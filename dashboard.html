@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROSCA MUNDIAL — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --amarillo: #FCD116;
+    --azul: #003087;
+    --rojo: #CE1126;
+    --bg: #0a0e1a;
+    --card: #111827;
+    --card2: #1a2235;
+    --border: #1e2d45;
+    --text: #e8eaf0;
+    --muted: #6b7a99;
+    --gold: #f0b429;
+    --gold2: #ffd666;
+    --silver: #a0aec0;
+    --bronze: #cd7c2f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* FRANJA TRICOLOR */
+  .tricolor {
+    height: 5px;
+    background: linear-gradient(90deg, var(--amarillo) 33.33%, var(--azul) 33.33% 66.66%, var(--rojo) 66.66%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+  }
+
+  /* NAVBAR */
+  .navbar {
+    position: fixed;
+    top: 5px;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    background: rgba(10, 14, 26, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nav-logo img {
+    height: 40px;
+    width: 40px;
+    object-fit: contain;
+  }
+
+  .nav-logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--amarillo);
+    line-height: 1;
+  }
+
+  .nav-logo-text span {
+    color: var(--text);
+    font-size: 13px;
+    display: block;
+    letter-spacing: 1px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  /* ALERTA PICKS - botón flotante */
+  .picks-alert {
+    position: fixed;
+    top: 76px;
+    right: 20px;
+    z-index: 998;
+    background: linear-gradient(135deg, #ff4444, #cc0000);
+    border: 2px solid #ff6666;
+    border-radius: 12px;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    animation: pulseAlert 2s infinite;
+    box-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
+    max-width: 280px;
+    transition: transform 0.2s;
+  }
+
+  .picks-alert:hover { transform: scale(1.03); }
+
+  @keyframes pulseAlert {
+    0%, 100% { box-shadow: 0 0 20px rgba(255,68,68,0.4); }
+    50% { box-shadow: 0 0 35px rgba(255,68,68,0.7); }
+  }
+
+  .picks-alert-icon { font-size: 22px; flex-shrink: 0; }
+
+  .picks-alert-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 1.3;
+    color: #fff;
+  }
+
+  .picks-alert-text strong { font-size: 15px; display: block; }
+
+  /* BTN IR A PICKS (siempre visible en navbar) */
+  .btn-picks {
+    background: linear-gradient(135deg, var(--amarillo), #e5a800);
+    color: #000;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    padding: 9px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-picks:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(252,209,22,0.4);
+  }
+
+  /* AVATAR */
+  .user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--card2);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .user-avatar:hover { border-color: var(--amarillo); }
+
+  /* MAIN */
+  .main {
+    padding-top: 90px;
+    padding-bottom: 60px;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  /* COUNTDOWN BANNER */
+  .countdown-banner {
+    background: linear-gradient(135deg, var(--azul) 0%, #001a4d 100%);
+    border: 1px solid rgba(252,209,22,0.3);
+    border-radius: 16px;
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .countdown-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--amarillo);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .countdown-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+
+  .countdown-timer {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .countdown-unit {
+    text-align: center;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 10px 14px;
+    min-width: 58px;
+  }
+
+  .countdown-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--amarillo);
+    line-height: 1;
+    display: block;
+  }
+
+  .countdown-lbl {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .countdown-sep {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: rgba(252,209,22,0.4);
+    margin-top: -6px;
+  }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(252,209,22,0.3);
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .stat-card.gold::before { background: linear-gradient(90deg, var(--gold), var(--gold2)); }
+  .stat-card.blue::before { background: linear-gradient(90deg, var(--azul), #4a90d9); }
+  .stat-card.red::before { background: linear-gradient(90deg, var(--rojo), #ff6b6b); }
+  .stat-card.green::before { background: linear-gradient(90deg, #22c55e, #16a34a); }
+
+  .stat-icon { font-size: 28px; margin-bottom: 8px; }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* LAYOUT PRINCIPAL */
+  .grid-main {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .col-left { display: flex; flex-direction: column; gap: 20px; }
+  .col-right { display: flex; flex-direction: column; gap: 20px; }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: var(--amarillo);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-badge {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  /* RANKING TABLE */
+  .ranking-table { width: 100%; }
+
+  .ranking-row {
+    display: grid;
+    grid-template-columns: 48px 1fr 60px 60px 60px 80px;
+    align-items: center;
+    padding: 12px 24px;
+    border-bottom: 1px solid rgba(30,45,69,0.6);
+    transition: background 0.15s;
+    gap: 8px;
+  }
+
+  .ranking-row:last-child { border-bottom: none; }
+  .ranking-row:hover { background: rgba(255,255,255,0.03); }
+
+  .ranking-row.top1 { background: rgba(240,180,41,0.06); }
+  .ranking-row.top2 { background: rgba(160,174,192,0.04); }
+  .ranking-row.top3 { background: rgba(205,124,47,0.04); }
+
+  .rank-pos {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .rank-pos.p1 { color: var(--gold); }
+  .rank-pos.p2 { color: var(--silver); }
+  .rank-pos.p3 { color: var(--bronze); }
+  .rank-pos.other { color: var(--muted); font-size: 16px; }
+
+  .rank-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .rank-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--card2);
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .rank-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+  }
+
+  .rank-name.you {
+    color: var(--amarillo);
+  }
+
+  .rank-name.you::after {
+    content: 'TÚ';
+    font-size: 9px;
+    background: var(--amarillo);
+    color: #000;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-left: 6px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+  }
+
+  .rank-stat {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    color: var(--muted);
+  }
+
+  .rank-stat.pts {
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .rank-header-row {
+    display: grid;
+    grid-template-columns: 48px 1fr 60px 60px 60px 80px;
+    padding: 8px 24px;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+    background: var(--card2);
+  }
+
+  .rh {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .rh:nth-child(2) { text-align: left; }
+
+  /* VER MÁS */
+  .ver-mas {
+    padding: 14px 24px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .btn-ver-mas {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 1px;
+    padding: 8px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .btn-ver-mas:hover {
+    border-color: var(--amarillo);
+    color: var(--amarillo);
+  }
+
+  /* RANKINGS ESPECIALES - GRID */
+  .especiales-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .especial-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+    cursor: pointer;
+  }
+
+  .especial-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(252,209,22,0.3);
+  }
+
+  .especial-header {
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .especial-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 1.5px;
+  }
+
+  .especial-desc {
+    font-family: 'Barlow', sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .especial-emoji { font-size: 24px; }
+
+  .especial-podio {
+    padding: 12px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .especial-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .epos {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    width: 20px;
+    flex-shrink: 0;
+  }
+
+  .epos.p1 { color: var(--gold); }
+  .epos.p2 { color: var(--silver); }
+  .epos.p3 { color: var(--bronze); }
+
+  .eavatar {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .ename {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ename.you { color: var(--amarillo); }
+
+  .evalue {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .especial-tu-pos {
+    padding: 8px 18px 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .tu-pos-txt {
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .tu-pos-txt strong { color: var(--amarillo); }
+
+  /* PICKS GLOBALES */
+  .picks-globales-locked {
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .lock-icon { font-size: 40px; opacity: 0.4; }
+
+  .lock-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* MI POSICIÓN */
+  .mi-pos-card {
+    background: linear-gradient(135deg, rgba(0,48,135,0.4), rgba(10,14,26,0.8));
+    border: 1px solid rgba(252,209,22,0.25);
+    border-radius: 14px;
+    padding: 20px 24px;
+  }
+
+  .mi-pos-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .mi-pos-main {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .mi-pos-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    color: var(--amarillo);
+    line-height: 1;
+  }
+
+  .mi-pos-info { flex: 1; }
+
+  .mi-pos-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--text);
+  }
+
+  .mi-pos-pts {
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .mi-pos-pts strong { color: var(--text); }
+
+  .mi-pos-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .mi-mini-stat {
+    background: rgba(255,255,255,0.04);
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .mini-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--text);
+  }
+
+  .mini-lbl {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* FASES */
+  .fases-list { padding: 16px 24px; }
+
+  .fase-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(30,45,69,0.5);
+  }
+
+  .fase-item:last-child { border-bottom: none; }
+
+  .fase-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .fase-dot.done { background: #22c55e; }
+  .fase-dot.active { background: var(--amarillo); animation: blinkDot 1.5s infinite; }
+  .fase-dot.locked { background: var(--border); }
+
+  @keyframes blinkDot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .fase-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    flex: 1;
+  }
+
+  .fase-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .fase-tag.done { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .fase-tag.active { background: rgba(252,209,22,0.15); color: var(--amarillo); }
+  .fase-tag.locked { background: rgba(107,122,153,0.15); color: var(--muted); }
+
+  /* MODAL PERFIL USUARIO */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    width: 420px;
+    max-width: 95vw;
+    position: relative;
+    animation: slideUp 0.25s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover { border-color: var(--rojo); color: var(--rojo); }
+
+  /* DROPDOWN USUARIO */
+  .user-dropdown {
+    position: fixed;
+    top: 74px;
+    right: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 8px;
+    min-width: 200px;
+    z-index: 900;
+    display: none;
+    animation: slideDown 0.2s ease;
+  }
+
+  .user-dropdown.open { display: block; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    transition: background 0.15s;
+  }
+
+  .dropdown-item:hover { background: var(--card2); }
+  .dropdown-item.danger { color: var(--rojo); }
+  .dropdown-item-icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .dropdown-divider { height: 1px; background: var(--border); margin: 6px 0; }
+
+  /* BARRA DE INSCRITOS */
+  .inscritos-bar {
+    padding: 16px 24px;
+  }
+
+  .inscritos-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .inscritos-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .inscritos-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: var(--amarillo);
+  }
+
+  .progress-track {
+    height: 8px;
+    background: var(--card2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--azul), var(--amarillo));
+    border-radius: 99px;
+    width: 47%;
+    transition: width 0.5s ease;
+  }
+
+  .inscritos-aviso {
+    margin-top: 8px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 11px;
+    color: rgba(107,122,153,0.8);
+    text-align: center;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .grid-main { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .especiales-grid { grid-template-columns: 1fr; }
+    .ranking-row, .rank-header-row {
+      grid-template-columns: 40px 1fr 80px;
+    }
+    .rank-stat.gana, .rank-stat.emp, .rank-stat.pier { display: none; }
+  }
+
+  /* COLOR ESPECIALES */
+  .c-killer { color: #f97316; }
+  .c-virgen { color: #22c55e; }
+  .c-carnicero { color: #ef4444; }
+  .c-niña { color: #ec4899; }
+  .c-banderin { color: #3b82f6; }
+  .c-mechacorta { color: #8b5cf6; }
+</style>
+</head>
+<body>
+
+<!-- TRICOLOR -->
+<div class="tricolor"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo">
+    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#003087,#001a4d);border:2px solid #FCD116;display:flex;align-items:center;justify-content:center;font-size:22px;">🍩</div>
+    <div class="nav-logo-text">
+      ROSCA MUNDIAL
+      <span>COPA 2026</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="btn-picks" onclick="goToPicks()">⚡ IR A PICKS</button>
+    <div class="user-avatar" onclick="toggleDropdown()">⚽</div>
+  </div>
+</nav>
+
+<!-- DROPDOWN USUARIO -->
+<div class="user-dropdown" id="userDropdown">
+  <div class="dropdown-item"><span class="dropdown-item-icon">👤</span> Mi perfil</div>
+  <div class="dropdown-item" onclick="goToPicks()"><span class="dropdown-item-icon">⚡</span> Mis Picks</div>
+  <div class="dropdown-item"><span class="dropdown-item-icon">📄</span> Descargar mis picks PDF</div>
+  <div class="dropdown-item"><span class="dropdown-item-icon">🔑</span> Cambiar contraseña</div>
+  <div class="dropdown-divider"></div>
+  <div class="dropdown-item danger"><span class="dropdown-item-icon">🚪</span> Cerrar sesión</div>
+</div>
+
+<!-- ALERTA PICKS PENDIENTES -->
+<div class="picks-alert" onclick="goToPicks()">
+  <div class="picks-alert-icon">⚠️</div>
+  <div class="picks-alert-text">
+    <strong>¡Picks incompletos!</strong>
+    Realiza tus picks antes del cierre. Haz click aquí.
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- COUNTDOWN BANNER -->
+  <div class="countdown-banner">
+    <div>
+      <div class="countdown-label">⏳ Cuenta regresiva</div>
+      <div class="countdown-title">PARTIDO INAUGURAL · 11 JUN 2026 · 6:00 PM 🇨🇴</div>
+    </div>
+    <div class="countdown-timer">
+      <div class="countdown-unit">
+        <span class="countdown-num" id="cd-dias">--</span>
+        <span class="countdown-lbl">DÍAS</span>
+      </div>
+      <span class="countdown-sep">:</span>
+      <div class="countdown-unit">
+        <span class="countdown-num" id="cd-horas">--</span>
+        <span class="countdown-lbl">HRS</span>
+      </div>
+      <span class="countdown-sep">:</span>
+      <div class="countdown-unit">
+        <span class="countdown-num" id="cd-min">--</span>
+        <span class="countdown-lbl">MIN</span>
+      </div>
+      <span class="countdown-sep">:</span>
+      <div class="countdown-unit">
+        <span class="countdown-num" id="cd-seg">--</span>
+        <span class="countdown-lbl">SEG</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="stats-row">
+    <div class="stat-card gold">
+      <div class="stat-icon">🏆</div>
+      <div class="stat-value">$24M</div>
+      <div class="stat-label">Pozo Total COP</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-icon">👥</div>
+      <div class="stat-value">187<span style="font-size:16px;color:var(--muted)">/400</span></div>
+      <div class="stat-label">Inscritos confirmados</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-icon">⚽</div>
+      <div class="stat-value">48</div>
+      <div class="stat-label">Equipos en el Mundial</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon">📋</div>
+      <div class="stat-value">80</div>
+      <div class="stat-label">Partidos totales</div>
+    </div>
+  </div>
+
+  <!-- GRID PRINCIPAL -->
+  <div class="grid-main">
+
+    <!-- COLUMNA IZQUIERDA -->
+    <div class="col-left">
+
+      <!-- RANKING PRINCIPAL L/E/V -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🏅 Ranking Principal L/E/V</div>
+          <div class="card-badge">187 jugadores</div>
+        </div>
+        <div class="rank-header-row">
+          <div class="rh">#</div>
+          <div class="rh" style="text-align:left">Jugador</div>
+          <div class="rh">G</div>
+          <div class="rh">E</div>
+          <div class="rh">P</div>
+          <div class="rh">Pts</div>
+        </div>
+        <div class="ranking-table">
+          <div class="ranking-row top1">
+            <div class="rank-pos p1">1</div>
+            <div class="rank-user">
+              <div class="rank-avatar">😎</div>
+              <div class="rank-name">ElMaestro99</div>
+            </div>
+            <div class="rank-stat gana">12</div>
+            <div class="rank-stat emp">3</div>
+            <div class="rank-stat pier">5</div>
+            <div class="rank-stat pts">27</div>
+          </div>
+          <div class="ranking-row top2">
+            <div class="rank-pos p2">2</div>
+            <div class="rank-user">
+              <div class="rank-avatar">🦁</div>
+              <div class="rank-name">TigreSamperio</div>
+            </div>
+            <div class="rank-stat gana">11</div>
+            <div class="rank-stat emp">4</div>
+            <div class="rank-stat pier">5</div>
+            <div class="rank-stat pts">26</div>
+          </div>
+          <div class="ranking-row top3">
+            <div class="rank-pos p3">3</div>
+            <div class="rank-user">
+              <div class="rank-avatar">🔥</div>
+              <div class="rank-name">Crack2026</div>
+            </div>
+            <div class="rank-stat gana">10</div>
+            <div class="rank-stat emp">5</div>
+            <div class="rank-stat pier">5</div>
+            <div class="rank-stat pts">25</div>
+          </div>
+          <div class="ranking-row">
+            <div class="rank-pos other">4</div>
+            <div class="rank-user">
+              <div class="rank-avatar">⭐</div>
+              <div class="rank-name">PastorFutbolero</div>
+            </div>
+            <div class="rank-stat gana">10</div>
+            <div class="rank-stat emp">4</div>
+            <div class="rank-stat pier">6</div>
+            <div class="rank-stat pts">24</div>
+          </div>
+          <div class="ranking-row" style="background:rgba(252,209,22,0.04)">
+            <div class="rank-pos other">47</div>
+            <div class="rank-user">
+              <div class="rank-avatar">⚽</div>
+              <div class="rank-name you">SamirF2026</div>
+            </div>
+            <div class="rank-stat gana">7</div>
+            <div class="rank-stat emp">2</div>
+            <div class="rank-stat pier">11</div>
+            <div class="rank-stat pts">16</div>
+          </div>
+        </div>
+        <div class="ver-mas">
+          <button class="btn-ver-mas">Ver ranking completo (187)</button>
+        </div>
+      </div>
+
+      <!-- RANKINGS ESPECIALES -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🎯 Rankings Especiales</div>
+          <div class="card-badge">6 categorías</div>
+        </div>
+        <div style="padding: 16px;">
+          <div class="especiales-grid">
+
+            <!-- EL KILLER -->
+            <div class="especial-card">
+              <div class="especial-header">
+                <div>
+                  <div class="especial-name c-killer">⚔️ EL KILLER</div>
+                  <div class="especial-desc">15 jugadores · más G+A</div>
+                </div>
+              </div>
+              <div class="especial-podio">
+                <div class="especial-row">
+                  <div class="epos p1">1</div>
+                  <div class="eavatar">🐉</div>
+                  <div class="ename">GolazoRex</div>
+                  <div class="evalue" style="color:#f97316">34 pts</div>
+                </div>
+                <div class="especial-row">
+                  <div class="epos p2">2</div>
+                  <div class="eavatar">🦊</div>
+                  <div class="ename you">SamirF2026</div>
+                  <div class="evalue">31 pts</div>
+                </div>
+                <div class="especial-row">
+                  <div class="epos p3">3</div>
+                  <div class="eavatar">🌟</div>
+                  <div class="ename">LaReina01</div>
+                  <div class="evalue">29 pts</div>
+                </div>
+              </div>
+              <div class="especial-tu-pos">
+                <div class="tu-pos-txt">Tu posición: <strong>#2</strong> de 187</div>
+              </div>
+            </div>
+
+            <!-- EL VIRGEN -->
+            <div class="especial-card">
+              <div class="especial-header">
+                <div>
+                  <div class="especial-name c-virgen">🕊️ EL VIRGEN</div>
+                  <div class="especial-desc">10 equipos · menos goles</div>
+                </div>
+              </div>
+              <div class="especial-podio">
+                <div class="especial-row">
+                  <div class="epos p1">1</div>
+                  <div class="eavatar">🛡️</div>
+                  <div class="ename">DefensaTotal</div>
+                  <div class="evalue" style="color:#22c55e">3 goles</div>
+                </div>
+                <div class="especial-row">
+                  <div class="epos p2">2</div>
+                  <div class="eavatar">🧱</div>
+                  <div class="ename">MuroFelipe</div>
+                  <div class="evalue">4 goles</div>
+                </div>
+                <div class="especial-row">
+                  <div class="epos p3">3</div>
+                  <div class="eavatar">🎯</div>
+                  <div class="ename">PrecisionFria</div>
+                  <div class="evalue">5 goles</div>
+                </div>
+              </div>
+              <div class="especial-tu-pos">
+                <div class="tu-pos-txt">Tu posición: <strong>#89</strong> de 187</div>
+              </div>
+            </div>
+
+            <!-- EL CARNICERO -->
+            <div class="especial-card">
+              <div class="especial-header">
+                <div>
+                  <div class="especial-name c-carnicero">🔪 EL CARNICERO</div>
+                  <div class="especial-desc">10 equipos · más tarjetas</div>
+                </div>
+              </div>
+              <div class="especial-podio">
+                <div class="especial-row">
+                  <div class="epos p1">1</div>
+                  <div class="eavatar">💀</div>
+                  <div class="ename">Sangre2026</div>
+                  <div class="evalue" style="color:#ef4444">47 pts</div>
+                </div>
+                <div class="especial-row">
+                  <div class="epos p2">2</div>
+                  <div class="eavatar">🐗</div>
+                  <div class="ename">Bestia88</div>
+                  <div class="evalue">44 pts</div>
+                </div>
+                <div class="especial-row">
+                  <div class="epos p3">3</div>
+                  <div class="eavatar">🌋</div>
+                  <div class="ename">ChapaKing</div>
+                  <div class="evalue">41 pts</div>
+                </div>
+              </div>
+              <div class="especial-tu-pos">
+                <div class="tu-pos-txt">Tu posición: <strong>#34</strong> de 187</div>
+              </div>
+            </div>
+
+            <!-- EL PIE DE NIÑA -->
+            <div class="especial-card">
+              <div class="especial-header">
+                <div>
+                  <div class="especial-name c-niña">🎀 EL PIE DE NIÑA</div>
+                  <div class="especial-desc">10 equipos · menos tarjetas</div>
+                </div>
+              </div>
+              <div class="especial-podio">
+                <div class="especial-row">
+                  <div class="epos p1">1</div>
+                  <div class="eavatar">🌸</div>
+                  <div class="ename">AngelLuisa</div>
+                  <div class="evalue" style="color:#ec4899">2 pts</div>
+                </div>
+                <div class="especial-row">
+                  <div class="epos p2">2</div>
+                  <div class="eavatar">🦋</div>
+                  <div class="ename">Caballero11</div>
+                  <div class="evalue">3 pts</div>
+                </div>
+                <div class="especial-row">
+                  <div class="epos p3">3</div>
+                  <div class="eavatar">🍀</div>
+                  <div class="ename">SuaveSiempre</div>
+                  <div class="evalue">4 pts</div>
+                </div>
+              </div>
+              <div class="especial-tu-pos">
+                <div class="tu-pos-txt">Tu posición: <strong>#12</strong> de 187</div>
+              </div>
+            </div>
+
+            <!-- EL BANDERÍN -->
+            <div class="especial-card">
+              <div class="especial-header">
+                <div>
+                  <div class="especial-name c-banderin">🚩 EL BANDERÍN</div>
+                  <div class="especial-desc">10 equipos · más corners</div>
+                </div>
+              </div>
+              <div class="especial-podio">
+                <div class="especial-row">
+                  <div class="epos p1">1</div>
+                  <div class="eavatar">🔵</div>
+                  <div class="ename">CornerKing</div>
+                  <div class="evalue" style="color:#3b82f6">67</div>
+                </div>
+                <div class="especial-row">
+                  <div class="epos p2">2</div>
+                  <div class="eavatar">⚽</div>
+                  <div class="ename">PorElAngulo</div>
+                  <div class="evalue">63</div>
+                </div>
+                <div class="especial-row">
+                  <div class="epos p3">3</div>
+                  <div class="eavatar">🎯</div>
+                  <div class="ename">TiroDeEsquina</div>
+                  <div class="evalue">61</div>
+                </div>
+              </div>
+              <div class="especial-tu-pos">
+                <div class="tu-pos-txt">Tu posición: <strong>#76</strong> de 187</div>
+              </div>
+            </div>
+
+            <!-- EL MECHACORTA -->
+            <div class="especial-card">
+              <div class="especial-header">
+                <div>
+                  <div class="especial-name c-mechacorta">✂️ EL MECHACORTA</div>
+                  <div class="especial-desc">10 equipos · menos corners</div>
+                </div>
+              </div>
+              <div class="especial-podio">
+                <div class="especial-row">
+                  <div class="epos p1">1</div>
+                  <div class="eavatar">🎻</div>
+                  <div class="ename">PocoBallao</div>
+                  <div class="evalue" style="color:#8b5cf6">8</div>
+                </div>
+                <div class="especial-row">
+                  <div class="epos p2">2</div>
+                  <div class="eavatar">🌵</div>
+                  <div class="ename">DirectoAlArco</div>
+                  <div class="evalue">10</div>
+                </div>
+                <div class="especial-row">
+                  <div class="epos p3">3</div>
+                  <div class="eavatar">🏔️</div>
+                  <div class="ename">FrioYDirecho</div>
+                  <div class="evalue">11</div>
+                </div>
+              </div>
+              <div class="especial-tu-pos">
+                <div class="tu-pos-txt">Tu posición: <strong>#55</strong> de 187</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COLUMNA DERECHA -->
+    <div class="col-right">
+
+      <!-- MI POSICIÓN -->
+      <div class="mi-pos-card">
+        <div class="mi-pos-title">📍 Mi posición actual</div>
+        <div class="mi-pos-main">
+          <div class="mi-pos-num">47</div>
+          <div class="mi-pos-info">
+            <div class="mi-pos-name">SamirF2026</div>
+            <div class="mi-pos-pts"><strong>16 pts</strong> · 7G / 2E / 11P</div>
+          </div>
+        </div>
+        <div class="mi-pos-stats">
+          <div class="mi-mini-stat">
+            <div class="mini-val" style="color:#f97316">2°</div>
+            <div class="mini-lbl">El Killer</div>
+          </div>
+          <div class="mini-mini-stat" style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;text-align:center">
+            <div class="mini-val" style="color:#22c55e">89°</div>
+            <div class="mini-lbl">El Virgen</div>
+          </div>
+          <div class="mini-mini-stat" style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;text-align:center">
+            <div class="mini-val" style="color:#ef4444">34°</div>
+            <div class="mini-lbl">Carnicero</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INSCRITOS + BARRA -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📊 Inscripciones</div>
+        </div>
+        <div class="inscritos-bar">
+          <div class="inscritos-top">
+            <div class="inscritos-label">Cupos ocupados</div>
+            <div class="inscritos-num">187 / 400</div>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill"></div>
+          </div>
+          <div class="inscritos-aviso">⚠️ Solo se realiza si se completan los 400 cupos</div>
+        </div>
+      </div>
+
+      <!-- VER PICKS GLOBALES -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🌍 Ver Picks Globales</div>
+        </div>
+        <div class="picks-globales-locked">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">Los picks de todos los participantes estarán disponibles una vez inicie el Mundial el 11 de junio de 2026.</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--muted);margin-top:4px">Fases liberadas progresivamente al cerrar cada ronda</div>
+        </div>
+      </div>
+
+      <!-- FASES DEL MUNDIAL -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📅 Fases del Mundial</div>
+        </div>
+        <div class="fases-list">
+          <div class="fase-item">
+            <div class="fase-dot active"></div>
+            <div class="fase-name">Fase de Grupos</div>
+            <div class="fase-tag active">Abierta</div>
+          </div>
+          <div class="fase-item">
+            <div class="fase-dot locked"></div>
+            <div class="fase-name">16avos de Final</div>
+            <div class="fase-tag locked">🔒 Bloqueada</div>
+          </div>
+          <div class="fase-item">
+            <div class="fase-dot locked"></div>
+            <div class="fase-name">8vos de Final</div>
+            <div class="fase-tag locked">🔒 Bloqueada</div>
+          </div>
+          <div class="fase-item">
+            <div class="fase-dot locked"></div>
+            <div class="fase-name">Cuartos de Final</div>
+            <div class="fase-tag locked">🔒 Bloqueada</div>
+          </div>
+          <div class="fase-item">
+            <div class="fase-dot locked"></div>
+            <div class="fase-name">Semifinales</div>
+            <div class="fase-tag locked">🔒 Bloqueada</div>
+          </div>
+          <div class="fase-item">
+            <div class="fase-dot locked"></div>
+            <div class="fase-name">Tercer Puesto</div>
+            <div class="fase-tag locked">🔒 Bloqueada</div>
+          </div>
+          <div class="fase-item">
+            <div class="fase-dot locked"></div>
+            <div class="fase-name">FINAL 🏆</div>
+            <div class="fase-tag locked">🔒 Bloqueada</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script>
+  // COUNTDOWN
+  function updateCountdown() {
+    const target = new Date('2026-06-11T23:00:00Z'); // 6 PM UTC-5 = 23:00 UTC
+    const now = new Date();
+    const diff = target - now;
+
+    if (diff <= 0) {
+      document.getElementById('cd-dias').textContent = '00';
+      document.getElementById('cd-horas').textContent = '00';
+      document.getElementById('cd-min').textContent = '00';
+      document.getElementById('cd-seg').textContent = '00';
+      return;
+    }
+
+    const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const min = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seg = Math.floor((diff % (1000 * 60)) / 1000);
+
+    document.getElementById('cd-dias').textContent = String(dias).padStart(2, '0');
+    document.getElementById('cd-horas').textContent = String(horas).padStart(2, '0');
+    document.getElementById('cd-min').textContent = String(min).padStart(2, '0');
+    document.getElementById('cd-seg').textContent = String(seg).padStart(2, '0');
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // DROPDOWN
+  function toggleDropdown() {
+    const d = document.getElementById('userDropdown');
+    d.classList.toggle('open');
+  }
+
+  document.addEventListener('click', function(e) {
+    const d = document.getElementById('userDropdown');
+    if (!e.target.closest('.user-avatar') && !e.target.closest('#userDropdown')) {
+      d.classList.remove('open');
+    }
+  });
+
+  // PICKS
+  function goToPicks() {
+    alert('⚡ Redirigiendo a la pantalla de Picks...\n\n(Se construirá en el siguiente paso)');
+  }
+</script>
+
+</body>
+</html>
