@@ -82,9 +82,9 @@
 
   .nav-logo-text span {
     color: var(--text);
-    font-size: 13px;
+    font-size: 11px;
     display: block;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 600;
   }
@@ -907,10 +907,28 @@
 <!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-logo">
-    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#003087,#001a4d);border:2px solid #FCD116;display:flex;align-items:center;justify-content:center;font-size:22px;">🍩</div>
+    <div style="width:40px;height:40px;flex-shrink:0;">
+      <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+        <ellipse cx="40" cy="42" rx="34" ry="22" fill="#c8860a" opacity="0.3"/>
+        <ellipse cx="40" cy="40" rx="34" ry="22" fill="#e8a020"/>
+        <ellipse cx="40" cy="40" rx="20" ry="11" fill="#c8860a"/>
+        <ellipse cx="40" cy="40" rx="14" ry="7" fill="#0a0e1a"/>
+        <!-- mordida -->
+        <path d="M58 28 Q68 35 66 45 Q60 38 54 32 Z" fill="#0a0e1a"/>
+        <!-- textura azúcar -->
+        <circle cx="30" cy="34" r="2" fill="#FCD116" opacity="0.8"/>
+        <circle cx="45" cy="30" r="1.5" fill="#FCD116" opacity="0.8"/>
+        <circle cx="50" cy="42" r="1.5" fill="#FCD116" opacity="0.6"/>
+        <circle cx="28" cy="46" r="2" fill="#FCD116" opacity="0.7"/>
+        <circle cx="36" cy="52" r="1.5" fill="#FCD116" opacity="0.6"/>
+        <!-- balón en el hueco -->
+        <circle cx="40" cy="40" r="6" fill="white" opacity="0.9"/>
+        <path d="M37 37 L40 35 L43 37 L43 43 L40 45 L37 43 Z" fill="#222" opacity="0.5"/>
+      </svg>
+    </div>
     <div class="nav-logo-text">
       ROSCA MUNDIAL
-      <span>COPA 2026</span>
+      <span>MUNDIAL USA · MÉXICO · CANADÁ 2026</span>
     </div>
   </div>
   <div class="nav-right">
@@ -921,12 +939,63 @@
 
 <!-- DROPDOWN USUARIO -->
 <div class="user-dropdown" id="userDropdown">
-  <div class="dropdown-item"><span class="dropdown-item-icon">👤</span> Mi perfil</div>
+  <div style="padding:10px 14px 8px;border-bottom:1px solid var(--border);margin-bottom:4px;">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;color:var(--text)">SamirF2026</div>
+    <div style="font-family:'Barlow',sans-serif;font-size:12px;color:var(--muted)">samir@roscamundial.com</div>
+  </div>
+  <div class="dropdown-item" onclick="openAliasModal()"><span class="dropdown-item-icon">✏️</span> Editar alias / nombre</div>
   <div class="dropdown-item" onclick="goToPicks()"><span class="dropdown-item-icon">⚡</span> Mis Picks</div>
-  <div class="dropdown-item"><span class="dropdown-item-icon">📄</span> Descargar mis picks PDF</div>
+  <div class="dropdown-item"><span class="dropdown-item-icon">📄</span> Descargar mis picks (PDF)</div>
   <div class="dropdown-item"><span class="dropdown-item-icon">🔑</span> Cambiar contraseña</div>
   <div class="dropdown-divider"></div>
   <div class="dropdown-item danger"><span class="dropdown-item-icon">🚪</span> Cerrar sesión</div>
+</div>
+
+<!-- MODAL ALIAS -->
+<div class="modal-overlay" id="aliasModal">
+  <div class="modal" style="max-width:440px">
+    <button class="modal-close" onclick="closeAliasModal()">✕</button>
+    <div style="margin-bottom:20px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--amarillo)">✏️ EDITAR MI NOMBRE</div>
+      <div style="font-family:'Barlow',sans-serif;font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5">Puedes usar tu nombre real o un alias. Este nombre aparecerá en todos los rankings y será visible para todos los participantes.</div>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <label style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">Tipo de nombre</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div id="opt-real" onclick="selectTipo('real')" style="border:2px solid var(--amarillo);border-radius:10px;padding:12px;text-align:center;cursor:pointer;background:rgba(252,209,22,0.08)">
+          <div style="font-size:20px;margin-bottom:4px">👤</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:var(--amarillo)">Nombre real</div>
+          <div style="font-family:'Barlow',sans-serif;font-size:11px;color:var(--muted)">Tu nombre completo</div>
+        </div>
+        <div id="opt-alias" onclick="selectTipo('alias')" style="border:2px solid var(--border);border-radius:10px;padding:12px;text-align:center;cursor:pointer">
+          <div style="font-size:20px;margin-bottom:4px">🎭</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:var(--text)">Alias</div>
+          <div style="font-family:'Barlow',sans-serif;font-size:11px;color:var(--muted)">Nombre creativo</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:6px">
+      <label style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">Tu nombre en los rankings</label>
+      <input id="aliasInput" type="text" maxlength="20" placeholder="Ej: SamirF2026 ó Samir Florez"
+        style="width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:600;outline:none;transition:border-color 0.2s"
+        oninput="validarAlias(this)">
+      <div id="alias-hint" style="font-family:'Barlow',sans-serif;font-size:11px;color:var(--muted);margin-top:5px">Máximo 20 caracteres. Sin groserías, ofensas o contenido inapropiado.</div>
+      <div id="alias-error" style="font-family:'Barlow',sans-serif;font-size:12px;color:#ef4444;margin-top:4px;display:none"></div>
+    </div>
+
+    <div style="margin-bottom:20px">
+      <div style="font-family:'Barlow',sans-serif;font-size:11px;color:rgba(107,122,153,0.7);line-height:1.5;padding:10px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid var(--border)">
+        ⚠️ El nombre será revisado por el administrador. Nombres ofensivos, vulgares, homofóbicos, xenofóbicos o inapropiados serán eliminados y el usuario deberá elegir uno nuevo.
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button onclick="closeAliasModal()" style="background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;padding:12px;border-radius:10px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#6b7a99'" onmouseout="this.style.borderColor='var(--border)'">CANCELAR</button>
+      <button onclick="guardarAlias()" style="background:linear-gradient(135deg,var(--amarillo),#e5a800);color:#000;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;padding:12px;border-radius:10px;cursor:pointer;border:none;transition:all 0.2s" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">GUARDAR NOMBRE</button>
+    </div>
+  </div>
 </div>
 
 <!-- ALERTA PICKS PENDIENTES -->
@@ -940,6 +1009,102 @@
 
 <!-- MAIN -->
 <main class="main">
+
+  <!-- PREMIOS PRINCIPALES + RANKING DESTACADO -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;" class="top-section">
+
+    <!-- PREMIOS TOP 4 -->
+    <div class="card" style="background:linear-gradient(135deg,#0d1a2e,#111827);">
+      <div class="card-header" style="border-bottom-color:rgba(252,209,22,0.2)">
+        <div class="card-title">🏆 Premios Principales</div>
+        <div class="card-badge" style="color:var(--gold)">TOP 4</div>
+      </div>
+      <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:rgba(240,180,41,0.08);border:1px solid rgba(240,180,41,0.2);border-radius:10px;">
+          <div style="font-size:26px">📱</div>
+          <div style="flex:1">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--gold);letter-spacing:1px">🥇 1° LUGAR</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text);font-weight:600">iPHONE 17 PRO MAX</div>
+          </div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold)">$8.000.000</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:rgba(160,174,192,0.06);border:1px solid rgba(160,174,192,0.15);border-radius:10px;">
+          <div style="font-size:26px">🎵</div>
+          <div style="flex:1">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--silver);letter-spacing:1px">🥈 2° LUGAR</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text);font-weight:600">BOSE S1 PRO</div>
+          </div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--silver)">$3.200.000</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:rgba(205,124,47,0.06);border:1px solid rgba(205,124,47,0.15);border-radius:10px;">
+          <div style="font-size:26px">🎮</div>
+          <div style="flex:1">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--bronze);letter-spacing:1px">🥉 3° LUGAR</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text);font-weight:600">PLAYSTATION 5</div>
+          </div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--bronze)">$2.800.000</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;">
+          <div style="font-size:26px">🎧</div>
+          <div style="flex:1">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--muted);letter-spacing:1px">4° LUGAR</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text);font-weight:600">AIRPODS PRO</div>
+          </div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--muted)">$1.200.000</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RANKING PRINCIPAL COMPACTO -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🏅 Ranking L/E/V</div>
+        <div class="card-badge">187 jugadores</div>
+      </div>
+      <div class="rank-header-row" style="grid-template-columns:40px 1fr 50px 80px">
+        <div class="rh">#</div>
+        <div class="rh" style="text-align:left">Jugador</div>
+        <div class="rh">Aciertos</div>
+        <div class="rh">Pts</div>
+      </div>
+      <div>
+        <div style="display:grid;grid-template-columns:40px 1fr 50px 80px;align-items:center;padding:10px 24px;border-bottom:1px solid rgba(30,45,69,0.6);background:rgba(240,180,41,0.06);gap:8px">
+          <div class="rank-pos p1" style="font-size:20px">1</div>
+          <div class="rank-user"><div class="rank-avatar">😎</div><div class="rank-name">ElMaestro99</div></div>
+          <div class="rank-stat" style="text-align:center">27</div>
+          <div class="rank-stat pts">27</div>
+        </div>
+        <div style="display:grid;grid-template-columns:40px 1fr 50px 80px;align-items:center;padding:10px 24px;border-bottom:1px solid rgba(30,45,69,0.6);background:rgba(160,174,192,0.04);gap:8px">
+          <div class="rank-pos p2" style="font-size:20px">2</div>
+          <div class="rank-user"><div class="rank-avatar">🦁</div><div class="rank-name">TigreSamperio</div></div>
+          <div class="rank-stat" style="text-align:center">26</div>
+          <div class="rank-stat pts">26</div>
+        </div>
+        <div style="display:grid;grid-template-columns:40px 1fr 50px 80px;align-items:center;padding:10px 24px;border-bottom:1px solid rgba(30,45,69,0.6);background:rgba(205,124,47,0.04);gap:8px">
+          <div class="rank-pos p3" style="font-size:20px">3</div>
+          <div class="rank-user"><div class="rank-avatar">🔥</div><div class="rank-name">Crack2026</div></div>
+          <div class="rank-stat" style="text-align:center">25</div>
+          <div class="rank-stat pts">25</div>
+        </div>
+        <div style="display:grid;grid-template-columns:40px 1fr 50px 80px;align-items:center;padding:10px 24px;border-bottom:1px solid rgba(30,45,69,0.6);gap:8px">
+          <div class="rank-pos other" style="font-size:14px">4</div>
+          <div class="rank-user"><div class="rank-avatar">⭐</div><div class="rank-name">PastorFutbolero</div></div>
+          <div class="rank-stat" style="text-align:center">24</div>
+          <div class="rank-stat pts">24</div>
+        </div>
+        <div style="display:grid;grid-template-columns:40px 1fr 50px 80px;align-items:center;padding:10px 24px;border-bottom:1px solid rgba(30,45,69,0.6);background:rgba(252,209,22,0.04);gap:8px">
+          <div class="rank-pos other" style="font-size:14px">47</div>
+          <div class="rank-user"><div class="rank-avatar">⚽</div><div class="rank-name you">SamirF2026</div></div>
+          <div class="rank-stat" style="text-align:center">16</div>
+          <div class="rank-stat pts">16</div>
+        </div>
+      </div>
+      <div class="ver-mas">
+        <button class="btn-ver-mas">Ver ranking completo (187)</button>
+      </div>
+    </div>
+
+  </div>
 
   <!-- COUNTDOWN BANNER -->
   <div class="countdown-banner">
@@ -999,82 +1164,6 @@
 
     <!-- COLUMNA IZQUIERDA -->
     <div class="col-left">
-
-      <!-- RANKING PRINCIPAL L/E/V -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">🏅 Ranking Principal L/E/V</div>
-          <div class="card-badge">187 jugadores</div>
-        </div>
-        <div class="rank-header-row">
-          <div class="rh">#</div>
-          <div class="rh" style="text-align:left">Jugador</div>
-          <div class="rh">G</div>
-          <div class="rh">E</div>
-          <div class="rh">P</div>
-          <div class="rh">Pts</div>
-        </div>
-        <div class="ranking-table">
-          <div class="ranking-row top1">
-            <div class="rank-pos p1">1</div>
-            <div class="rank-user">
-              <div class="rank-avatar">😎</div>
-              <div class="rank-name">ElMaestro99</div>
-            </div>
-            <div class="rank-stat gana">12</div>
-            <div class="rank-stat emp">3</div>
-            <div class="rank-stat pier">5</div>
-            <div class="rank-stat pts">27</div>
-          </div>
-          <div class="ranking-row top2">
-            <div class="rank-pos p2">2</div>
-            <div class="rank-user">
-              <div class="rank-avatar">🦁</div>
-              <div class="rank-name">TigreSamperio</div>
-            </div>
-            <div class="rank-stat gana">11</div>
-            <div class="rank-stat emp">4</div>
-            <div class="rank-stat pier">5</div>
-            <div class="rank-stat pts">26</div>
-          </div>
-          <div class="ranking-row top3">
-            <div class="rank-pos p3">3</div>
-            <div class="rank-user">
-              <div class="rank-avatar">🔥</div>
-              <div class="rank-name">Crack2026</div>
-            </div>
-            <div class="rank-stat gana">10</div>
-            <div class="rank-stat emp">5</div>
-            <div class="rank-stat pier">5</div>
-            <div class="rank-stat pts">25</div>
-          </div>
-          <div class="ranking-row">
-            <div class="rank-pos other">4</div>
-            <div class="rank-user">
-              <div class="rank-avatar">⭐</div>
-              <div class="rank-name">PastorFutbolero</div>
-            </div>
-            <div class="rank-stat gana">10</div>
-            <div class="rank-stat emp">4</div>
-            <div class="rank-stat pier">6</div>
-            <div class="rank-stat pts">24</div>
-          </div>
-          <div class="ranking-row" style="background:rgba(252,209,22,0.04)">
-            <div class="rank-pos other">47</div>
-            <div class="rank-user">
-              <div class="rank-avatar">⚽</div>
-              <div class="rank-name you">SamirF2026</div>
-            </div>
-            <div class="rank-stat gana">7</div>
-            <div class="rank-stat emp">2</div>
-            <div class="rank-stat pier">11</div>
-            <div class="rank-stat pts">16</div>
-          </div>
-        </div>
-        <div class="ver-mas">
-          <button class="btn-ver-mas">Ver ranking completo (187)</button>
-        </div>
-      </div>
 
       <!-- RANKINGS ESPECIALES -->
       <div class="card">
@@ -1299,7 +1388,7 @@
           <div class="mi-pos-num">47</div>
           <div class="mi-pos-info">
             <div class="mi-pos-name">SamirF2026</div>
-            <div class="mi-pos-pts"><strong>16 pts</strong> · 7G / 2E / 11P</div>
+            <div class="mi-pos-pts"><strong>16 aciertos</strong> de 20 partidos jugados</div>
           </div>
         </div>
         <div class="mi-pos-stats">
@@ -1441,6 +1530,89 @@
   function goToPicks() {
     alert('⚡ Redirigiendo a la pantalla de Picks...\n\n(Se construirá en el siguiente paso)');
   }
+
+  // MODAL ALIAS
+  let tipoSeleccionado = 'real';
+
+  function openAliasModal() {
+    document.getElementById('userDropdown').classList.remove('open');
+    document.getElementById('aliasModal').classList.add('open');
+  }
+
+  function closeAliasModal() {
+    document.getElementById('aliasModal').classList.remove('open');
+    document.getElementById('alias-error').style.display = 'none';
+  }
+
+  function selectTipo(tipo) {
+    tipoSeleccionado = tipo;
+    const optReal = document.getElementById('opt-real');
+    const optAlias = document.getElementById('opt-alias');
+    if (tipo === 'real') {
+      optReal.style.border = '2px solid var(--amarillo)';
+      optReal.style.background = 'rgba(252,209,22,0.08)';
+      optReal.querySelector('div:nth-child(2)').style.color = 'var(--amarillo)';
+      optAlias.style.border = '2px solid var(--border)';
+      optAlias.style.background = 'transparent';
+      optAlias.querySelector('div:nth-child(2)').style.color = 'var(--text)';
+      document.getElementById('aliasInput').placeholder = 'Ej: Samir Florez';
+    } else {
+      optAlias.style.border = '2px solid var(--amarillo)';
+      optAlias.style.background = 'rgba(252,209,22,0.08)';
+      optAlias.querySelector('div:nth-child(2)').style.color = 'var(--amarillo)';
+      optReal.style.border = '2px solid var(--border)';
+      optReal.style.background = 'transparent';
+      optReal.querySelector('div:nth-child(2)').style.color = 'var(--text)';
+      document.getElementById('aliasInput').placeholder = 'Ej: ElRoscaKing, TigreMundial...';
+    }
+  }
+
+  // Lista básica de palabras bloqueadas (el backend hace validación completa)
+  const palabrasProhibidas = ['puta','culo','mierda','hijueputa','marica','negro','gordo','gay','fag','bitch','ass','fuck','pene','vagina','tetas','coño','cabron','idiota','estupido'];
+
+  function validarAlias(input) {
+    const val = input.value;
+    const errEl = document.getElementById('alias-error');
+    const lower = val.toLowerCase();
+    const tieneProhibida = palabrasProhibidas.some(p => lower.includes(p));
+    if (tieneProhibida) {
+      errEl.textContent = '⚠️ Este nombre contiene palabras inapropiadas. Por favor elige otro.';
+      errEl.style.display = 'block';
+      input.style.borderColor = '#ef4444';
+    } else if (val.length > 0 && val.length < 3) {
+      errEl.textContent = 'El nombre debe tener al menos 3 caracteres.';
+      errEl.style.display = 'block';
+      input.style.borderColor = '#ef4444';
+    } else {
+      errEl.style.display = 'none';
+      input.style.borderColor = val.length >= 3 ? 'var(--amarillo)' : 'var(--border)';
+    }
+  }
+
+  function guardarAlias() {
+    const val = document.getElementById('aliasInput').value.trim();
+    const errEl = document.getElementById('alias-error');
+    if (val.length < 3) {
+      errEl.textContent = 'Ingresa un nombre de al menos 3 caracteres.';
+      errEl.style.display = 'block';
+      return;
+    }
+    const lower = val.toLowerCase();
+    const tieneProhibida = palabrasProhibidas.some(p => lower.includes(p));
+    if (tieneProhibida) {
+      errEl.textContent = '⚠️ Nombre inapropiado. Por favor elige otro.';
+      errEl.style.display = 'block';
+      return;
+    }
+    // Aquí iría la llamada a Supabase para guardar el alias
+    closeAliasModal();
+    alert('✅ Nombre actualizado: ' + val + '\n\nAparecerá así en todos los rankings.');
+  }
+
+  // Cerrar modal al click fuera
+  document.getElementById('aliasModal').addEventListener('click', function(e) {
+    if (e.target === this) closeAliasModal();
+  });
 </script>
 
 </body>
