@@ -1000,7 +1000,7 @@
       <div class="card-title">🏅 Ranking Principal — Local / Empate / Visitante</div>
       <div style="display:flex;align-items:center;gap:10px">
         <div class="card-badge">187 jugadores</div>
-        <button class="btn-ver-mas" style="padding:6px 16px;font-size:12px">Ver completo</button>
+        <button class="btn-ver-mas" style="padding:6px 16px;font-size:12px" onclick="abrirRankingPrincipal()">Ver ranking completo</button>
       </div>
     </div>
     <!-- tabla con columnas fijas usando table layout -->
@@ -1165,6 +1165,7 @@
               <div class="especial-tu-pos">
                 <div class="tu-pos-txt">Tu posición: <strong>#2</strong> de 187</div>
                 <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#f97316;margin-top:5px">🏆 Premio: $800.000 COP efectivo</div>
+                <button onclick="abrirRankingEspecial('killer')" style="width:100%;margin-top:8px;background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:1px;padding:7px;border-radius:8px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.borderColor='#f97316';this.style.color='#f97316'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Ver ranking completo →</button>
               </div>
             </div>
 
@@ -1199,6 +1200,7 @@
               <div class="especial-tu-pos">
                 <div class="tu-pos-txt">Tu posición: <strong>#34</strong> de 187</div>
                 <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#ef4444;margin-top:5px">🏆 Premio: $600.000 COP efectivo</div>
+                <button onclick="abrirRankingEspecial('carnicero')" style="width:100%;margin-top:8px;background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:1px;padding:7px;border-radius:8px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.borderColor='#ef4444';this.style.color='#ef4444'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Ver ranking completo →</button>
               </div>
             </div>
 
@@ -1233,6 +1235,7 @@
               <div class="especial-tu-pos">
                 <div class="tu-pos-txt">Tu posición: <strong>#76</strong> de 187</div>
                 <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#3b82f6;margin-top:5px">🏆 Premio: $500.000 COP efectivo</div>
+                <button onclick="abrirRankingEspecial('banderin')" style="width:100%;margin-top:8px;background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:1px;padding:7px;border-radius:8px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.borderColor='#3b82f6';this.style.color='#3b82f6'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Ver ranking completo →</button>
               </div>
             </div>
 
@@ -1267,6 +1270,7 @@
               <div class="especial-tu-pos">
                 <div class="tu-pos-txt">Tu posición: <strong>#89</strong> de 187</div>
                 <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#22c55e;margin-top:5px">🏆 Premio: $400.000 COP efectivo</div>
+                <button onclick="abrirRankingEspecial('virgen')" style="width:100%;margin-top:8px;background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:1px;padding:7px;border-radius:8px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.borderColor='#22c55e';this.style.color='#22c55e'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Ver ranking completo →</button>
               </div>
             </div>
 
@@ -1301,6 +1305,7 @@
               <div class="especial-tu-pos">
                 <div class="tu-pos-txt">Tu posición: <strong>#12</strong> de 187</div>
                 <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#ec4899;margin-top:5px">🏆 Premio: $300.000 COP efectivo</div>
+                <button onclick="abrirRankingEspecial('niña')" style="width:100%;margin-top:8px;background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:1px;padding:7px;border-radius:8px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.borderColor='#ec4899';this.style.color='#ec4899'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Ver ranking completo →</button>
               </div>
             </div>
 
@@ -1450,7 +1455,47 @@
   </div>
 </main>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><!-- MODAL RANKING COMPLETO (principal + especiales) -->
+<div id="rankingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:3000;align-items:center;justify-content:center;padding:16px">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:600px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;animation:slideUp 0.25s ease">
+    <!-- Header -->
+    <div style="padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0">
+      <div>
+        <div id="rmTitulo" style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--amarillo)"></div>
+        <div id="rmSubtitulo" style="font-family:'Barlow',sans-serif;font-size:12px;color:var(--muted);margin-top:2px"></div>
+        <div id="rmPremio" style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;margin-top:4px"></div>
+      </div>
+      <button onclick="cerrarRankingModal()" style="background:none;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:12px" onmouseover="this.style.borderColor='var(--rojo)';this.style.color='var(--rojo)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">✕</button>
+    </div>
+    <!-- Info bar -->
+    <div style="padding:8px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--card2);flex-shrink:0">
+      <span id="rmInfo" style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--muted);letter-spacing:0.5px"></span>
+      <button id="rmBtnIrPos" onclick="rmIrAMiPosicion()" style="background:rgba(252,209,22,0.12);border:1px solid rgba(252,209,22,0.3);color:var(--amarillo);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;padding:4px 12px;border-radius:6px;cursor:pointer;text-transform:uppercase">Ir a mi posición ↓</button>
+    </div>
+    <!-- Table -->
+    <div id="rmTableWrap" style="overflow-y:auto;flex:1">
+      <table style="width:100%;border-collapse:collapse">
+        <colgroup><col style="width:52px"><col><col style="width:80px"></colgroup>
+        <thead style="position:sticky;top:0;z-index:1">
+          <tr style="background:var(--card2);border-bottom:1px solid var(--border)">
+            <th style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:8px 0 8px 16px;font-weight:600;text-align:center">#</th>
+            <th style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:8px;font-weight:600;text-align:left">Jugador</th>
+            <th style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:8px 16px 8px 0;font-weight:600;text-align:center">Puntaje</th>
+          </tr>
+        </thead>
+        <tbody id="rmTablaBody"></tbody>
+      </table>
+    </div>
+    <!-- Pagination -->
+    <div style="padding:12px 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--card2)">
+      <button id="rmBtnPrev" onclick="rmCambiarPagina(-1)" style="background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;padding:7px 18px;border-radius:8px;cursor:pointer;transition:all 0.2s;text-transform:uppercase" onmouseover="this.style.borderColor='var(--amarillo)';this.style.color='var(--amarillo)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">← Anterior</button>
+      <span id="rmPagActual" style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--muted)"></span>
+      <button id="rmBtnNext" onclick="rmCambiarPagina(1)" style="background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;padding:7px 18px;border-radius:8px;cursor:pointer;transition:all 0.2s;text-transform:uppercase" onmouseover="this.style.borderColor='var(--amarillo)';this.style.color='var(--amarillo)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<script>
   // COUNTDOWN
   function updateCountdown() {
     const target = new Date('2026-06-11T23:00:00Z'); // 6 PM UTC-5 = 23:00 UTC
@@ -1494,7 +1539,7 @@
 
   // PICKS
   function goToPicks() {
-    alert('⚡ Redirigiendo a la pantalla de Picks...\n\n(Se construirá en el siguiente paso)');
+    window.location.href = 'picks.html';
   }
 
   // DATOS DEL USUARIO — en producción vendrán de Supabase
@@ -1593,4 +1638,148 @@
     }
     // Aquí iría la llamada a Supabase para guardar el alias
     closeAliasModal();
-    alert('✅ Nombre actualizado: ' + val + '\n\nAparec
+    alert('✅ Nombre actualizado: ' + val + '\n\nAparecarece en todos los rankings. Visible para todos los participantes.');
+  }
+
+  // ===== MODALES RANKING COMPLETO =====
+  const RANKING_CONFIG = {
+    killer:    { titulo: '⚔️ El Killer',     subtitulo: '15 jugadores · más G+A combinados',  premio: '$800.000 COP', color: '#f97316' },
+    carnicero: { titulo: '🔪 El Carnicero',  subtitulo: '10 equipos · más tarjetas',           premio: '$600.000 COP', color: '#ef4444' },
+    banderin:  { titulo: '🚩 El Banderín',   subtitulo: '10 equipos · más corners',            premio: '$500.000 COP', color: '#3b82f6' },
+    virgen:    { titulo: '🕊️ El Virgen',     subtitulo: '10 equipos · menos goles',            premio: '$400.000 COP', color: '#22c55e' },
+    niña:      { titulo: '🎀 El Pie de Niña',subtitulo: '10 equipos · menos tarjetas',         premio: '$300.000 COP', color: '#ec4899' },
+    mechacorta:{ titulo: '✂️ El Mechacorta', subtitulo: '10 equipos · menos corners',          premio: '$200.000 COP', color: '#8b5cf6' },
+  };
+
+  // Datos mock — en producción vendrán de Supabase
+  function generarJugadoresMock(n) {
+    const emojis = ['😎','🦁','🔥','⭐','🐺','🦊','🐉','🎯','💪','🌟','🦅','🐯','🏆','⚡','🎪','🌙','🦄','🐻','🦋','🌊'];
+    const nombres = ['ElMaestro99','TigreSamperio','Crack2026','PastorFubol','GolazoRex','LaReina01','Sangre2026','Bestia88','ChapaKing','CornerKing','PorElAngulo','TiroDeEsquina','DefensaTotal','MuroFelipe','PrecisionFria','AngelLuisa','Caballero11','SuaveSiempre','PocoBallao','DirectoArco','FrioYDirecto','ElProfe77','RoscaChamp','MundialFC','GolesYMas','TarjetaRoja','CincoEstrellas','ElBarco22','SinPerdón','MejorDelMundo','Aguila2026','NeymarFan','MamíloVio','Campeón01','TiburónFC','JugadorX','ElColombiano','DelanteroTop','LaMaquina','GuardadoFan'];
+    return Array.from({length: n}, (_, i) => ({
+      pos: i + 1,
+      nombre: nombres[i % nombres.length] + (i >= nombres.length ? '_'+Math.floor(i/nombres.length) : ''),
+      emoji: emojis[i % emojis.length],
+      valor: Math.max(1, 50 - i + Math.floor(Math.random()*3)),
+      esTu: i === 46,
+    }));
+  }
+
+  let rankingModalActual = null;
+  let rankingPagina = 1;
+  const POR_PAGINA = 25;
+  let rankingDatos = [];
+
+  function abrirRankingPrincipal() {
+    rankingModalActual = '__principal__';
+    rankingDatos = generarJugadoresMock(187);
+    rankingPagina = 1;
+    const tuPos = rankingDatos.findIndex(r => r.esTu) + 1;
+    mostrarModalRanking({
+      titulo: '🏅 Ranking Principal — L/E/V',
+      subtitulo: '187 participantes · Aciertos totales',
+      premio: 'iPhone 17 Pro Max / Bose S1 Pro / PS5 / AirPods Pro',
+      color: 'var(--amarillo)',
+      tuPosicion: tuPos,
+    });
+  }
+
+  function abrirRankingEspecial(cat) {
+    rankingModalActual = cat;
+    rankingDatos = generarJugadoresMock(187);
+    rankingPagina = 1;
+    const cfg = RANKING_CONFIG[cat];
+    const tuPos = rankingDatos.findIndex(r => r.esTu) + 1;
+    mostrarModalRanking({
+      titulo: cfg.titulo,
+      subtitulo: cfg.subtitulo,
+      premio: cfg.premio,
+      color: cfg.color,
+      tuPosicion: tuPos,
+    });
+  }
+
+  function mostrarModalRanking(cfg) {
+    const modal = document.getElementById('rankingModal');
+    document.getElementById('rmTitulo').textContent = cfg.titulo;
+    document.getElementById('rmSubtitulo').textContent = cfg.subtitulo;
+    document.getElementById('rmPremio').textContent = '🏆 ' + cfg.premio;
+    document.getElementById('rmPremio').style.color = cfg.color;
+    renderTablaRanking(cfg);
+    modal.style.display = 'flex';
+  }
+
+  function renderTablaRanking(cfg) {
+    const total = rankingDatos.length;
+    const totalPags = Math.ceil(total / POR_PAGINA);
+    const inicio = (rankingPagina - 1) * POR_PAGINA;
+    const fin = Math.min(inicio + POR_PAGINA, total);
+    const slice = rankingDatos.slice(inicio, fin);
+    const tuPos = rankingDatos.findIndex(r => r.esTu) + 1;
+
+    // Paginación
+    document.getElementById('rmInfo').textContent = 'Mostrando ' + (inicio+1) + '–' + fin + ' de ' + total + ' participantes';
+    document.getElementById('rmPagActual').textContent = 'Página ' + rankingPagina + ' de ' + totalPags;
+    document.getElementById('rmBtnPrev').disabled = rankingPagina === 1;
+    document.getElementById('rmBtnNext').disabled = rankingPagina === totalPags;
+    document.getElementById('rmBtnIrPos').style.display = tuPos ? 'inline-block' : 'none';
+
+    // Tabla
+    let rows = '';
+    slice.forEach(r => {
+      const esTop1 = r.pos === 1, esTop2 = r.pos === 2, esTop3 = r.pos === 3;
+      const rowBg = r.esTu ? 'background:rgba(252,209,22,0.06);' : esTop1 ? 'background:rgba(240,180,41,0.05);' : esTop2 ? 'background:rgba(160,174,192,0.03);' : esTop3 ? 'background:rgba(205,124,47,0.03);' : '';
+      const posColor = esTop1 ? 'color:var(--gold)' : esTop2 ? 'color:var(--silver)' : esTop3 ? 'color:var(--bronze)' : 'color:var(--muted)';
+      const nombreStyle = r.esTu ? 'color:var(--amarillo)' : 'color:var(--text)';
+      const tuBadge = r.esTu ? '<span style="font-size:9px;background:var(--amarillo);color:#000;padding:1px 5px;border-radius:4px;margin-left:6px;font-weight:700;letter-spacing:0.5px">TÚ</span>' : '';
+      rows += `<tr style="${rowBg}border-bottom:1px solid rgba(30,45,69,0.5)">
+        <td style="padding:9px 16px;font-family:'Bebas Neue',sans-serif;font-size:18px;${posColor};text-align:center;width:44px">${r.pos}</td>
+        <td style="padding:9px 8px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:28px;height:28px;border-radius:50%;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${r.emoji}</div>
+            <span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;${nombreStyle}">${r.nombre}${tuBadge}</span>
+          </div>
+        </td>
+        <td style="padding:9px 16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--text);text-align:center">${r.valor}</td>
+      </tr>`;
+    });
+    document.getElementById('rmTablaBody').innerHTML = rows;
+  }
+
+  function rmCambiarPagina(delta) {
+    const total = rankingDatos.length;
+    const totalPags = Math.ceil(total / POR_PAGINA);
+    rankingPagina = Math.max(1, Math.min(totalPags, rankingPagina + delta));
+    const cfg = rankingModalActual === '__principal__'
+      ? { titulo:'Ranking Principal', color:'var(--amarillo)' }
+      : RANKING_CONFIG[rankingModalActual];
+    renderTablaRanking(cfg);
+    document.getElementById('rmTableWrap').scrollTop = 0;
+  }
+
+  function rmIrAMiPosicion() {
+    const tuIdx = rankingDatos.findIndex(r => r.esTu);
+    if (tuIdx < 0) return;
+    rankingPagina = Math.floor(tuIdx / POR_PAGINA) + 1;
+    const cfg = rankingModalActual === '__principal__'
+      ? { titulo:'Ranking Principal', color:'var(--amarillo)' }
+      : RANKING_CONFIG[rankingModalActual];
+    renderTablaRanking(cfg);
+    // Scroll to highlighted row
+    setTimeout(() => {
+      const rows = document.querySelectorAll('#rmTablaBody tr');
+      const enPag = tuIdx % POR_PAGINA;
+      if (rows[enPag]) rows[enPag].scrollIntoView({ behavior:'smooth', block:'center' });
+    }, 100);
+  }
+
+  function cerrarRankingModal() {
+    document.getElementById('rankingModal').style.display = 'none';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') cerrarRankingModal();
+  });
+
+</script>
+</body>
+</html>
