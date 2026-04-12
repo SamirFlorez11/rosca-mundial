@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron-actualizar-datos",
+      "schedule": "0 */2 * * *"
+    }
+  ],
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/", "destination": "/admin/index.html" }
+  ]
+}
