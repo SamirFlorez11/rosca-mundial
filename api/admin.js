@@ -1,0 +1,346 @@
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SERVICE_KEY  = process.env.SUPABASE_SERVICE_KEY;
+const ADMIN_SECRET = process.env.ADMIN_SECRET;
+const RESEND_KEY   = process.env.RESEND_API_KEY;
+const FROM_EMAIL   = process.env.RESEND_FROM_EMAIL || "noreply@roscamundial.com";
+
+// ─── Cliente Supabase ─────────────────────────────────────────────────────────
+async function sb(table, { method = "GET", body, params = {} } = {}) {
+  let url = `${SUPABASE_URL}/rest/v1/${table}`;
+  const qs = new URLSearchParams(params).toString();
+  if (qs) url += "?" + qs;
+  const res = await fetch(url, {
+    method,
+    headers: {
+      "apikey": SERVICE_KEY,
+      "Authorization": `Bearer ${SERVICE_KEY}`,
+      "Content-Type": "application/json",
+      "Prefer": method === "POST" ? "return=representation" : "return=minimal",
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const text = await res.text();
+  let data; try { data = JSON.parse(text); } catch { data = text; }
+  return { data, status: res.status, ok: res.ok };
+}
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+function requireAdmin(req) {
+  const token = req.headers["x-admin-token"];
+  if (!ADMIN_SECRET) return false;
+  return token === ADMIN_SECRET;
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function setCORS(res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type,X-Admin-Token");
+}
+const ok  = (res, data, status = 200) => res.status(status).json({ ok: true,  ...data });
+const err = (res, msg,  status = 400) => res.status(status).json({ ok: false, error: msg });
+
+// ─── Router ───────────────────────────────────────────────────────────────────
+export default async function handler(req, res) {
+  setCORS(res);
+  if (req.method === "OPTIONS") return res.status(200).end();
+  if (!requireAdmin(req)) return err(res, "No autorizado", 401);
+
+  const action = req.query.action || "";
+
+  // ══════════════════════════════════════════════════════
+  //  STATS
+  // ══════════════════════════════════════════════════════
+  if (action === "stats") {
+    try {
+      const [rActivos, rPendientes, rConPicks, rRecaudado] = await Promise.all([
+        sb("usuarios", { params: { activo: "eq.true",  select: "count", head: "true" } }),
+        sb("usuarios", { params: { activo: "eq.false", select: "count", head: "true" } }),
+        sb("usuarios", { params: { picks_completos: "eq.true", activo: "eq.true", select: "count", head: "true" } }),
+        sb("pagos",    { params: { estado: "eq.APPROVED", select: "monto" } }),
+      ]);
+      const inscritos  = parseInt(rActivos.data?.count    ?? 0);
+      const pendientes = parseInt(rPendientes.data?.count ?? 0);
+      const conPicks   = parseInt(rConPicks.data?.count   ?? 0);
+      const pagos      = Array.isArray(rRecaudado.data) ? rRecaudado.data : [];
+      const recaudado  = pagos.reduce((a, p) => a + (p.monto || 0), 0);
+      const hace14     = new Date(Date.now() - 14 * 86400000).toISOString();
+      const rDiario    = await sb("pagos", { params: { estado: "eq.APPROVED", created_at: `gte.${hace14}`, select: "created_at", order: "created_at.asc" } });
+      const dias = {};
+      for (let i = 13; i >= 0; i--) {
+        const d = new Date(Date.now() - i * 86400000).toISOString().split("T")[0];
+        dias[d] = 0;
+      }
+      if (Array.isArray(rDiario.data)) rDiario.data.forEach(p => { const d = p.created_at?.split("T")[0]; if (d && dias[d] !== undefined) dias[d]++; });
+      return ok(res, { inscritos, pendientes, conPicks, sinPicks: inscritos - conPicks, recaudado, meta: 400, porcentaje: Math.round(inscritos / 400 * 100), chartDiario: Object.entries(dias).map(([fecha, count]) => ({ fecha, count })) });
+    } catch (e) { return err(res, e.message, 500); }
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  USUARIOS
+  // ══════════════════════════════════════════════════════
+  if (action === "usuarios") {
+    if (req.method === "GET") {
+      const { page = 1, limit = 20, q = "", activo = "", picks = "" } = req.query;
+      const from = (parseInt(page) - 1) * parseInt(limit);
+      const params = {
+        select: "id,nombre_completo,nombre_usuario,correo,celular,documento,activo,picks_completos,created_at",
+        order: "created_at.desc",
+        offset: String(from),
+        limit: String(limit)
+      };
+      if (activo !== "") params.activo = `eq.${activo}`;
+      if (picks === "completo")   params.picks_completos = "eq.true";
+      if (picks === "incompleto") params.picks_completos = "eq.false";
+      if (q) params["or"] = `nombre_completo.ilike.*${q}*,correo.ilike.*${q}*,documento.ilike.*${q}*`;
+      const [rData, rCount] = await Promise.all([
+        sb("usuarios", { params }),
+        sb("usuarios", { params: { ...params, select: "count", head: "true", offset: "0", limit: "1" } }),
+      ]);
+      if (!rData.ok) return err(res, "Error consultando usuarios");
+      const ids = (rData.data || []).map(u => u.id);
+      let pagosMap = {};
+      if (ids.length) {
+        const rPagos = await sb("pagos", { params: { usuario_id: `in.(${ids.join(",")})`, select: "usuario_id,estado,metodo_pago", order: "created_at.desc" } });
+        if (Array.isArray(rPagos.data)) rPagos.data.forEach(p => { if (!pagosMap[p.usuario_id]) pagosMap[p.usuario_id] = p; });
+      }
+      const usuarios = (rData.data || []).map(u => ({
+        ...u,
+        alias: u.nombre_usuario,
+        nombre: u.nombre_completo,
+        pago_estado: pagosMap[u.id]?.estado || "SIN_PAGO",
+        pago_metodo: pagosMap[u.id]?.metodo_pago || null,
+      }));
+      return ok(res, { usuarios, total: parseInt(rCount.data?.count ?? 0) });
+    }
+    if (req.method === "POST") {
+      const { nombre, alias, correo, celular, documento, password, estado_pago } = req.body || {};
+      if (!nombre || !correo || !documento) return err(res, "Faltan campos obligatorios");
+      const authRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users`, {
+        method: "POST",
+        headers: { "apikey": SERVICE_KEY, "Authorization": `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ email: correo, password: password || "RoscaTemp2026!", email_confirm: true, user_metadata: { nombre_completo: nombre, nombre_usuario: alias, celular, documento } })
+      });
+      const authData = await authRes.json();
+      if (!authRes.ok) return err(res, authData.message || "Error creando auth user");
+      const uid = authData.id;
+      await sb("usuarios", { method: "POST", body: {
+        id: uid, nombre_completo: nombre,
+        nombre_usuario: alias || nombre.split(" ")[0] + "2026",
+        correo, celular, documento,
+        password_hash: "auth_managed_by_supabase",
+        activo: estado_pago === "pagado",
+        picks_completos: false
+      }});
+      if (estado_pago === "pagado") {
+        await sb("pagos", { method: "POST", body: { usuario_id: uid, monto: 60000, moneda: "COP", estado: "APPROVED", metodo_pago: "MANUAL_ADMIN", wompi_transaction_id: `ADMIN_${Date.now()}` }});
+      }
+      await sb("logs", { method: "POST", body: { tipo: "admin", mensaje: `Usuario creado manualmente: ${correo}`, meta: { nombre, documento } }});
+      return ok(res, { mensaje: "Usuario creado", id: uid }, 201);
+    }
+    if (req.method === "PATCH") {
+      const { id, activo } = req.body || {};
+      if (!id || activo === undefined) return err(res, "Faltan id o activo");
+      await sb(`usuarios?id=eq.${id}`, { method: "PATCH", body: { activo } });
+      await sb("logs", { method: "POST", body: { tipo: "admin", mensaje: `Usuario ${id} → activo: ${activo}`, meta: { id, activo } }});
+      return ok(res, { mensaje: `Usuario ${activo ? "activado" : "desactivado"}` });
+    }
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  PAGOS
+  // ══════════════════════════════════════════════════════
+  if (action === "pagos") {
+    if (req.method === "GET") {
+      const { page = 1, limit = 30, estado = "" } = req.query;
+      const from = (parseInt(page) - 1) * parseInt(limit);
+      const params = {
+        select: "id,usuario_id,monto,moneda,estado,metodo_pago,wompi_transaction_id,created_at,usuarios(nombre_completo,correo)",
+        order: "created_at.desc", offset: String(from), limit: String(limit)
+      };
+      if (estado) params.estado = `eq.${estado}`;
+      const [rPagos, rAprobados] = await Promise.all([
+        sb("pagos", { params }),
+        sb("pagos", { params: { estado: "eq.APPROVED", select: "monto" } }),
+      ]);
+      const aprobados     = Array.isArray(rAprobados.data) ? rAprobados.data : [];
+      const totalRecaudado= aprobados.reduce((a, p) => a + (p.monto || 0), 0);
+      return ok(res, { pagos: rPagos.data || [], totalRecaudado, pozo: Math.round(totalRecaudado * 0.7), organizador: Math.round(totalRecaudado * 0.3) });
+    }
+    if (req.method === "PATCH") {
+      const { pago_id, usuario_id } = req.body || {};
+      if (!pago_id || !usuario_id) return err(res, "Faltan pago_id o usuario_id");
+      await Promise.all([
+        sb(`pagos?id=eq.${pago_id}`,       { method: "PATCH", body: { estado: "APPROVED", metodo_pago: "MANUAL_ADMIN" } }),
+        sb(`usuarios?id=eq.${usuario_id}`, { method: "PATCH", body: { activo: true } }),
+      ]);
+      await sb("logs", { method: "POST", body: { tipo: "pago", mensaje: `Pago #${pago_id} activado manualmente`, meta: { pago_id, usuario_id } }});
+      return ok(res, { mensaje: "Pago aprobado y usuario activado" });
+    }
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  ALIAS
+  // ══════════════════════════════════════════════════════
+  if (action === "alias") {
+    const PALABRAS = ["puta","mierda","hijueputa","culo","verga","pendejo","malparido","gonorrea","maricon","idiota","hdp","hp"];
+    const esSospechoso = (a = "") => { const s = a.toLowerCase().replace(/[^a-z0-9]/gi,""); return PALABRAS.some(p => s.includes(p)); };
+    if (req.method === "GET") {
+      const r = await sb("usuarios", { params: { select: "id,nombre_completo,nombre_usuario,activo", order: "nombre_completo.asc", limit: "500" } });
+      const usuarios = (r.data || []).map(u => ({ ...u, alias: u.nombre_usuario, nombre: u.nombre_completo, flagged: esSospechoso(u.nombre_usuario) }));
+      return ok(res, { usuarios, totalFlagged: usuarios.filter(u => u.flagged).length });
+    }
+    if (req.method === "PATCH") {
+      const { usuario_id, alias_nuevo } = req.body || {};
+      if (!usuario_id || !alias_nuevo) return err(res, "Faltan campos");
+      const rCheck = await sb("usuarios", { params: { nombre_usuario: `eq.${alias_nuevo}`, id: `neq.${usuario_id}`, select: "id" } });
+      if (Array.isArray(rCheck.data) && rCheck.data.length > 0) return err(res, "Alias ya en uso");
+      await sb(`usuarios?id=eq.${usuario_id}`, { method: "PATCH", body: { nombre_usuario: alias_nuevo } });
+      await sb("logs", { method: "POST", body: { tipo: "admin", mensaje: `Alias ${usuario_id} → ${alias_nuevo}`, meta: { usuario_id, alias_nuevo } }});
+      return ok(res, { mensaje: "Alias actualizado" });
+    }
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  PICKS
+  // ══════════════════════════════════════════════════════
+  if (action === "picks") {
+    const { usuario_id, resumen } = req.query;
+    if (resumen === "1") {
+      const r = await sb("usuarios", { params: { activo: "eq.true", select: "id,nombre_completo,nombre_usuario,picks_completos", order: "nombre_completo.asc", limit: "500" } });
+      return ok(res, { usuarios: (r.data || []).map(u => ({ ...u, nombre: u.nombre_completo, alias: u.nombre_usuario })) });
+    }
+    if (!usuario_id) return err(res, "Falta usuario_id");
+    const [rUser, rPred, rKiller, rEquipos] = await Promise.all([
+      sb("usuarios",     { params: { id: `eq.${usuario_id}`, select: "id,nombre_completo,nombre_usuario,correo" } }),
+      sb("predicciones", { params: { usuario_id: `eq.${usuario_id}`, select: "partido_id,prediccion,es_correcto", order: "partido_id.asc" } }),
+      sb("picks_killer", { params: { usuario_id: `eq.${usuario_id}`, select: "jugador_id" } }),
+      sb("picks_equipos",{ params: { usuario_id: `eq.${usuario_id}`, select: "categoria,equipo_id", order: "categoria.asc" } }),
+    ]);
+    const catMap = {};
+    (rEquipos.data || []).forEach(p => { if (!catMap[p.categoria]) catMap[p.categoria] = []; catMap[p.categoria].push(p.equipo_id); });
+    const u = (rUser.data || [])[0];
+    return ok(res, {
+      usuario: u ? { ...u, nombre: u.nombre_completo, alias: u.nombre_usuario } : null,
+      predicciones: rPred.data || [],
+      killer: rKiller.data || [],
+      especiales: catMap,
+      resumen: { totalPredicciones: (rPred.data||[]).length, killer: (rKiller.data||[]).length, categoriasEspeciales: Object.keys(catMap).length }
+    });
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  FASES
+  // ══════════════════════════════════════════════════════
+  if (action === "fases") {
+    if (req.method === "GET") {
+      const r = await sb("fases", { params: { select: "id,nombre,estado,fecha_inicio,fecha_fin,picks_visibles", order: "fecha_inicio.asc" } });
+      return ok(res, { fases: (r.data || []).map(f => ({ ...f, apertura_picks: f.fecha_inicio, cierre_picks: f.fecha_fin })) });
+    }
+    if (req.method === "PATCH") {
+      const { fase_id, estado } = req.body || {};
+      if (!fase_id || !estado) return err(res, "Faltan campos");
+      if (!["abierto","cerrado","pendiente"].includes(estado)) return err(res, "Estado inválido");
+      const abierto = estado === "abierto";
+      await sb(`fases?id=eq.${fase_id}`, { method: "PATCH", body: { estado, picks_visibles: abierto, updated_at: new Date().toISOString() } });
+      await sb("logs", { method: "POST", body: { tipo: "admin", mensaje: `Fase ${fase_id} → ${estado}`, meta: { fase_id, estado } }});
+      return ok(res, { mensaje: `Fase ${estado}` });
+    }
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  RANKING
+  // ══════════════════════════════════════════════════════
+  if (action === "ranking") {
+    const TABLAS = {
+      principal: { tabla: "ranking",            col: "puntos_total",      label: "Aciertos" },
+      killer:    { tabla: "ranking_killer",      col: "puntos_total",      label: "G+A" },
+      carnicero: { tabla: "ranking_carnicero",   col: "puntos_total",      label: "Pts tarjetas" },
+      banderin:  { tabla: "ranking_banderin",    col: "puntos_total",      label: "Corners" },
+      virgen:    { tabla: "ranking_virgen",      col: "puntos_total",      label: "Goles (menos)" },
+      pied:      { tabla: "ranking_pie_de_nina", col: "puntos_total",      label: "Tarjetas (menos)" },
+      mecha:     { tabla: "ranking_mechacorta",  col: "puntos_total",      label: "Corners (menos)" },
+    };
+    const resultados = {};
+    await Promise.all(Object.entries(TABLAS).map(async ([cat, cfg]) => {
+      const r = await sb(cfg.tabla, { params: { select: `${cfg.col},usuarios(nombre_usuario,nombre_completo)`, order: `${cfg.col}.desc`, limit: "10" } });
+      resultados[cat] = { label: cfg.label, data: (r.data || []).map((row, i) => ({ posicion: i + 1, alias: row.usuarios?.nombre_usuario || "—", nombre: row.usuarios?.nombre_completo || "—", puntos: row[cfg.col] ?? 0 })) };
+    }));
+    return ok(res, { rankings: resultados });
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  LOGS
+  // ══════════════════════════════════════════════════════
+  if (action === "logs") {
+    const { tipo = "", limit = "50", page = "1" } = req.query;
+    const from = (parseInt(page) - 1) * parseInt(limit);
+    const params = { select: "id,tipo,mensaje,meta,created_at", order: "created_at.desc", offset: String(from), limit: String(Math.min(parseInt(limit), 200)) };
+    if (tipo) params.tipo = `eq.${tipo}`;
+    const [rLogs, rCount] = await Promise.all([
+      sb("logs", { params }),
+      sb("logs", { params: { ...(tipo ? { tipo: `eq.${tipo}` } : {}), select: "count", head: "true" } }),
+    ]);
+    return ok(res, { logs: rLogs.data || [], total: parseInt(rCount.data?.count ?? 0) });
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  NOTIFICACIONES
+  // ══════════════════════════════════════════════════════
+  if (action === "notificaciones") {
+    if (req.method === "GET") {
+      const r = await sb("notificaciones", { params: { select: "id,asunto,destinatarios,total_enviados,total_abiertos,estado,created_at", order: "created_at.desc", limit: "50" } });
+      return ok(res, { notificaciones: r.data || [] });
+    }
+    if (req.method === "POST") {
+      const { destinatarios, correo_especifico, asunto, mensaje } = req.body || {};
+      if (!asunto || !mensaje) return err(res, "Faltan asunto o mensaje");
+      let correos = [];
+      if (destinatarios === "uno")            correos = correo_especifico ? [correo_especifico] : [];
+      else if (destinatarios === "todos")     { const r = await sb("usuarios", { params: { activo: "eq.true",  select: "correo" } }); correos = (r.data||[]).map(u=>u.correo).filter(Boolean); }
+      else if (destinatarios === "pendientes"){ const r = await sb("usuarios", { params: { activo: "eq.false", select: "correo" } }); correos = (r.data||[]).map(u=>u.correo).filter(Boolean); }
+      else if (destinatarios === "sin-picks") { const r = await sb("usuarios", { params: { activo: "eq.true", picks_completos: "eq.false", select: "correo" } }); correos = (r.data||[]).map(u=>u.correo).filter(Boolean); }
+      if (!correos.length) return err(res, "Sin destinatarios");
+      const htmlBody = `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px 20px;background:#0D1B3E;color:#fff;border-radius:16px;"><h1 style="color:#E8A020;">${asunto}</h1><div style="color:rgba(255,255,255,0.8);line-height:1.7;white-space:pre-line;">${mensaje}</div><p style="color:rgba(255,255,255,0.3);font-size:11px;margin-top:24px;">roscamundial.com</p></div>`;
+      let enviados = 0;
+      for (let i = 0; i < correos.length; i += 50) {
+        const batch = correos.slice(i, i + 50);
+        const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { "Authorization": `Bearer ${RESEND_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: `Rosca Mundial <${FROM_EMAIL}>`, to: batch, subject: asunto, html: htmlBody }) });
+        if (r.ok) enviados += batch.length;
+      }
+      await sb("notificaciones", { method: "POST", body: { asunto, mensaje, destinatarios, total_enviados: enviados, total_abiertos: 0, estado: enviados > 0 ? "enviado" : "error" } });
+      return ok(res, { mensaje: `Enviado a ${enviados} de ${correos.length}`, enviados });
+    }
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  CRON FORCE
+  // ══════════════════════════════════════════════════════
+  if (action === "cron-force") {
+    const { tipo = "todo" } = req.body || {};
+    const BASE = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://roscamundial.com";
+    const inicio = Date.now();
+    const cronRes = await fetch(`${BASE}/api/cron-actualizar-datos`, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.CRON_SECRET}` }, body: JSON.stringify({ tipo, forzado: true }) });
+    const duracion = ((Date.now() - inicio) / 1000).toFixed(2) + "s";
+    await sb("logs", { method: "POST", body: { tipo: "cron", mensaje: `Sync manual: ${tipo}`, meta: { tipo, duracion, exito: cronRes.ok } }});
+    return ok(res, { mensaje: `Sync "${tipo}" completado`, duracion });
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  BACKUP
+  // ══════════════════════════════════════════════════════
+  if (action === "backup") {
+    if (req.method === "GET") {
+      const r = await sb("logs", { params: { tipo: "eq.backup", select: "id,mensaje,meta,created_at", order: "created_at.desc", limit: "10" } });
+      return ok(res, { backups: r.data || [] });
+    }
+    if (req.method === "POST") {
+      const TABLAS_BK = ["usuarios","pagos","predicciones","picks_killer","picks_equipos","fases","ranking"];
+      const exports = await Promise.all(TABLAS_BK.map(async t => { const r = await sb(t, { params: { select: "*", limit: "10000" } }); return { tabla: t, registros: (r.data||[]).length }; }));
+      await sb("logs", { method: "POST", body: { tipo: "backup", mensaje: "Backup manual creado", meta: { tablas: exports, timestamp: new Date().toISOString() } }});
+      return ok(res, { mensaje: "Backup registrado", tablas: exports }, 201);
+    }
+  }
+
+  return err(res, "Acción no encontrada: " + action, 404);
+}
