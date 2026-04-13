@@ -24,6 +24,13 @@ async function sb(table, { method = "GET", body, params = {} } = {}) {
   return { data, status: res.status, ok: res.ok };
 }
 
+// ─── Log helper (usa estructura real de tabla logs) ───────────────────────────
+async function log(accion, detalle = {}, usuario_id = null) {
+  try {
+    await sb("logs", { method: "POST", body: { accion, detalle, usuario_id } });
+  } catch (e) { console.error("Error escribiendo log:", e.message); }
+}
+
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 function requireAdmin(req) {
   const token = req.headers["x-admin-token"];
@@ -85,9 +92,7 @@ export default async function handler(req, res) {
       const from = (parseInt(page) - 1) * parseInt(limit);
       const params = {
         select: "id,nombre_completo,nombre_usuario,correo,celular,documento,activo,picks_completos,created_at",
-        order: "created_at.desc",
-        offset: String(from),
-        limit: String(limit)
+        order: "created_at.desc", offset: String(from), limit: String(limit)
       };
       if (activo !== "") params.activo = `eq.${activo}`;
       if (picks === "completo")   params.picks_completos = "eq.true";
@@ -119,7 +124,7 @@ export default async function handler(req, res) {
       const authRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users`, {
         method: "POST",
         headers: { "apikey": SERVICE_KEY, "Authorization": `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ email: correo, password: password || "RoscaTemp2026!", email_confirm: true, user_metadata: { nombre_completo: nombre, nombre_usuario: alias, celular, documento } })
+        body: JSON.stringify({ email: correo, password: password || "RoscaTemp2026!", email_confirm: true })
       });
       const authData = await authRes.json();
       if (!authRes.ok) return err(res, authData.message || "Error creando auth user");
@@ -135,14 +140,14 @@ export default async function handler(req, res) {
       if (estado_pago === "pagado") {
         await sb("pagos", { method: "POST", body: { usuario_id: uid, monto: 60000, moneda: "COP", estado: "APPROVED", metodo_pago: "MANUAL_ADMIN", wompi_transaction_id: `ADMIN_${Date.now()}` }});
       }
-      await sb("logs", { method: "POST", body: { tipo: "admin", mensaje: `Usuario creado manualmente: ${correo}`, meta: { nombre, documento } }});
+      await log(`usuario_creado_manual`, { nombre, correo, documento, estado_pago });
       return ok(res, { mensaje: "Usuario creado", id: uid }, 201);
     }
     if (req.method === "PATCH") {
       const { id, activo } = req.body || {};
       if (!id || activo === undefined) return err(res, "Faltan id o activo");
       await sb(`usuarios?id=eq.${id}`, { method: "PATCH", body: { activo } });
-      await sb("logs", { method: "POST", body: { tipo: "admin", mensaje: `Usuario ${id} → activo: ${activo}`, meta: { id, activo } }});
+      await log(`usuario_${activo ? "activado" : "desactivado"}`, { id });
       return ok(res, { mensaje: `Usuario ${activo ? "activado" : "desactivado"}` });
     }
   }
@@ -163,8 +168,8 @@ export default async function handler(req, res) {
         sb("pagos", { params }),
         sb("pagos", { params: { estado: "eq.APPROVED", select: "monto" } }),
       ]);
-      const aprobados     = Array.isArray(rAprobados.data) ? rAprobados.data : [];
-      const totalRecaudado= aprobados.reduce((a, p) => a + (p.monto || 0), 0);
+      const aprobados      = Array.isArray(rAprobados.data) ? rAprobados.data : [];
+      const totalRecaudado = aprobados.reduce((a, p) => a + (p.monto || 0), 0);
       return ok(res, { pagos: rPagos.data || [], totalRecaudado, pozo: Math.round(totalRecaudado * 0.7), organizador: Math.round(totalRecaudado * 0.3) });
     }
     if (req.method === "PATCH") {
@@ -174,7 +179,7 @@ export default async function handler(req, res) {
         sb(`pagos?id=eq.${pago_id}`,       { method: "PATCH", body: { estado: "APPROVED", metodo_pago: "MANUAL_ADMIN" } }),
         sb(`usuarios?id=eq.${usuario_id}`, { method: "PATCH", body: { activo: true } }),
       ]);
-      await sb("logs", { method: "POST", body: { tipo: "pago", mensaje: `Pago #${pago_id} activado manualmente`, meta: { pago_id, usuario_id } }});
+      await log("pago_activado_manual", { pago_id, usuario_id });
       return ok(res, { mensaje: "Pago aprobado y usuario activado" });
     }
   }
@@ -196,7 +201,7 @@ export default async function handler(req, res) {
       const rCheck = await sb("usuarios", { params: { nombre_usuario: `eq.${alias_nuevo}`, id: `neq.${usuario_id}`, select: "id" } });
       if (Array.isArray(rCheck.data) && rCheck.data.length > 0) return err(res, "Alias ya en uso");
       await sb(`usuarios?id=eq.${usuario_id}`, { method: "PATCH", body: { nombre_usuario: alias_nuevo } });
-      await sb("logs", { method: "POST", body: { tipo: "admin", mensaje: `Alias ${usuario_id} → ${alias_nuevo}`, meta: { usuario_id, alias_nuevo } }});
+      await log("alias_actualizado", { usuario_id, alias_nuevo });
       return ok(res, { mensaje: "Alias actualizado" });
     }
   }
@@ -240,10 +245,10 @@ export default async function handler(req, res) {
     if (req.method === "PATCH") {
       const { fase_id, estado } = req.body || {};
       if (!fase_id || !estado) return err(res, "Faltan campos");
-      if (!["abierto","cerrado","pendiente"].includes(estado)) return err(res, "Estado inválido");
+      if (!["abierto","cerrado","bloqueada"].includes(estado)) return err(res, "Estado inválido. Usar: abierto | cerrado | bloqueada");
       const abierto = estado === "abierto";
       await sb(`fases?id=eq.${fase_id}`, { method: "PATCH", body: { estado, picks_visibles: abierto, updated_at: new Date().toISOString() } });
-      await sb("logs", { method: "POST", body: { tipo: "admin", mensaje: `Fase ${fase_id} → ${estado}`, meta: { fase_id, estado } }});
+      await log("fase_cambiada_manual", { fase_id, estado });
       return ok(res, { mensaje: `Fase ${estado}` });
     }
   }
@@ -253,13 +258,13 @@ export default async function handler(req, res) {
   // ══════════════════════════════════════════════════════
   if (action === "ranking") {
     const TABLAS = {
-      principal: { tabla: "ranking",            col: "puntos_total",      label: "Aciertos" },
-      killer:    { tabla: "ranking_killer",      col: "puntos_total",      label: "G+A" },
-      carnicero: { tabla: "ranking_carnicero",   col: "puntos_total",      label: "Pts tarjetas" },
-      banderin:  { tabla: "ranking_banderin",    col: "puntos_total",      label: "Corners" },
-      virgen:    { tabla: "ranking_virgen",      col: "puntos_total",      label: "Goles (menos)" },
-      pied:      { tabla: "ranking_pie_de_nina", col: "puntos_total",      label: "Tarjetas (menos)" },
-      mecha:     { tabla: "ranking_mechacorta",  col: "puntos_total",      label: "Corners (menos)" },
+      principal: { tabla: "ranking",            col: "puntos_total", label: "Aciertos" },
+      killer:    { tabla: "ranking_killer",      col: "puntos_total", label: "G+A" },
+      carnicero: { tabla: "ranking_carnicero",   col: "puntos_total", label: "Pts tarjetas" },
+      banderin:  { tabla: "ranking_banderin",    col: "puntos_total", label: "Corners" },
+      virgen:    { tabla: "ranking_virgen",      col: "puntos_total", label: "Goles (menos)" },
+      pied:      { tabla: "ranking_pie_de_nina", col: "puntos_total", label: "Tarjetas (menos)" },
+      mecha:     { tabla: "ranking_mechacorta",  col: "puntos_total", label: "Corners (menos)" },
     };
     const resultados = {};
     await Promise.all(Object.entries(TABLAS).map(async ([cat, cfg]) => {
@@ -270,46 +275,101 @@ export default async function handler(req, res) {
   }
 
   // ══════════════════════════════════════════════════════
-  //  LOGS
+  //  LOGS — usa columnas reales: accion, detalle (jsonb)
   // ══════════════════════════════════════════════════════
   if (action === "logs") {
-    const { tipo = "", limit = "50", page = "1" } = req.query;
+    if (req.method !== "GET") return err(res, "Método no permitido", 405);
+    const { accion = "", limit = "50", page = "1" } = req.query;
     const from = (parseInt(page) - 1) * parseInt(limit);
-    const params = { select: "id,tipo,mensaje,meta,created_at", order: "created_at.desc", offset: String(from), limit: String(Math.min(parseInt(limit), 200)) };
-    if (tipo) params.tipo = `eq.${tipo}`;
+    const params = {
+      select: "id,accion,detalle,usuario_id,ip_address,created_at",
+      order: "created_at.desc",
+      offset: String(from),
+      limit: String(Math.min(parseInt(limit), 200))
+    };
+    if (accion) params.accion = `eq.${accion}`;
     const [rLogs, rCount] = await Promise.all([
       sb("logs", { params }),
-      sb("logs", { params: { ...(tipo ? { tipo: `eq.${tipo}` } : {}), select: "count", head: "true" } }),
+      sb("logs", { params: { ...(accion ? { accion: `eq.${accion}` } : {}), select: "count", head: "true" } }),
     ]);
-    return ok(res, { logs: rLogs.data || [], total: parseInt(rCount.data?.count ?? 0) });
+    // Normalizar para el panel: mapear accion → tipo, detalle → meta
+    const logs = (rLogs.data || []).map(l => ({
+      ...l,
+      tipo:    l.accion,
+      mensaje: typeof l.detalle === "object" ? (l.detalle?.mensaje || l.accion) : l.accion,
+      meta:    l.detalle,
+    }));
+    return ok(res, { logs, total: parseInt(rCount.data?.count ?? 0) });
   }
 
   // ══════════════════════════════════════════════════════
-  //  NOTIFICACIONES
+  //  NOTIFICACIONES — tabla real por usuario individual
   // ══════════════════════════════════════════════════════
   if (action === "notificaciones") {
     if (req.method === "GET") {
-      const r = await sb("notificaciones", { params: { select: "id,asunto,destinatarios,total_enviados,total_abiertos,estado,created_at", order: "created_at.desc", limit: "50" } });
-      return ok(res, { notificaciones: r.data || [] });
+      // Listar notificaciones recientes agrupadas por asunto
+      const r = await sb("notificaciones", {
+        params: { select: "id,tipo,asunto,estado,intentos,created_at,enviado_at,usuario_id", order: "created_at.desc", limit: "100" }
+      });
+      // Agrupar por asunto para mostrar envíos masivos
+      const grupos = {};
+      (r.data || []).forEach(n => {
+        const key = n.asunto || n.tipo;
+        if (!grupos[key]) grupos[key] = { asunto: key, tipo: n.tipo, total: 0, enviados: 0, created_at: n.created_at };
+        grupos[key].total++;
+        if (n.estado === "enviado") grupos[key].enviados++;
+      });
+      return ok(res, { notificaciones: Object.values(grupos) });
     }
     if (req.method === "POST") {
-      const { destinatarios, correo_especifico, asunto, mensaje } = req.body || {};
+      // Envío masivo: crea un registro por usuario en tabla notificaciones + envía email
+      const { destinatarios, correo_especifico, asunto, mensaje, tipo = "email_masivo" } = req.body || {};
       if (!asunto || !mensaje) return err(res, "Faltan asunto o mensaje");
-      let correos = [];
-      if (destinatarios === "uno")            correos = correo_especifico ? [correo_especifico] : [];
-      else if (destinatarios === "todos")     { const r = await sb("usuarios", { params: { activo: "eq.true",  select: "correo" } }); correos = (r.data||[]).map(u=>u.correo).filter(Boolean); }
-      else if (destinatarios === "pendientes"){ const r = await sb("usuarios", { params: { activo: "eq.false", select: "correo" } }); correos = (r.data||[]).map(u=>u.correo).filter(Boolean); }
-      else if (destinatarios === "sin-picks") { const r = await sb("usuarios", { params: { activo: "eq.true", picks_completos: "eq.false", select: "correo" } }); correos = (r.data||[]).map(u=>u.correo).filter(Boolean); }
-      if (!correos.length) return err(res, "Sin destinatarios");
+
+      // Obtener lista de usuarios según destinatarios
+      let usuarios = [];
+      if (destinatarios === "uno") {
+        if (!correo_especifico) return err(res, "Falta correo_especifico");
+        const r = await sb("usuarios", { params: { correo: `eq.${correo_especifico}`, select: "id,correo,nombre_completo" } });
+        usuarios = r.data || [];
+      } else if (destinatarios === "todos") {
+        const r = await sb("usuarios", { params: { activo: "eq.true", select: "id,correo,nombre_completo" } });
+        usuarios = r.data || [];
+      } else if (destinatarios === "pendientes") {
+        const r = await sb("usuarios", { params: { activo: "eq.false", select: "id,correo,nombre_completo" } });
+        usuarios = r.data || [];
+      } else if (destinatarios === "sin-picks") {
+        const r = await sb("usuarios", { params: { activo: "eq.true", picks_completos: "eq.false", select: "id,correo,nombre_completo" } });
+        usuarios = r.data || [];
+      }
+      if (!usuarios.length) return err(res, "Sin destinatarios");
+
       const htmlBody = `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px 20px;background:#0D1B3E;color:#fff;border-radius:16px;"><h1 style="color:#E8A020;">${asunto}</h1><div style="color:rgba(255,255,255,0.8);line-height:1.7;white-space:pre-line;">${mensaje}</div><p style="color:rgba(255,255,255,0.3);font-size:11px;margin-top:24px;">roscamundial.com</p></div>`;
       let enviados = 0;
+
+      // Enviar en batches y registrar en tabla notificaciones por usuario
+      const correos = usuarios.map(u => u.correo).filter(Boolean);
       for (let i = 0; i < correos.length; i += 50) {
         const batch = correos.slice(i, i + 50);
-        const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { "Authorization": `Bearer ${RESEND_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: `Rosca Mundial <${FROM_EMAIL}>`, to: batch, subject: asunto, html: htmlBody }) });
+        const r = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${RESEND_KEY}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ from: `Rosca Mundial <${FROM_EMAIL}>`, to: batch, subject: asunto, html: htmlBody })
+        });
         if (r.ok) enviados += batch.length;
       }
-      await sb("notificaciones", { method: "POST", body: { asunto, mensaje, destinatarios, total_enviados: enviados, total_abiertos: 0, estado: enviados > 0 ? "enviado" : "error" } });
-      return ok(res, { mensaje: `Enviado a ${enviados} de ${correos.length}`, enviados });
+
+      // Registrar una notificación por usuario
+      for (const u of usuarios) {
+        await sb("notificaciones", { method: "POST", body: {
+          usuario_id: u.id, tipo, asunto,
+          estado: enviados > 0 ? "enviado" : "error",
+          enviado_at: enviados > 0 ? new Date().toISOString() : null,
+        }});
+      }
+
+      await log("notificacion_masiva_enviada", { destinatarios, asunto, enviados, total: usuarios.length });
+      return ok(res, { mensaje: `Enviado a ${enviados} de ${usuarios.length}`, enviados });
     }
   }
 
@@ -320,25 +380,37 @@ export default async function handler(req, res) {
     const { tipo = "todo" } = req.body || {};
     const BASE = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://roscamundial.com";
     const inicio = Date.now();
-    const cronRes = await fetch(`${BASE}/api/cron-actualizar-datos`, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.CRON_SECRET}` }, body: JSON.stringify({ tipo, forzado: true }) });
-    const duracion = ((Date.now() - inicio) / 1000).toFixed(2) + "s";
-    await sb("logs", { method: "POST", body: { tipo: "cron", mensaje: `Sync manual: ${tipo}`, meta: { tipo, duracion, exito: cronRes.ok } }});
-    return ok(res, { mensaje: `Sync "${tipo}" completado`, duracion });
+    try {
+      const cronRes = await fetch(`${BASE}/api/cron-actualizar-datos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.CRON_SECRET}` },
+        body: JSON.stringify({ tipo, forzado: true })
+      });
+      const duracion = ((Date.now() - inicio) / 1000).toFixed(2) + "s";
+      await log("cron_forzado_manual", { tipo, duracion, exito: cronRes.ok });
+      return ok(res, { mensaje: `Sync "${tipo}" completado`, duracion });
+    } catch (e) {
+      return err(res, `Error ejecutando sync: ${e.message}`, 500);
+    }
   }
 
   // ══════════════════════════════════════════════════════
-  //  BACKUP
+  //  BACKUP — guarda en logs con accion="backup"
   // ══════════════════════════════════════════════════════
   if (action === "backup") {
     if (req.method === "GET") {
-      const r = await sb("logs", { params: { tipo: "eq.backup", select: "id,mensaje,meta,created_at", order: "created_at.desc", limit: "10" } });
-      return ok(res, { backups: r.data || [] });
+      const r = await sb("logs", { params: { accion: "eq.backup_manual", select: "id,detalle,created_at", order: "created_at.desc", limit: "10" } });
+      return ok(res, { backups: (r.data || []).map(l => ({ ...l, nombre: l.detalle?.nombre || "backup", tamano_kb: l.detalle?.tamano_kb || 0 })) });
     }
     if (req.method === "POST") {
       const TABLAS_BK = ["usuarios","pagos","predicciones","picks_killer","picks_equipos","fases","ranking"];
-      const exports = await Promise.all(TABLAS_BK.map(async t => { const r = await sb(t, { params: { select: "*", limit: "10000" } }); return { tabla: t, registros: (r.data||[]).length }; }));
-      await sb("logs", { method: "POST", body: { tipo: "backup", mensaje: "Backup manual creado", meta: { tablas: exports, timestamp: new Date().toISOString() } }});
-      return ok(res, { mensaje: "Backup registrado", tablas: exports }, 201);
+      const exports = await Promise.all(TABLAS_BK.map(async t => {
+        const r = await sb(t, { params: { select: "*", limit: "10000" } });
+        return { tabla: t, registros: (r.data||[]).length };
+      }));
+      const nombre = `backup_${new Date().toISOString().replace(/[:.]/g,"-")}.json`;
+      await log("backup_manual", { nombre, tablas: exports, timestamp: new Date().toISOString() });
+      return ok(res, { mensaje: "Backup registrado", nombre, tablas: exports }, 201);
     }
   }
 

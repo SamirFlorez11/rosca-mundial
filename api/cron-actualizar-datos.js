@@ -99,9 +99,8 @@ async function gestionarFasesAutomatico() {
           abierta_en: ahora.toISOString()
         });
         await supabaseQuery('logs', 'POST', {
-          tipo: 'cron',
-          mensaje: `Fase "${fase.nombre}" abierta automáticamente`,
-          meta: { fase_id: faseDB.id, timestamp: ahora.toISOString() }
+          accion: 'fase_abierta_automatica',
+          detalle: { mensaje: `Fase "${fase.nombre}" abierta automáticamente`, fase_id: faseDB.id, timestamp: ahora.toISOString() }
         });
         console.log(`✅ Fase "${fase.nombre}" abierta automáticamente`);
       }
@@ -113,9 +112,8 @@ async function gestionarFasesAutomatico() {
           cerrada_en: ahora.toISOString()
         });
         await supabaseQuery('logs', 'POST', {
-          tipo: 'cron',
-          mensaje: `Fase "${fase.nombre}" cerrada automáticamente`,
-          meta: { fase_id: faseDB.id, timestamp: ahora.toISOString() }
+          accion: 'fase_cerrada_automatica',
+          detalle: { mensaje: `Fase "${fase.nombre}" cerrada automáticamente`, fase_id: faseDB.id, timestamp: ahora.toISOString() }
         });
         console.log(`✅ Fase "${fase.nombre}" cerrada automáticamente`);
       }
@@ -389,9 +387,8 @@ export default async function handler(req, res) {
 
     // 3. Log en Supabase
     await supabaseQuery('logs', 'POST', {
-      tipo: 'cron',
-      mensaje: 'Cron ejecutado exitosamente',
-      meta: { duracion: ((Date.now() - inicio) / 1000).toFixed(2) + 's', sportmonks_activo: !!SPORTMONKS_TOKEN }
+      accion: 'cron_ejecutado',
+      detalle: { mensaje: 'Cron ejecutado exitosamente', duracion: ((Date.now() - inicio) / 1000).toFixed(2) + 's', sportmonks_activo: !!SPORTMONKS_TOKEN }
     });
 
     const duracion = ((Date.now() - inicio) / 1000).toFixed(2);
