@@ -457,7 +457,7 @@
     return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
   }
 
-  document.getElementById("regForm").addEventListener("submit",function(e){
+  document.getElementById("regForm").addEventListener("submit",async function(e){
     e.preventDefault();let valid=true;
     const nombre=document.getElementById("nombre");
     const correo=document.getElementById("correo");
@@ -472,3 +472,90 @@
     if(!validarPassword(password.value)){password.classList.add("error");valid=false;}
     const t=document.getElementById("terminos"),w=document.getElementById("terminosWarning");
     if(!t.checked){w.classList.add("show");valid=false;}
+    // (continuación del submit handler)
+    if(!valid) return;
+
+    const btn = document.querySelector(".btn-submit");
+    btn.disabled = true;
+    btn.innerHTML = '<span>Procesando...</span>';
+
+    const payload = {
+      nombre_completo: nombre.value.trim(),
+      correo: correo.value.trim().toLowerCase(),
+      celular: celular.value.trim(),
+      documento: documento.value.trim(),
+      password: password.value,
+      ciudad: document.getElementById("ciudad") ? document.getElementById("ciudad").value.trim() : "",
+      pais: document.getElementById("pais") ? document.getElementById("pais").value.trim() : "Colombia",
+      nombre_usuario: document.getElementById("alias") ? document.getElementById("alias").value.trim() : ""
+    };
+
+    try {
+      const res = await fetch("/api/registro", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Inscribirme y pagar</span><span class="btn-wompi-badge">WOMPI</span>';
+        // Mostrar error específico
+        const errMsg = data.error || "Error al registrarte. Intenta de nuevo.";
+        if (errMsg.includes("correo")) correo.classList.add("error");
+        else if (errMsg.includes("documento")) documento.classList.add("error");
+        // Mostrar mensaje al usuario
+        let alertBox = document.getElementById("reg-error-msg");
+        if (!alertBox) {
+          alertBox = document.createElement("div");
+          alertBox.id = "reg-error-msg";
+          alertBox.style.cssText = "background:rgba(206,17,38,0.12);border:1px solid rgba(206,17,38,0.3);color:#FF6B6B;font-size:13px;font-weight:700;padding:12px 16px;border-radius:10px;margin-top:12px;text-align:center;";
+          btn.parentNode.insertBefore(alertBox, btn.nextSibling);
+        }
+        alertBox.textContent = errMsg;
+        return;
+      }
+
+      // Registro exitoso — lanzar Wompi
+      const usuarioId = data.usuario_id;
+      document.getElementById("successEmail").textContent = payload.correo;
+
+      // Crear el widget de Wompi dinámicamente
+      const wompiContainer = document.getElementById("wompi-container") || (() => {
+        const div = document.createElement("div");
+        div.id = "wompi-container";
+        div.style.cssText = "margin-top:20px;display:flex;justify-content:center;";
+        document.querySelector(".btn-submit").parentNode.insertBefore(div, document.querySelector(".btn-submit"));
+        return div;
+      })();
+
+      wompiContainer.innerHTML = "";
+      const script = document.createElement("script");
+      script.src = "https://checkout.wompi.co/widget.js";
+      script.setAttribute("data-render", "button");
+      script.setAttribute("data-public-key", "pub_test_Cn1vW2dPmL1tqoxMVRF5NpxcuP9NVxT3"); // ← reemplazar con tu key real
+      script.setAttribute("data-currency", "COP");
+      script.setAttribute("data-amount-in-cents", "6000000");
+      script.setAttribute("data-reference", usuarioId);
+      script.setAttribute("data-redirect-url", "https://roscamundial.com/dashboard.html");
+      wompiContainer.appendChild(script);
+
+      btn.style.display = "none";
+      document.querySelector(".login-link").style.display = "none";
+
+    } catch(err) {
+      btn.disabled = false;
+      btn.innerHTML = '<span>Inscribirme y pagar</span><span class="btn-wompi-badge">WOMPI</span>';
+      console.error(err);
+      let alertBox = document.getElementById("reg-error-msg");
+      if (!alertBox) {
+        alertBox = document.createElement("div");
+        alertBox.id = "reg-error-msg";
+        alertBox.style.cssText = "background:rgba(206,17,38,0.12);border:1px solid rgba(206,17,38,0.3);color:#FF6B6B;font-size:13px;font-weight:700;padding:12px 16px;border-radius:10px;margin-top:12px;text-align:center;";
+        btn.parentNode.insertBefore(alertBox, btn.nextSibling);
+      }
+      alertBox.textContent = "Error de conexión. Verifica tu internet e intenta de nuevo.";
+    }
+  });
+</script>
