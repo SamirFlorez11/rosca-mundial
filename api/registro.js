@@ -32,22 +32,40 @@ export default async function handler(req, res) {
   try {
     const { data: correoExiste } = await supabase
       .from("usuarios")
-      .select("id")
+      .select("id, activo")
       .eq("correo", correo.toLowerCase())
       .maybeSingle();
 
-    if (correoExiste) {
+    if (correoExiste && correoExiste.activo) {
       return res.status(409).json({ error: "Este correo ya está registrado" });
+    }
+
+    if (correoExiste && !correoExiste.activo) {
+      // Retornar el usuario_id para que pueda reintentar el pago
+      return res.status(200).json({
+        success: true,
+        usuario_id: correoExiste.id,
+        mensaje: "Usuario ya registrado, procede al pago"
+      });
     }
 
     const { data: docExiste } = await supabase
       .from("usuarios")
-      .select("id")
+      .select("id,activo")
       .eq("documento", documento)
       .maybeSingle();
 
-    if (docExiste) {
+    if (docExiste && docExiste.activo) {
       return res.status(409).json({ error: "Este documento ya está registrado" });
+    }
+
+    if (docExiste && !docExiste.activo) {
+      // Retornar el usuario_id para que pueda reintentar el pago
+      return res.status(200).json({
+        success: true,
+        usuario_id: docExiste.id,
+        mensaje: "Usuario ya registrado, procede al pago"
+      });
     }
 
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({

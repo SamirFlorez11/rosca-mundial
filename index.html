@@ -490,6 +490,16 @@
       nombre_usuario: document.getElementById("alias") ? document.getElementById("alias").value.trim() : ""
     };
 
+    async function generarFirma(referencia) {
+      const resp = await fetch("/api/firma", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ referencia })
+      });
+      const data = await resp.json();
+      return data.firma;
+    }
+
     try {
       const res = await fetch("/api/registro", {
         method: "POST",
@@ -538,6 +548,8 @@
       script.setAttribute("data-currency", "COP");
       script.setAttribute("data-amount-in-cents", "6000000");
       script.setAttribute("data-reference", usuarioId);
+      const firma = await generarFirma(usuarioId);
+      script.setAttribute("data-signature:integrity", firma);
       script.setAttribute("data-redirect-url", "https://roscamundial.com/dashboard.html");
       wompiContainer.appendChild(script);
 
@@ -558,4 +570,5 @@
       alertBox.textContent = "Error de conexión. Verifica tu internet e intenta de nuevo.";
     }
   });
+
 </script>
