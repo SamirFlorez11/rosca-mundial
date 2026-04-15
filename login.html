@@ -653,6 +653,14 @@
 </div>
 
 <script type="module">
+  // Si ya hay sesión activa, redirigir al dashboard
+  import { supabase } from '/js/supabase.js';
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    window.location.href = '/dashboard.html';
+  }
+  
   import { login, olvideMiPassword, redirigirSiLogueado } from './js/auth.js';
   import { validarCorreo } from './js/validation.js';
 
