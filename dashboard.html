@@ -491,7 +491,7 @@
   /* RANKINGS ESPECIALES - GRID */
   .especiales-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr ;
     gap: 14px;
   }
 
@@ -891,12 +891,12 @@
   }
 
   /* COLOR ESPECIALES */
-  .c-killer { color: #f97316; }
-  .c-virgen { color: #22c55e; }
-  .c-carnicero { color: #ef4444; }
-  .c-niña { color: #ec4899; }
-  .c-banderin { color: #3b82f6; }
-  .c-mechacorta { color: #8b5cf6; }
+  .c-killer { color: var(--amarillo); }
+  .c-virgen { color: var(--amarillo); }
+  .c-carnicero { color: var(--amarillo); }
+  .c-niña { color: var(--amarillo); }
+  .c-banderin { color: var(--amarillo); }
+  .c-mechacorta { color: var(--amarillo); }
 </style>
 </head>
 <body>
@@ -1643,12 +1643,12 @@
 
   // ===== MODALES RANKING COMPLETO =====
   const RANKING_CONFIG = {
-    killer:    { titulo: '⚔️ El Killer',     subtitulo: '15 jugadores · más G+A combinados',  premio: '$800.000 COP', color: '#f97316' },
-    carnicero: { titulo: '🔪 El Carnicero',  subtitulo: '10 equipos · más tarjetas',           premio: '$600.000 COP', color: '#ef4444' },
-    banderin:  { titulo: '🚩 El Banderín',   subtitulo: '10 equipos · más corners',            premio: '$500.000 COP', color: '#3b82f6' },
-    virgen:    { titulo: '🕊️ El Virgen',     subtitulo: '10 equipos · menos goles',            premio: '$400.000 COP', color: '#22c55e' },
-    niña:      { titulo: '🎀 El Pie de Niña',subtitulo: '10 equipos · menos tarjetas',         premio: '$300.000 COP', color: '#ec4899' },
-    mechacorta:{ titulo: '✂️ El Mechacorta', subtitulo: '10 equipos · menos corners',          premio: '$200.000 COP', color: '#8b5cf6' },
+    killer:    { titulo: '⚔️ El Killer',     subtitulo: '15 jugadores · más G+A combinados',  premio: '$800.000 COP', color: 'var(--amarillo)' },
+    carnicero: { titulo: '🔪 El Carnicero',  subtitulo: '10 equipos · más tarjetas',           premio: '$600.000 COP', color: 'var(--amarillo)' },
+    banderin:  { titulo: '🚩 El Banderín',   subtitulo: '10 equipos · más corners',            premio: '$500.000 COP', color: 'var(--amarillo)' },
+    virgen:    { titulo: '🕊️ El Virgen',     subtitulo: '10 equipos · menos goles',            premio: '$400.000 COP', color: 'var(--amarillo)' },
+    niña:      { titulo: '🎀 El Pie de Niña',subtitulo: '10 equipos · menos tarjetas',         premio: '$300.000 COP', color: 'var(--amarillo)' },
+    mechacorta:{ titulo: '✂️ El Mechacorta', subtitulo: '10 equipos · menos corners',          premio: '$200.000 COP', color: 'var(--amarillo)' },
   };
 
   // Datos mock — en producción vendrán de Supabase
