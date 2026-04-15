@@ -6,8 +6,8 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 // Estas variables las lee Vercel desde las Environment Variables
-const SUPABASE_URL = window.ENV?.SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = window.ENV?.SUPABASE_ANON_KEY || '';
+const SUPABASE_URL = 'https://hwhlmuixnxevzbabkqcy.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_Sub3P-1VhdcnNfhNzeet1A_yhQt_wJS';
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.error('❌ Faltan las variables de entorno de Supabase');
