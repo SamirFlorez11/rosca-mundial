@@ -57,7 +57,7 @@
   .progress-count{font-family:"Bebas Neue",sans-serif;font-size:20px;color:var(--gold);letter-spacing:2px;}
   .progress-bar-bg{background:rgba(255,255,255,0.1);border-radius:999px;height:7px;overflow:hidden;margin-bottom:6px;}
   .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-dark),var(--gold));border-radius:999px;width:0;animation:fillBar 1.5s ease-out forwards;}
-  @keyframes fillBar{to{width:47%;}}
+  @keyframes fillBar{to{width:0%;}}
   .progress-pct{font-size:11px;color:rgba(255,255,255,0.3);text-align:right;}
   .form-panel{flex:1;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;overflow-y:auto;}
   .form-container{width:100%;max-width:440px;}
@@ -570,5 +570,49 @@
       alertBox.textContent = "Error de conexión. Verifica tu internet e intenta de nuevo.";
     }
   });
+
+  // ── Countdown timer ─────────────────────────────────────────────────────
+  (function() {
+    var TARGET = new Date('2026-06-11T23:00:00Z'); // 6 PM Colombia = 23:00 UTC
+    function pad(n) { return String(Math.floor(n)).padStart(2,'0'); }
+    function tick() {
+      var diff = TARGET - new Date();
+      if (diff <= 0) { ['t-mes','t-dia','t-hor','t-min','t-seg'].forEach(function(id){ var e=document.getElementById(id); if(e) e.textContent='00'; }); return; }
+      var s = Math.floor(diff/1000);
+      var seg = s % 60;
+      var min = Math.floor(s/60) % 60;
+      var hor = Math.floor(s/3600) % 24;
+      var dia = Math.floor(s/86400) % 30;
+      var mes = Math.floor(s/(86400*30));
+      var m=function(id,v){ var e=document.getElementById(id); if(e) e.textContent=pad(v); };
+      m('t-mes',mes); m('t-dia',dia); m('t-hor',hor); m('t-min',min); m('t-seg',seg);
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+
+  // ── Contador de inscritos desde Supabase ─────────────────────────────────
+  (function() {
+    var SUPA_URL = 'https://hwhlmuixnxevzbabkqcy.supabase.co';
+    var ANON_KEY = 'sb_publishable_Sub3P-1VhdcnNfhNzeet1A_yhQt_wJS';
+    fetch(SUPA_URL + '/rest/v1/usuarios?activo=eq.true&select=id', {
+      headers: {
+        'apikey': ANON_KEY,
+        'Authorization': 'Bearer ' + ANON_KEY,
+        'Prefer': 'count=exact',
+        'Range': '0-0'
+      }
+    }).then(function(r) {
+      var total = parseInt(r.headers.get('content-range')?.split('/')[1] || '0', 10);
+      if (!total || isNaN(total)) return;
+      var pct = Math.min(Math.round((total / 400) * 100), 100);
+      var pc = document.querySelector('.progress-count');
+      if (pc) pc.textContent = total + ' / 400';
+      var pf = document.querySelector('.progress-bar-fill');
+      if (pf) { pf.style.animation = 'none'; pf.style.width = pct + '%'; }
+      var pp = document.querySelector('.progress-pct');
+      if (pp) pp.textContent = pct + '% completado';
+    }).catch(function(){});
+  })();
 
 </script>

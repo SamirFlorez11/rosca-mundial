@@ -21,6 +21,20 @@
     --panel: #0d1525;
   }
 
+  /* Modo día/noche */
+  body.dia {
+    --bg: #f0f4f8; --card: #ffffff; --card2: #e8edf5;
+    --border: #c5d0e0; --text: #0f172a; --muted: #4a5568; --amarillo: #1e3a8a;
+  }
+  body.dia .navbar { background: rgba(240,244,248,0.97); }
+  .btn-tema {
+    background: none; border: 1px solid var(--border); color: var(--muted);
+    width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
+    font-size: 17px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .btn-tema:hover { border-color: var(--amarillo); color: var(--amarillo); }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
@@ -392,7 +406,8 @@
     </div>
   </div>
   <!-- Botón izquierdo: Atrás (aparece en vista picks) -->
-  <button class="btn-nav btn-back" onclick="volverAlMenu()" id="btnVolver" style="display:none">← Seleccionar categoría</button>
+  <button class="btn-tema" id="btnTema" onclick="toggleTema()" title="Cambiar modo día/noche">🌙</button>
+  <button class="btn-nav btn-back" onclick="volverAlMenu()" id="btnVolver" style="display:none;margin-left:24px">← Seleccionar categoría</button>
   <!-- Centro expandible para empujar el modificar al centro -->
   <div style="flex:1;display:flex;justify-content:center;">
     <button class="btn-nav btn-modify" id="btnModificar" onclick="toggleModoEdicion()" style="display:none">✏️ Modificar picks</button>
@@ -1809,6 +1824,21 @@ function toggleSeccionResumen(id) {
 // =====================
 actualizarProgreso();
 actualizarMenuBadges();
+
+  // ── Modo Día/Noche ──────────────────────────────────────────────────────
+  function toggleTema() {
+    const esDia = document.body.classList.toggle('dia');
+    document.getElementById('btnTema').textContent = esDia ? '☀️' : '🌙';
+    localStorage.setItem('rosca-tema', esDia ? 'dia' : 'noche');
+  }
+  (function() {
+    const t = localStorage.getItem('rosca-tema');
+    if (t === 'dia') {
+      document.body.classList.add('dia');
+      const btn = document.getElementById('btnTema');
+      if (btn) btn.textContent = '☀️';
+    }
+  })();
 </script>
 
 <script type="module">

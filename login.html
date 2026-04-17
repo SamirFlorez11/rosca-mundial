@@ -534,9 +534,22 @@
     .brand-title { font-size: 40px; }
     .form-panel { padding: 32px 24px; }
   }
+
+  /* Modo día/noche */
+  body.dia { background: #f0f4f8; color: #0f172a; }
+  .btn-tema-fixed {
+    position: fixed; top: 14px; right: 14px; z-index: 999;
+    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.7); width: 36px; height: 36px;
+    border-radius: 8px; cursor: pointer; font-size: 17px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  body.dia .btn-tema-fixed { background: rgba(0,0,0,0.08); border-color: rgba(0,0,0,0.15); color: #333; }
 </style>
 </head>
 <body>
+<button class="btn-tema-fixed" id="btnTema" onclick="toggleTema()" title="Cambiar modo">🌙</button>
 
 <!-- PANEL IZQUIERDO -->
 <div class="brand-panel">
@@ -785,6 +798,16 @@
       setTimeout(cerrarModal, 3000);
     }
   });
+
+  function toggleTema() {
+    const esDia = document.body.classList.toggle('dia');
+    document.getElementById('btnTema').textContent = esDia ? '☀️' : '🌙';
+    localStorage.setItem('rosca-tema', esDia ? 'dia' : 'noche');
+  }
+  (function() {
+    const t = localStorage.getItem('rosca-tema');
+    if (t === 'dia') { document.body.classList.add('dia'); const b = document.getElementById('btnTema'); if(b) b.textContent='☀️'; }
+  })();
 </script>
 </body>
 </html>
