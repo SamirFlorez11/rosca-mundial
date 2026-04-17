@@ -34,6 +34,9 @@
   }
   body.dia .navbar { background: rgba(240,244,248,0.97); }
   body.dia .tricolor { filter: brightness(0.95); }
+  body.dia .countdown-banner { background: linear-gradient(135deg, #1e3a8a 0%, #132a6e 100%); }
+  body.dia .countdown-label, body.dia .countdown-num, body.dia .countdown-sep { color: #fff; }
+  body.dia .countdown-title { color: #fff; }
 
   /* Botón modo día/noche */
   .btn-tema {
@@ -978,8 +981,8 @@
         <span>MUNDIAL USA · MÉXICO · CANADÁ 2026</span>
       </div>
   </div>
+  <button class="btn-tema" id="btnTema" onclick="toggleTema()" title="Cambiar modo día/noche" style="margin-left:14px">🌙</button>
   <div class="nav-right">
-    <button class="btn-tema" id="btnTema" onclick="toggleTema()" title="Cambiar modo día/noche">🌙</button>
     <button class="btn-picks" onclick="goToPicks()">⚡ IR A PICKS</button>
     <div class="user-avatar" onclick="toggleDropdown()">⚽</div>
   </div>

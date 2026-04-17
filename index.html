@@ -128,6 +128,19 @@
 
   .timer-section{width:100%;margin-top:14px;}
   .timer-label{font-size:9px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px;text-align:center;}
+  /* ===== POSTER BACKGROUNDS ===== */
+  .poster-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .poster-bg.visible { opacity: 0.28; }
+  .form-panel { position: relative; }
 </style>
 <script>
   function openModal(id){document.getElementById(id).classList.add("show");document.body.style.overflow="hidden";}
@@ -305,6 +318,7 @@
 
 <!-- BRAND PANEL -->
 <div class="brand-panel">
+  <div class="poster-bg" id="posterLeft"></div>
   <div class="colombia-stripe"><div class="stripe-yellow"></div><div class="stripe-blue"></div><div class="stripe-red"></div></div>
   <div class="brand-content">
     <div class="nav-buttons">
@@ -359,6 +373,7 @@
 
 <!-- FORM PANEL -->
 <div class="form-panel">
+  <div class="poster-bg" id="posterRight"></div>
   <div class="form-container">
     <div class="form-eyebrow">Inscripción 2026</div>
     <div class="form-title">Crea tu cuenta</div>
@@ -571,7 +586,69 @@
     }
   });
 
-  // ── Countdown timer ─────────────────────────────────────────────────────
+  // ── World Cup poster backgrounds ─────────────────────────────────────────────
+(function() {
+  var POSTERS = [
+    'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1920&q=80',      // Estadio lleno de fans
+    'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1920&q=80',      // Celebración de gol
+    'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1920&q=80',      // Estadio de noche
+    'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1920&q=80',      // Balón en el pasto
+    'https://images.unsplash.com/photo-1556056504-5c7696c4c28d?w=1920&q=80',         // Interior estadio
+    'https://images.pexels.com/photos/1884574/pexels-photo-1884574.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',   // Fans festejando
+    'https://images.pexels.com/photos/274422/pexels-photo-274422.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',    // Acción en el campo
+    'https://images.pexels.com/photos/1618200/pexels-photo-1618200.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',  // Estadio exterior al atardecer
+    'https://images.pexels.com/photos/47730/the-ball-stadion-football-the-pitch-47730.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop', // Remate al arco
+    'https://images.pexels.com/photos/3621104/pexels-photo-3621104.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop'   // Multitud con banderas
+  ];
+
+  var leftEl, rightEl;
+  var leftIdx = 0, rightIdx = 5; // Empezar con imágenes distintas en cada columna
+
+  function preload(url) {
+    var img = new Image();
+    img.src = url;
+  }
+
+  function setPoster(el, url, cb) {
+    el.classList.remove('visible');
+    setTimeout(function() {
+      el.style.backgroundImage = 'url(' + url + ')';
+      el.classList.add('visible');
+      if (cb) cb();
+    }, 1200);
+  }
+
+  function rotate() {
+    leftIdx = (leftIdx + 1) % POSTERS.length;
+    // Ensure right image is always different from left
+    rightIdx = (leftIdx + 5) % POSTERS.length;
+    setPoster(leftEl, POSTERS[leftIdx]);
+    setPoster(rightEl, POSTERS[rightIdx]);
+    // Preload next
+    preload(POSTERS[(leftIdx + 1) % POSTERS.length]);
+    preload(POSTERS[(rightIdx + 1) % POSTERS.length]);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    leftEl = document.getElementById('posterLeft');
+    rightEl = document.getElementById('posterRight');
+    if (!leftEl || !rightEl) return;
+    // Set initial posters
+    leftEl.style.backgroundImage = 'url(' + POSTERS[leftIdx] + ')';
+    rightEl.style.backgroundImage = 'url(' + POSTERS[rightIdx] + ')';
+    // Fade in after a brief delay
+    setTimeout(function() {
+      leftEl.classList.add('visible');
+      rightEl.classList.add('visible');
+    }, 300);
+    // Preload next batch
+    for (var i = 1; i <= 3; i++) preload(POSTERS[i % POSTERS.length]);
+    // Rotate every 7 seconds
+    setInterval(rotate, 7000);
+  });
+})();
+
+// ── Countdown timer ─────────────────────────────────────────────────────
   (function() {
     var TARGET = new Date('2026-06-11T23:00:00Z'); // 6 PM Colombia = 23:00 UTC
     function pad(n) { return String(Math.floor(n)).padStart(2,'0'); }
