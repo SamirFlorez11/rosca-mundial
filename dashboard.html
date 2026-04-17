@@ -22,6 +22,33 @@
     --bronze: #cd7c2f;
   }
 
+  /* ===== MODO DÍA ===== */
+  body.dia {
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --card2: #e8edf5;
+    --border: #c5d0e0;
+    --text: #0f172a;
+    --muted: #4a5568;
+  }
+  body.dia .navbar { background: rgba(240,244,248,0.97); }
+  body.dia .tricolor { filter: brightness(0.95); }
+
+  /* Botón modo día/noche */
+  .btn-tema {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 17px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .btn-tema:hover { border-color: var(--amarillo); color: var(--amarillo); }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
@@ -951,6 +978,7 @@
       </div>
   </div>
   <div class="nav-right">
+    <button class="btn-tema" id="btnTema" onclick="toggleTema()" title="Cambiar modo día/noche">🌙</button>
     <button class="btn-picks" onclick="goToPicks()">⚡ IR A PICKS</button>
     <div class="user-avatar" onclick="toggleDropdown()">⚽</div>
   </div>
@@ -1171,28 +1199,11 @@
                   <div class="especial-desc">15 jugadores · más G+A</div>
                 </div>
               </div>
-              <div class="especial-podio">
-                <div class="especial-row">
-                  <div class="epos p1">1</div>
-                  <div class="eavatar">🐉</div>
-                  <div class="ename">GolazoRex</div>
-                  <div class="evalue" style="color:var(--amarillo)">34 pts</div>
-                </div>
-                <div class="especial-row">
-                  <div class="epos p2">2</div>
-                  <div class="eavatar">🦊</div>
-                  <div class="ename you">SamirF2026</div>
-                  <div class="evalue">31 pts</div>
-                </div>
-                <div class="especial-row">
-                  <div class="epos p3">3</div>
-                  <div class="eavatar">🌟</div>
-                  <div class="ename">LaReina01</div>
-                  <div class="evalue">29 pts</div>
-                </div>
+              <div class="especial-podio" style="display:flex;align-items:center;justify-content:center;padding:20px 0;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;text-align:center;line-height:1.6">
+                🏆<br>Top 3 disponible<br>desde el 11 de junio
               </div>
               <div class="especial-tu-pos">
-                <div class="tu-pos-txt">Tu posición: <strong>#2</strong> de 187</div>
+                <div class="tu-pos-txt">Tu posición: <strong>—</strong></div>
                 <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--amarillo);margin-top:5px">🏆 Premio: $800.000 COP efectivo</div>
                 <button onclick="abrirRankingEspecial('killer')" style="width:100%;margin-top:8px;background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:1px;padding:7px;border-radius:8px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.borderColor='#f97316';this.style.color='#f97316'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Ver ranking completo →</button>
               </div>
@@ -1206,28 +1217,11 @@
                   <div class="especial-desc">10 equipos · más tarjetas</div>
                 </div>
               </div>
-              <div class="especial-podio">
-                <div class="especial-row">
-                  <div class="epos p1">1</div>
-                  <div class="eavatar">💀</div>
-                  <div class="ename">Sangre2026</div>
-                  <div class="evalue" style="color:var(--amarillo)">47 pts</div>
-                </div>
-                <div class="especial-row">
-                  <div class="epos p2">2</div>
-                  <div class="eavatar">🐗</div>
-                  <div class="ename">Bestia88</div>
-                  <div class="evalue">44 pts</div>
-                </div>
-                <div class="especial-row">
-                  <div class="epos p3">3</div>
-                  <div class="eavatar">🌋</div>
-                  <div class="ename">ChapaKing</div>
-                  <div class="evalue">41 pts</div>
-                </div>
+              <div class="especial-podio" style="display:flex;align-items:center;justify-content:center;padding:20px 0;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;text-align:center;line-height:1.6">
+                🏆<br>Top 3 disponible<br>desde el 11 de junio
               </div>
               <div class="especial-tu-pos">
-                <div class="tu-pos-txt">Tu posición: <strong>#34</strong> de 187</div>
+                <div class="tu-pos-txt">Tu posición: <strong>—</strong></div>
                 <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--amarillo);margin-top:5px">🏆 Premio: $600.000 COP efectivo</div>
                 <button onclick="abrirRankingEspecial('carnicero')" style="width:100%;margin-top:8px;background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:1px;padding:7px;border-radius:8px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.borderColor='#ef4444';this.style.color='#ef4444'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Ver ranking completo →</button>
               </div>
@@ -1241,28 +1235,11 @@
                   <div class="especial-desc">10 equipos · más corners</div>
                 </div>
               </div>
-              <div class="especial-podio">
-                <div class="especial-row">
-                  <div class="epos p1">1</div>
-                  <div class="eavatar">🔵</div>
-                  <div class="ename">CornerKing</div>
-                  <div class="evalue" style="color:var(--amarillo)">67</div>
-                </div>
-                <div class="especial-row">
-                  <div class="epos p2">2</div>
-                  <div class="eavatar">⚽</div>
-                  <div class="ename">PorElAngulo</div>
-                  <div class="evalue">63</div>
-                </div>
-                <div class="especial-row">
-                  <div class="epos p3">3</div>
-                  <div class="eavatar">🎯</div>
-                  <div class="ename">TiroDeEsquina</div>
-                  <div class="evalue">61</div>
-                </div>
+              <div class="especial-podio" style="display:flex;align-items:center;justify-content:center;padding:20px 0;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;text-align:center;line-height:1.6">
+                🏆<br>Top 3 disponible<br>desde el 11 de junio
               </div>
               <div class="especial-tu-pos">
-                <div class="tu-pos-txt">Tu posición: <strong>#76</strong> de 187</div>
+                <div class="tu-pos-txt">Tu posición: <strong>—</strong></div>
                 <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--amarillo);margin-top:5px">🏆 Premio: $500.000 COP efectivo</div>
                 <button onclick="abrirRankingEspecial('banderin')" style="width:100%;margin-top:8px;background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:1px;padding:7px;border-radius:8px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.borderColor='#3b82f6';this.style.color='#3b82f6'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Ver ranking completo →</button>
               </div>
@@ -1276,28 +1253,11 @@
                   <div class="especial-desc">10 equipos · menos goles</div>
                 </div>
               </div>
-              <div class="especial-podio">
-                <div class="especial-row">
-                  <div class="epos p1">1</div>
-                  <div class="eavatar">🛡️</div>
-                  <div class="ename">DefensaTotal</div>
-                  <div class="evalue" style="color:var(--amarillo)">3 goles</div>
-                </div>
-                <div class="especial-row">
-                  <div class="epos p2">2</div>
-                  <div class="eavatar">🧱</div>
-                  <div class="ename">MuroFelipe</div>
-                  <div class="evalue">4 goles</div>
-                </div>
-                <div class="especial-row">
-                  <div class="epos p3">3</div>
-                  <div class="eavatar">🎯</div>
-                  <div class="ename">PrecisionFria</div>
-                  <div class="evalue">5 goles</div>
-                </div>
+              <div class="especial-podio" style="display:flex;align-items:center;justify-content:center;padding:20px 0;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;text-align:center;line-height:1.6">
+                🏆<br>Top 3 disponible<br>desde el 11 de junio
               </div>
               <div class="especial-tu-pos">
-                <div class="tu-pos-txt">Tu posición: <strong>#89</strong> de 187</div>
+                <div class="tu-pos-txt">Tu posición: <strong>—</strong></div>
                 <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--amarillo);margin-top:5px">🏆 Premio: $400.000 COP efectivo</div>
                 <button onclick="abrirRankingEspecial('virgen')" style="width:100%;margin-top:8px;background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:1px;padding:7px;border-radius:8px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.borderColor='#22c55e';this.style.color='#22c55e'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Ver ranking completo →</button>
               </div>
@@ -1311,28 +1271,11 @@
                   <div class="especial-desc">10 equipos · menos tarjetas</div>
                 </div>
               </div>
-              <div class="especial-podio">
-                <div class="especial-row">
-                  <div class="epos p1">1</div>
-                  <div class="eavatar">🌸</div>
-                  <div class="ename">AngelLuisa</div>
-                  <div class="evalue" style="color:var(--amarillo)">2 pts</div>
-                </div>
-                <div class="especial-row">
-                  <div class="epos p2">2</div>
-                  <div class="eavatar">🦋</div>
-                  <div class="ename">Caballero11</div>
-                  <div class="evalue">3 pts</div>
-                </div>
-                <div class="especial-row">
-                  <div class="epos p3">3</div>
-                  <div class="eavatar">🍀</div>
-                  <div class="ename">SuaveSiempre</div>
-                  <div class="evalue">4 pts</div>
-                </div>
+              <div class="especial-podio" style="display:flex;align-items:center;justify-content:center;padding:20px 0;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;text-align:center;line-height:1.6">
+                🏆<br>Top 3 disponible<br>desde el 11 de junio
               </div>
               <div class="especial-tu-pos">
-                <div class="tu-pos-txt">Tu posición: <strong>#12</strong> de 187</div>
+                <div class="tu-pos-txt">Tu posición: <strong>—</strong></div>
                 <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--amarillo);margin-top:5px">🏆 Premio: $300.000 COP efectivo</div>
                 <button onclick="abrirRankingEspecial('niña')" style="width:100%;margin-top:8px;background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:1px;padding:7px;border-radius:8px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.borderColor='#ec4899';this.style.color='#ec4899'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Ver ranking completo →</button>
               </div>
@@ -1346,28 +1289,11 @@
                   <div class="especial-desc">10 equipos · menos corners</div>
                 </div>
               </div>
-              <div class="especial-podio">
-                <div class="especial-row">
-                  <div class="epos p1">1</div>
-                  <div class="eavatar">🎻</div>
-                  <div class="ename">PocoBallao</div>
-                  <div class="evalue" style="color:var(--amarillo)">8</div>
-                </div>
-                <div class="especial-row">
-                  <div class="epos p2">2</div>
-                  <div class="eavatar">🌵</div>
-                  <div class="ename">DirectoAlArco</div>
-                  <div class="evalue">10</div>
-                </div>
-                <div class="especial-row">
-                  <div class="epos p3">3</div>
-                  <div class="eavatar">🏔️</div>
-                  <div class="ename">FrioYDirecho</div>
-                  <div class="evalue">11</div>
-                </div>
+              <div class="especial-podio" style="display:flex;align-items:center;justify-content:center;padding:20px 0;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;text-align:center;line-height:1.6">
+                🏆<br>Top 3 disponible<br>desde el 11 de junio
               </div>
               <div class="especial-tu-pos">
-                <div class="tu-pos-txt">Tu posición: <strong>#55</strong> de 187</div>
+                <div class="tu-pos-txt">Tu posición: <strong>—</strong></div>
                 <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--amarillo);margin-top:5px">🏆 Premio: $200.000 COP efectivo</div>
                 <button onclick="abrirRankingEspecial('mechacorta')" style="width:100%;margin-top:8px;background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:1px;padding:7px;border-radius:8px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;" onmouseover="this.style.borderColor='#8b5cf6';this.style.color='#8b5cf6'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">Ver ranking completo →</button>
               </div>
@@ -1700,52 +1626,10 @@
   };
   window.RANKING_CONFIG = RANKING_CONFIG;
 
-  // Datos mock — en producción vendrán de Supabase
-  function generarJugadoresMock(n) {
-    const emojis = ['😎','🦁','🔥','⭐','🐺','🦊','🐉','🎯','💪','🌟','🦅','🐯','🏆','⚡','🎪','🌙','🦄','🐻','🦋','🌊'];
-    const nombres = ['ElMaestro99','TigreSamperio','Crack2026','PastorFubol','GolazoRex','LaReina01','Sangre2026','Bestia88','ChapaKing','CornerKing','PorElAngulo','TiroDeEsquina','DefensaTotal','MuroFelipe','PrecisionFria','AngelLuisa','Caballero11','SuaveSiempre','PocoBallao','DirectoArco','FrioYDirecto','ElProfe77','RoscaChamp','MundialFC','GolesYMas','TarjetaRoja','CincoEstrellas','ElBarco22','SinPerdón','MejorDelMundo','Aguila2026','NeymarFan','MamíloVio','Campeón01','TiburónFC','JugadorX','ElColombiano','DelanteroTop','LaMaquina','GuardadoFan'];
-    return Array.from({length: n}, (_, i) => ({
-      pos: i + 1,
-      nombre: nombres[i % nombres.length] + (i >= nombres.length ? '_'+Math.floor(i/nombres.length) : ''),
-      emoji: emojis[i % emojis.length],
-      valor: Math.max(1, 50 - i + Math.floor(Math.random()*3)),
-      esTu: i === 46,
-    }));
-  }
-
   var rankingModalActual = null;
   var rankingPagina = 1;
   const POR_PAGINA = 25;
   var rankingDatos = [];
-
-  function abrirRankingPrincipal() {
-    rankingModalActual = '__principal__';
-    rankingDatos = generarJugadoresMock(window.totalInscritos || 187);
-    rankingPagina = 1;
-    const tuPos = rankingDatos.findIndex(r => r.esTu) + 1;
-    mostrarModalRanking({
-      titulo: '🏅 Ranking Principal — L/E/V',
-      subtitulo: (window.totalInscritos || 187) + ' participantes · Aciertos totales',
-      premio: 'iPhone 17 Pro Max / Bose S1 Pro / PS5 / AirPods Pro',
-      color: 'var(--amarillo)',
-      tuPosicion: tuPos,
-    });
-  }
-
-  function abrirRankingEspecial(cat) {
-    rankingModalActual = cat;
-    rankingDatos = generarJugadoresMock(window.totalInscritos || 187);
-    rankingPagina = 1;
-    const cfg = RANKING_CONFIG[cat];
-    const tuPos = rankingDatos.findIndex(r => r.esTu) + 1;
-    mostrarModalRanking({
-      titulo: cfg.titulo,
-      subtitulo: cfg.subtitulo,
-      premio: cfg.premio,
-      color: cfg.color,
-      tuPosicion: tuPos,
-    });
-  }
 
   function mostrarModalRanking(cfg) {
     const modal = document.getElementById('rankingModal');
@@ -1825,6 +1709,22 @@
     document.getElementById('rankingModal').style.display = 'none';
   }
 
+  // ── Modo Día/Noche ────────────────────────────────────────────────────────
+  function toggleTema() {
+    const esDia = document.body.classList.toggle('dia');
+    document.getElementById('btnTema').textContent = esDia ? '☀️' : '🌙';
+    localStorage.setItem('rosca-tema', esDia ? 'dia' : 'noche');
+  }
+  // Aplicar tema guardado al cargar
+  (function() {
+    const t = localStorage.getItem('rosca-tema');
+    if (t === 'dia') {
+      document.body.classList.add('dia');
+      const btn = document.getElementById('btnTema');
+      if (btn) btn.textContent = '☀️';
+    }
+  })();
+
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') cerrarRankingModal();
   });
@@ -1899,20 +1799,20 @@
 
     if (error || !rows || rows.length === 0) {
       // Sin datos reales → usar usuarios registrados alfabéticamente con 0 pts
-      rankingDatos = window._usuariosRanking || [];
-      if (!rankingDatos.length) {
+      window.rankingDatos = window._usuariosRanking || [];
+      if (!window.rankingDatos.length) {
         document.getElementById('rmTabla').innerHTML =
           '<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);font-family:\'Barlow\',sans-serif;font-size:14px">🏆 Las clasificaciones estarán disponibles<br>desde el 11 de junio de 2026</td></tr>';
         return;
       }
-      rankingPagina = 1;
-      rankingModalActual = key;
+      window.rankingPagina = 1;
+      window.rankingModalActual = key;
       renderTablaRanking(cfg);
       return;
     }
 
     // Transformar a formato compatible con renderTablaRanking
-    rankingDatos = rows.map((r, i) => ({
+    window.rankingDatos = rows.map((r, i) => ({
       pos:    i + 1,
       nombre: r.usuarios?.nombre || ('Jugador #' + (i + 1)),
       emoji:  EMOJIS[i % EMOJIS.length],
@@ -1920,8 +1820,8 @@
       esTu:   r.usuario_id === user?.id,
     }));
 
-    rankingPagina = 1;
-    rankingModalActual = key;
+    window.rankingPagina = 1;
+    window.rankingModalActual = key;
     renderTablaRanking(cfg);
   }
 

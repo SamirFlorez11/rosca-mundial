@@ -536,6 +536,24 @@
       <strong style="color:var(--amarillo)">📋 Sobre las listas de jugadores y equipos:</strong><br>
       Los 48 equipos del Mundial ya están disponibles. Las <strong style="color:#fff">prelistas de jugadores (~40-55 por selección)</strong> se cargan a partir del <strong style="color:#fff">11 de mayo de 2026</strong>, cuando salgan los llamados preliminares. Las listas <strong style="color:#fff">definitivas de 23 jugadores</strong> salen el <strong style="color:#fff">26 de mayo</strong>. Hasta entonces, El Killer usa las prelistas. <strong style="color:#fff">Fuente: Sportmonks (Season ID 26618)</strong>.
     </div>
+
+    <!-- Botón PDF (deshabilitado hasta el cierre de picks) -->
+    <div style="max-width:1200px;margin:0 16px 24px;text-align:center">
+      <button
+        id="btnGenerarPDF"
+        onclick="solicitarPDF()"
+        title="Esta opción estará disponible 30 minutos antes del inicio del partido inicial"
+        style="background:var(--card2);border:1px solid var(--border);color:var(--muted);
+               font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;
+               letter-spacing:1px;padding:11px 28px;border-radius:10px;cursor:not-allowed;
+               opacity:0.45;text-transform:uppercase;width:100%;max-width:400px;"
+        disabled>
+        📄 GENERAR PDF DE MIS PICKS
+      </button>
+      <div style="font-family:'Barlow',sans-serif;font-size:11px;color:var(--muted);margin-top:6px">
+        Disponible a partir del cierre (11 jun, 5:30 PM)
+      </div>
+    </div>
   </div><!-- /vista-menu -->
 
   <!-- ===== VISTA PICKS (split panel) ===== -->
@@ -625,8 +643,7 @@
   <div class="modal">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--amarillo);margin-bottom:8px">✅ CONFIRMAR PICKS</div>
     <div id="modalConfirmarCuerpo" style="font-family:'Barlow',sans-serif;font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px">
-      Una vez confirmados, recibirás automáticamente un <strong style="color:var(--text)">PDF con todas tus selecciones</strong> por correo electrónico.<br><br>
-      Puedes <strong style="color:var(--amarillo)">modificar tus picks en cualquier momento</strong> antes del cierre (11 jun, 5:30 PM). Al volver a confirmar se genera un nuevo PDF.
+      Puedes <strong style="color:var(--amarillo)">modificar tus picks en cualquier momento</strong> antes del cierre (11 jun, 5:30 PM).
     </div>
     <div style="background:rgba(252,209,22,0.07);border:1px solid rgba(252,209,22,0.2);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-family:'Barlow',sans-serif;font-size:13px;color:#a0b4cc;line-height:1.6">
       ⚠️ Si un jugador de El Killer es desconvocado antes del inicio del torneo, tu pick vuelve a "Incompleto" y deberás reemplazarlo antes del cierre.
@@ -1587,7 +1604,6 @@ function abrirModalConfirmar() {
     return;
   }
   document.getElementById('modalConfirmarCuerpo').innerHTML = `Estás por confirmar tus picks de <strong style="color:var(--amarillo)">${nombre}</strong>.<br><br>
-    Recibirás un <strong style="color:var(--text)">PDF resumen</strong> por correo al confirmar el total de tus picks.<br><br>
     Puedes <strong style="color:var(--amarillo)">modificar cuando quieras</strong> antes del cierre (11 jun, 5:30 PM).`;
   document.getElementById('modalConfirmar').classList.add('open');
 }
@@ -1596,6 +1612,33 @@ function esCategoriaCompleta(cat) {
   if (cat === 'lev') return PARTIDOS_LEV.filter(p => !p.bloqueado && !STATE.lev[p.id]).length === 0;
   return STATE[cat].length >= CAT_CONFIG[cat].max;
 }
+
+// ── PDF de picks ──────────────────────────────────────────────────────────
+const DEADLINE_PICKS = new Date('2026-06-11T17:30:00-05:00'); // 5:30 PM Colombia (UTC-5)
+function solicitarPDF() {
+  if (new Date() < DEADLINE_PICKS) return; // botón deshabilitado, no hace nada
+  mostrarAlertaError('Función de PDF en construcción. Estará disponible próximamente.');
+}
+// Activar el botón después del deadline
+(function() {
+  function verificarDeadlinePDF() {
+    const btn = document.getElementById('btnGenerarPDF');
+    if (!btn) return;
+    if (new Date() >= DEADLINE_PICKS) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+      btn.style.background = 'linear-gradient(135deg, var(--azul), #1a4fa8)';
+      btn.style.color = '#fff';
+      btn.style.borderColor = 'transparent';
+      btn.removeAttribute('title');
+      btn.title = 'Genera y descarga el PDF con todos tus picks';
+      clearInterval(pdfTimer);
+    }
+  }
+  const pdfTimer = setInterval(verificarDeadlinePDF, 30000);
+  verificarDeadlinePDF();
+})();
 
 function cerrarSmNote() {
   document.getElementById('smNote').style.display = 'none';
