@@ -307,7 +307,7 @@
   /* LAYOUT PRINCIPAL */
   .grid-main {
     display: grid;
-    grid-template-columns: 1fr 380px;
+    grid-template-columns: 1fr;
     gap: 20px;
     align-items: start;
   }
@@ -491,7 +491,7 @@
   /* RANKINGS ESPECIALES - GRID */
   .especiales-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 14px;
   }
 
@@ -881,10 +881,15 @@
   }
 
   /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .especiales-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .especiales-grid { grid-template-columns: 1fr; }
+  }
   @media (max-width: 1100px) {
     .grid-main { grid-template-columns: 1fr; }
     .stats-row { grid-template-columns: repeat(2, 1fr); }
-    .especiales-grid { grid-template-columns: 1fr; }
     .ranking-row, .rank-header-row {
       grid-template-columns: 40px 1fr 80px;
     }
@@ -898,6 +903,35 @@
   .c-niña { color: var(--amarillo); }
   .c-banderin { color: var(--amarillo); }
   .c-mechacorta { color: var(--amarillo); }
+
+  /* TOAST */
+  #toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1a2e4a;
+    border: 1px solid rgba(252,209,22,0.4);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    padding: 14px 22px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    max-width: 420px;
+    text-align: center;
+  }
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 </style>
 </head>
 <body>
@@ -1000,7 +1034,7 @@
     <div class="card-header">
       <div class="card-title">🏅 Ranking Principal — Local / Empate / Visitante</div>
       <div style="display:flex;align-items:center;gap:10px">
-        <div class="card-badge">187 jugadores</div>
+        <div class="card-badge" id="badge-jugadores">187 jugadores</div>
         <button class="btn-ver-mas" style="padding:6px 16px;font-size:12px" onclick="abrirRankingPrincipal()">Ver ranking completo</button>
       </div>
     </div>
@@ -1105,7 +1139,7 @@
   <div class="stats-row">
     <div class="stat-card blue">
       <div class="stat-icon">👥</div>
-      <div class="stat-value">187<span style="font-size:18px;color:var(--muted)">/400</span></div>
+      <div class="stat-value"><span id="stat-inscritos">187</span><span style="font-size:18px;color:var(--muted)">/400</span></div>
       <div class="stat-label">Inscritos confirmados</div>
     </div>
     <div class="stat-card green">
@@ -1120,20 +1154,14 @@
     </div>
   </div>
 
-  <!-- GRID PRINCIPAL -->
-  <div class="grid-main">
-
-    <!-- COLUMNA IZQUIERDA -->
-    <div class="col-left">
-
-      <!-- RANKINGS ESPECIALES -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">🎯 Rankings Especiales</div>
-          <div class="card-badge">6 categorías</div>
-        </div>
-        <div style="padding: 16px;">
-          <div class="especiales-grid">
+  <!-- RANKINGS ESPECIALES — ANCHO COMPLETO -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <div class="card-title">🎯 Rankings Especiales</div>
+      <div class="card-badge">6 categorías</div>
+    </div>
+    <div style="padding: 16px;">
+      <div class="especiales-grid">
 
             <!-- EL KILLER -->
             <div class="especial-card">
@@ -1344,13 +1372,13 @@
               </div>
             
 
-          </div>
-        </div>
       </div>
-
     </div>
+  </div>
 
-    <!-- COLUMNA DERECHA -->
+  <!-- GRID PRINCIPAL -->
+  <div class="grid-main">
+
     <div class="col-right">
 
       <!-- MI POSICIÓN -->
@@ -1387,7 +1415,7 @@
         <div class="inscritos-bar">
           <div class="inscritos-top">
             <div class="inscritos-label">Cupos ocupados</div>
-            <div class="inscritos-num">187 / 400</div>
+            <div class="inscritos-num" id="inscritos-num">187 / 400</div>
           </div>
           <div class="progress-track">
             <div class="progress-fill"></div>
@@ -1569,6 +1597,15 @@
     document.getElementById('alias-error').style.display = 'none';
   }
 
+  let _toastTimer = null;
+  function showToast(html, duration = 3500) {
+    const t = document.getElementById('toast');
+    t.innerHTML = html;
+    t.classList.add('show');
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => t.classList.remove('show'), duration);
+  }
+
   function selectTipo(tipo) {
     tipoSeleccionado = tipo;
     const optReal = document.getElementById('opt-real');
@@ -1639,7 +1676,7 @@
     }
     // Aquí iría la llamada a Supabase para guardar el alias
     closeAliasModal();
-    alert('✅ Nombre actualizado: ' + val + '\n\nAparecarece en todos los rankings. Visible para todos los participantes.');
+    showToast('✅ Nombre actualizado: <strong>' + val + '</strong><br><span style="font-size:12px;color:var(--muted)">Visible para todos los participantes</span>');
   }
 
   // ===== MODALES RANKING COMPLETO =====
@@ -1672,12 +1709,12 @@
 
   function abrirRankingPrincipal() {
     rankingModalActual = '__principal__';
-    rankingDatos = generarJugadoresMock(187);
+    rankingDatos = generarJugadoresMock(window.totalInscritos || 187);
     rankingPagina = 1;
     const tuPos = rankingDatos.findIndex(r => r.esTu) + 1;
     mostrarModalRanking({
       titulo: '🏅 Ranking Principal — L/E/V',
-      subtitulo: '187 participantes · Aciertos totales',
+      subtitulo: (window.totalInscritos || 187) + ' participantes · Aciertos totales',
       premio: 'iPhone 17 Pro Max / Bose S1 Pro / PS5 / AirPods Pro',
       color: 'var(--amarillo)',
       tuPosicion: tuPos,
@@ -1686,7 +1723,7 @@
 
   function abrirRankingEspecial(cat) {
     rankingModalActual = cat;
-    rankingDatos = generarJugadoresMock(187);
+    rankingDatos = generarJugadoresMock(window.totalInscritos || 187);
     rankingPagina = 1;
     const cfg = RANKING_CONFIG[cat];
     const tuPos = rankingDatos.findIndex(r => r.esTu) + 1;
@@ -1782,5 +1819,39 @@
   });
 
 </script>
+
+<script type="module">
+  import { supabase } from '/js/supabase.js';
+
+  async function cargarInscritos() {
+    const { count, error } = await supabase
+      .from('usuarios')
+      .select('*', { count: 'exact', head: true })
+      .eq('activo', true);
+
+    if (error || count === null) return;
+
+    // Actualizar todos los elementos que muestran el total
+    const el = (id) => document.getElementById(id);
+    if (el('badge-jugadores'))  el('badge-jugadores').textContent = count + ' jugadores';
+    if (el('stat-inscritos'))   el('stat-inscritos').textContent = count;
+    if (el('inscritos-num'))    el('inscritos-num').textContent = count + ' / 400';
+
+    // Barra de progreso
+    const fill = document.querySelector('.progress-fill');
+    if (fill) fill.style.width = Math.min((count / 400) * 100, 100) + '%';
+
+    // "de X" en cada ranking especial y principal
+    document.querySelectorAll('.tu-pos-txt').forEach(el => {
+      el.innerHTML = el.innerHTML.replace(/de \d+/, 'de ' + count);
+    });
+
+    // Total en modales de ranking (generarJugadoresMock usa window.totalInscritos)
+    window.totalInscritos = count;
+  }
+
+  cargarInscritos();
+</script>
+<div id="toast"></div>
 </body>
 </html>
