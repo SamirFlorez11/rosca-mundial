@@ -157,19 +157,15 @@
   .cat-arrow { font-size: 18px; color: var(--muted); flex-shrink: 0; transition: transform 0.2s; }
   .cat-row:hover .cat-arrow { transform: translateX(4px); color: var(--amarillo); }
 
-  /* ===== VISTA PICKS (split panel) ===== */
+  /* ===== VISTA PICKS (full width) ===== */
   .picks-split {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    height: calc(100vh - 100px);
-    overflow: hidden;
+    display: block;
   }
 
-  /* Panel Izquierdo — Mis Picks de la Categoría */
+  /* Panel Superior — Mis Picks de la Categoría */
   .panel-left {
-    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
     display: flex; flex-direction: column;
-    overflow: hidden;
   }
 
   .panel-header {
@@ -203,7 +199,7 @@
 
   /* Lista de picks seleccionados */
   .picks-selected-list {
-    flex: 1; overflow-y: auto; padding: 8px;
+    overflow-y: auto; padding: 8px; max-height: 300px;
   }
 
   .pick-item {
@@ -234,7 +230,6 @@
   /* Panel Derecho — Buscador */
   .panel-right {
     display: flex; flex-direction: column;
-    overflow: hidden;
     background: var(--panel);
   }
 
@@ -273,7 +268,7 @@
 
   /* Lista de opciones disponibles */
   .options-list {
-    flex: 1; overflow-y: auto; padding: 8px;
+    padding: 8px;
   }
 
   .option-item {
@@ -339,9 +334,25 @@
     background: rgba(0,48,135,0.15); border: 1px solid rgba(0,48,135,0.4);
     border-radius: 10px;
     font-family: 'Barlow', sans-serif; font-size: 12px; line-height: 1.6; color: #a0b4cc;
-    flex-shrink: 0;
+    flex-shrink: 0; position: relative;
   }
   .sm-note strong { color: var(--amarillo); }
+
+  /* Cerrar nota */
+  .sm-note-close {
+    position: absolute; top: 8px; right: 8px;
+    background: none; border: none; color: var(--muted);
+    font-size: 14px; cursor: pointer; padding: 2px 6px;
+    border-radius: 4px; transition: color 0.15s; line-height: 1;
+  }
+  .sm-note-close:hover { color: var(--text); }
+
+  /* Scroll reveal */
+  .opt-reveal {
+    opacity: 0; transform: translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .opt-reveal.visible { opacity: 1; transform: translateY(0); }
 
   /* Empty state */
   .empty-panel {
@@ -363,9 +374,7 @@
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
   @media (max-width: 768px) {
-    .picks-split { grid-template-columns: 1fr; height: auto; }
-    .panel-left { max-height: 50vh; }
-    .panel-right { min-height: 50vh; }
+    .picks-selected-list { max-height: 200px; }
   }
 </style>
 </head>
@@ -578,6 +587,7 @@
 
         <!-- Nota Sportmonks (solo Killer) -->
         <div class="sm-note" id="smNote" style="display:none">
+          <button class="sm-note-close" onclick="cerrarSmNote()" title="Cerrar">✕</button>
           <strong>📡 Fuente de datos: Sportmonks</strong><br>
           Las prelistas (~40-55 jugadores/selección) se cargan el <strong>11 de mayo</strong>. Las listas definitivas de 23 el <strong>26 de mayo</strong>. Si un jugador es desconvocado, tu pick vuelve a "Incompleto" y deberás reemplazarlo antes del cierre. Máx. <strong>3 jugadores del mismo equipo</strong>.
         </div>
@@ -1144,19 +1154,21 @@ function abrirCategoria(cat) {
   document.getElementById('btnModificar').style.display = cat !== 'lev' ? 'inline-block' : 'none';
   document.getElementById('btnVerPicks').style.display = 'inline-block';
 
+  // Siempre ocultar filterTabs (ahora se usan los grupoTabsWrap para todo)
+  document.getElementById('filterTabs').style.display = 'none';
+  filtroEquipo = null;
+
   if (cat === 'lev') {
-    document.getElementById('grupoTabsWrap').style.display = 'flex';
     document.getElementById('panelTitulo').textContent = '⚽ Predicciones L/E/V';
     document.getElementById('panelSub').textContent = 'Selecciona Local (L), Empate (E) o Visitante (V) para cada partido. Gana 1 punto por acierto.';
-    document.getElementById('searchTitle').textContent = 'Grupos y partidos';
-    document.getElementById('filterTabs').style.display = 'flex';
+    document.getElementById('searchTitle').textContent = 'Buscar equipo...';
+    document.getElementById('filterTabs').style.display = 'none';
     document.getElementById('smNote').style.display = 'none';
     document.getElementById('searchInput').placeholder = 'Buscar equipo en grupos...';
-    renderGrupoTabs();
-    renderPartidosGrupo(grupoActivo);
+    renderTabsCategoria('lev');
+    renderPartidosTodos();
     renderPicksLEV();
   } else {
-    document.getElementById('grupoTabsWrap').style.display = 'none';
     const cfg = CAT_CONFIG[cat];
     const titulos = {
       killer:    '⚔️ El Killer — 15 Jugadores',
@@ -1179,15 +1191,8 @@ function abrirCategoria(cat) {
     document.getElementById('searchTitle').textContent = cfg.tipo === 'jugadores' ? 'Buscar jugadores' : 'Buscar equipos';
     document.getElementById('searchInput').placeholder = cfg.tipo === 'jugadores' ? 'Nombre del jugador o selección...' : 'Nombre de la selección...';
     document.getElementById('smNote').style.display = cat === 'killer' ? 'block' : 'none';
-    // Filtros por equipo solo para killer
-    if (cat === 'killer') {
-      document.getElementById('filterTabs').style.display = 'flex';
-      renderFiltrosEquipo();
-    } else {
-      document.getElementById('filterTabs').style.display = 'none';
-    }
+    renderTabsCategoria(cat);
     document.getElementById('searchInput').value = '';
-    filtroEquipo = null;
     renderPicksCategoria(cat);
     renderOpcionesCategoria(cat, '');
   }
@@ -1272,108 +1277,134 @@ function setBadge(id, n, max) {
 // =====================
 // RENDER LEV
 // =====================
-function renderGrupoTabs() {
-  const GRUPOS_LEV = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+// Tabs de grupo/equipo para TODAS las categorías
+function renderTabsCategoria(cat) {
+  const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
   const wrap = document.getElementById('grupoTabsWrap');
-  const done = {};
-  GRUPOS_LEV.forEach(g => {
-    const ps = PARTIDOS_LEV.filter(p => p.grupo === g);
-    done[g] = ps.every(p => STATE.lev[p.id]);
-  });
-  wrap.innerHTML = GRUPOS_LEV.map(g =>
-    `<button class="gtab ${g === grupoActivo ? 'active' : ''} ${done[g] ? 'done' : ''}" onclick="cambiarGrupo('${g}')">${g}</button>`
-  ).join('') + `<button class="gtab ${grupoActivo==='ELIM'?'active':''}" onclick="cambiarGrupo('ELIM')" style="opacity:0.5;cursor:not-allowed" title="Se desbloquea al terminar la fase de grupos">🔒 Elim.</button>`;
+  wrap.style.display = 'flex';
+  if (cat === 'lev') {
+    const done = {};
+    GRUPOS.forEach(g => {
+      const ps = PARTIDOS_LEV.filter(p => p.grupo === g);
+      done[g] = ps.length > 0 && ps.every(p => STATE.lev[p.id]);
+    });
+    wrap.innerHTML = GRUPOS.map(g =>
+      `<button class="gtab ${done[g] ? 'done' : ''}" onclick="scrollToGrupoLEV('${g}')">${g}</button>`
+    ).join('') + `<button class="gtab" style="opacity:0.5;cursor:not-allowed" title="Se desbloquea al terminar la fase de grupos">🔒 Elim.</button>`;
+  } else {
+    wrap.innerHTML = `<button class="gtab ${!filtroEquipo?'active':''}" onclick="setFiltroEquipo(null)">Todos</button>` +
+      GRUPOS.map(g => `<button class="gtab ${filtroEquipo===g?'active':''}" onclick="setFiltroEquipo('${g}')">Gpo ${g}</button>`).join('');
+  }
 }
 
-function cambiarGrupo(g) {
-  if (g === 'ELIM') return;
-  grupoActivo = g;
-  renderGrupoTabs();
-  renderPartidosGrupo(g);
+function scrollToGrupoLEV(g) {
+  const el = document.getElementById('grupo-sec-' + g);
+  if (!el) return;
+  const offset = 150;
+  const top = el.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo({ top, behavior: 'smooth' });
 }
 
-function renderPartidosGrupo(g) {
-  const ps = PARTIDOS_LEV.filter(p => p.grupo === g);
+// Renderiza TODOS los grupos de LEV en el optionsList
+function renderPartidosTodos() {
+  const GRUPOS_LEV = ['A','B','C','D','E','F','G','H','I','J','K','L'];
   const lista = document.getElementById('optionsList');
-  if (!ps.length) { lista.innerHTML = '<div class="empty-panel"><div class="empty-icon">🔒</div><div class="empty-text">Fase eliminatoria.<br>Se desbloquea cuando termine la fase de grupos.</div></div>'; return; }
-  lista.innerHTML = `<div class="grupo-header">GRUPO ${g}</div>` + ps.map(p => {
-    const sel = STATE.lev[p.id];
-    return `<div class="partido-row">
-      <div class="partido-teams">
-        ${p.local.flag} ${p.local.nombre} <span class="partido-vs">vs</span> ${p.visit.flag} ${p.visit.nombre}
-      </div>
-      <div class="partido-date">${p.fecha}</div>
-      <div class="lev-btns">
-        <button class="lev-btn ${sel==='L'?'sel-L':''}" onclick="pickLEV('${p.id}','L')">L</button>
-        <button class="lev-btn ${sel==='E'?'sel-E':''}" onclick="pickLEV('${p.id}','E')">E</button>
-        <button class="lev-btn ${sel==='V'?'sel-V':''}" onclick="pickLEV('${p.id}','V')">V</button>
-      </div>
-    </div>`;
-  }).join('');
+  let html = '';
+  GRUPOS_LEV.forEach((g, idx) => {
+    const ps = PARTIDOS_LEV.filter(p => p.grupo === g);
+    if (!ps.length) return;
+    html += `<div class="grupo-header opt-reveal" id="grupo-sec-${g}" style="scroll-margin-top:150px;${idx>0?'margin-top:12px':''}">GRUPO ${g}</div>`;
+    ps.forEach(p => {
+      const sel = STATE.lev[p.id];
+      html += `<div class="partido-row opt-reveal">
+        <div class="partido-teams">${p.local.flag} ${p.local.nombre}<span class="partido-vs"> vs </span>${p.visit.flag} ${p.visit.nombre}</div>
+        <div class="partido-date">${p.fecha}</div>
+        <div class="lev-btns">
+          <button class="lev-btn ${sel==='L'?'sel-L':''}" onclick="pickLEV('${p.id}','L')">L</button>
+          <button class="lev-btn ${sel==='E'?'sel-E':''}" onclick="pickLEV('${p.id}','E')">E</button>
+          <button class="lev-btn ${sel==='V'?'sel-V':''}" onclick="pickLEV('${p.id}','V')">V</button>
+        </div>
+      </div>`;
+    });
+  });
+  lista.innerHTML = html;
+  setupScrollReveal();
+}
+
+function setupScrollReveal() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.01, rootMargin: '0px 0px 80px 0px' });
+  document.querySelectorAll('.opt-reveal:not(.visible)').forEach(el => obs.observe(el));
 }
 
 function pickLEV(id, val) {
-  STATE.lev[id] = val;
-  renderPartidosGrupo(grupoActivo);
+  if (STATE.lev[id] === val) delete STATE.lev[id]; else STATE.lev[id] = val;
+  renderPartidosTodos();
   renderPicksLEV();
-  renderGrupoTabs();
+  renderTabsCategoria('lev');
   actualizarContador();
 }
 
 function renderPicksLEV() {
-  const ps = PARTIDOS_LEV.filter(p => p.grupo === grupoActivo && STATE.lev[p.id]);
+  const GRUPOS_LEV = ['A','B','C','D','E','F','G','H','I','J','K','L'];
   const lista = document.getElementById('picksSelectedList');
-  if (!ps.length) {
-    lista.innerHTML = '<div class="empty-panel"><div class="empty-icon">⚽</div><div class="empty-text">Aún no has elegido resultados<br>para el Grupo '+grupoActivo+'.<br>Usa los botones L/E/V →</div></div>';
+  const allPicks = PARTIDOS_LEV.filter(p => STATE.lev[p.id]);
+  if (!allPicks.length) {
+    lista.innerHTML = '<div class="empty-panel"><div class="empty-icon">⚽</div><div class="empty-text">Aún no has elegido resultados.<br>Usa los botones L / E / V →</div></div>';
     return;
   }
-  lista.innerHTML = ps.map(p => {
-    const s = STATE.lev[p.id];
-    const col = s==='L'?'#85B7EB':s==='E'?'#FAC775':'#F0997B';
-    return `<div class="pick-item filled">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${col};width:28px;text-align:center;flex-shrink:0">${s}</div>
-      <div style="font-size:13px;flex-shrink:0">${p.local.flag}${p.visit.flag}</div>
-      <div style="flex:1"><div class="pick-name" style="font-size:12px">${p.local.nombre} vs ${p.visit.nombre}</div></div>
-      <button class="btn-remove" onclick="quitarLEV('${p.id}')">✕</button>
-    </div>`;
-  }).join('');
+  let html = '';
+  GRUPOS_LEV.forEach(g => {
+    const ps = allPicks.filter(p => p.grupo === g);
+    if (!ps.length) return;
+    html += `<div style="padding:4px 8px 2px;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1.5px;color:var(--muted)">GRUPO ${g}</div>`;
+    ps.forEach(p => {
+      const s = STATE.lev[p.id];
+      const col = s==='L'?'#85B7EB':s==='E'?'#FAC775':'#F0997B';
+      html += `<div class="pick-item filled">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${col};width:28px;text-align:center;flex-shrink:0">${s}</div>
+        <div style="font-size:13px;flex-shrink:0">${p.local.flag}${p.visit.flag}</div>
+        <div style="flex:1"><div class="pick-name" style="font-size:12px">${p.local.nombre} vs ${p.visit.nombre}</div></div>
+        <button class="btn-remove" onclick="quitarLEV('${p.id}')">✕</button>
+      </div>`;
+    });
+  });
+  lista.innerHTML = html;
 }
 
 function quitarLEV(id) {
   delete STATE.lev[id];
-  renderPartidosGrupo(grupoActivo);
+  renderPartidosTodos();
   renderPicksLEV();
-  renderGrupoTabs();
+  renderTabsCategoria('lev');
   actualizarContador();
 }
 
 // =====================
 // RENDER CATEGORÍAS EQUIPOS/JUGADORES
 // =====================
-function renderFiltrosEquipo() {
-  const grupos = [...new Set(EQUIPOS.map(e => e.grupo))].sort();
-  const tabs = document.getElementById('filterTabs');
-  tabs.innerHTML = `<button class="ftab ${!filtroEquipo?'active':''}" onclick="setFiltroEquipo(null)">Todos</button>` +
-    grupos.map(g => `<button class="ftab ${filtroEquipo===g?'active':''}" onclick="setFiltroEquipo('${g}')">Gpo ${g}</button>`).join('');
-}
-
 function setFiltroEquipo(g) {
   filtroEquipo = g;
-  renderFiltrosEquipo();
+  renderTabsCategoria(catActiva);
   renderOpcionesCategoria(catActiva, document.getElementById('searchInput').value);
 }
 
 function filtrarOpciones(q) {
-  renderOpcionesCategoria(catActiva, q);
   if (catActiva === 'lev') {
-    // Filtrar equipos en tabs
     const busqueda = q.toLowerCase();
-    const equiposEncontrados = EQUIPOS.filter(e => e.nombre.toLowerCase().includes(busqueda));
-    const gruposConEquipo = [...new Set(equiposEncontrados.map(e => e.grupo))];
-    // Resaltar tabs — simplificado, sólo cambiar tab activo al primer grupo que coincida
-    if (busqueda && gruposConEquipo.length) {
-      cambiarGrupo(gruposConEquipo[0]);
+    if (busqueda) {
+      const eqs = EQUIPOS.filter(e => e.nombre.toLowerCase().includes(busqueda));
+      const grupos = [...new Set(eqs.map(e => e.grupo))];
+      if (grupos.length) scrollToGrupoLEV(grupos[0]);
     }
+  } else {
+    renderOpcionesCategoria(catActiva, q);
   }
 }
 
@@ -1438,7 +1469,7 @@ function renderOpcionesCategoria(cat, q) {
         const lleno = STATE[cat].length >= 15 && !sel;
         const maxEq = (contPorEquipo[eqId]||0) >= 3 && !sel;
         const dis = (lleno || maxEq) && !sel;
-        html += `<div class="option-item ${sel?'selected':''} ${dis?'disabled':''}" onclick="${!dis&&!sel?`agregarPick('${cat}','${j.id}')`:sel?`quitarPick('${cat}','${j.id}')`:''}"  >
+        html += `<div class="option-item opt-reveal ${sel?'selected':''} ${dis?'disabled':''}" onclick="${!dis&&!sel?`agregarPick('${cat}','${j.id}')`:sel?`quitarPick('${cat}','${j.id}')`:''}"  >
           <div class="opt-flag">${j.flag}</div>
           <div style="flex:1"><div class="opt-name">${j.nombre}</div><div class="opt-detail">${j.pos}</div></div>
           ${sel ? '<span class="opt-check">✓</span>' : !dis ? '<span class="opt-add">+</span>' : ''}
@@ -1446,10 +1477,15 @@ function renderOpcionesCategoria(cat, q) {
       });
     });
     lista.innerHTML = html || '<div class="empty-panel"><div class="empty-icon">🔍</div><div class="empty-text">Sin resultados para "'+busq+'"</div></div>';
+    setupScrollReveal();
 
   } else {
     // Equipos
-    items = EQUIPOS.filter(e => !busq || e.nombre.toLowerCase().includes(busq));
+    items = EQUIPOS.filter(e => {
+      const matchQ = !busq || e.nombre.toLowerCase().includes(busq);
+      const matchGrupo = !filtroEquipo || e.grupo === filtroEquipo;
+      return matchQ && matchGrupo;
+    });
     // Agrupar por grupo
     const porGrupo = {};
     items.forEach(e => { if (!porGrupo[e.grupo]) porGrupo[e.grupo] = []; porGrupo[e.grupo].push(e); });
@@ -1460,7 +1496,7 @@ function renderOpcionesCategoria(cat, q) {
         const sel = STATE[cat].includes(e.id);
         const lleno = STATE[cat].length >= cfg.max && !sel;
         const dis = lleno && !sel;
-        html += `<div class="option-item ${sel?'selected':''} ${dis?'disabled':''}" onclick="${!dis?`toggleEquipo('${cat}','${e.id}')`:''}"  >
+        html += `<div class="option-item opt-reveal ${sel?'selected':''} ${dis?'disabled':''}" onclick="${!dis?`toggleEquipo('${cat}','${e.id}')`:''}"  >
           <div class="opt-flag">${e.flag}</div>
           <div style="flex:1"><div class="opt-name">${e.nombre}</div><div class="opt-detail">Grupo ${e.grupo}</div></div>
           ${sel ? '<span class="opt-check">✓</span>' : !dis ? '<span class="opt-add">+</span>' : ''}
@@ -1468,6 +1504,7 @@ function renderOpcionesCategoria(cat, q) {
       });
     });
     lista.innerHTML = html || '<div class="empty-panel"><div class="empty-icon">🔍</div><div class="empty-text">Sin resultados</div></div>';
+    setupScrollReveal();
   }
 }
 
@@ -1517,10 +1554,10 @@ function cerrarModalLimpiar() {
 function ejecutarLimpiar() {
   cerrarModalLimpiar();
   if (catActiva === 'lev') {
-    PARTIDOS_LEV.filter(p => p.grupo === grupoActivo).forEach(p => delete STATE.lev[p.id]);
-    renderPartidosGrupo(grupoActivo);
+    PARTIDOS_LEV.forEach(p => delete STATE.lev[p.id]);
+    renderPartidosTodos();
     renderPicksLEV();
-    renderGrupoTabs();
+    renderTabsCategoria('lev');
   } else {
     STATE[catActiva] = [];
     renderPicksCategoria(catActiva);
@@ -1558,6 +1595,10 @@ function abrirModalConfirmar() {
 function esCategoriaCompleta(cat) {
   if (cat === 'lev') return PARTIDOS_LEV.filter(p => !p.bloqueado && !STATE.lev[p.id]).length === 0;
   return STATE[cat].length >= CAT_CONFIG[cat].max;
+}
+
+function cerrarSmNote() {
+  document.getElementById('smNote').style.display = 'none';
 }
 
 function mostrarAlertaError(msg) {
