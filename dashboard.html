@@ -1688,6 +1688,7 @@
     niña:      { titulo: '🎀 El Pie de Niña',subtitulo: '10 equipos · menos tarjetas',         premio: '$300.000 COP', color: 'var(--amarillo)' },
     mechacorta:{ titulo: '✂️ El Mechacorta', subtitulo: '10 equipos · menos corners',          premio: '$200.000 COP', color: 'var(--amarillo)' },
   };
+  window.RANKING_CONFIG = RANKING_CONFIG;
 
   // Datos mock — en producción vendrán de Supabase
   function generarJugadoresMock(n) {
@@ -1702,10 +1703,10 @@
     }));
   }
 
-  let rankingModalActual = null;
-  let rankingPagina = 1;
+  var rankingModalActual = null;
+  var rankingPagina = 1;
   const POR_PAGINA = 25;
-  let rankingDatos = [];
+  var rankingDatos = [];
 
   function abrirRankingPrincipal() {
     rankingModalActual = '__principal__';
@@ -1823,6 +1824,7 @@
 <script type="module">
   import { supabase } from '/js/supabase.js';
 
+  // ── Inscritos ──────────────────────────────────────────────────────────────
   async function cargarInscritos() {
     const { count, error } = await supabase
       .from('usuarios')
@@ -1831,24 +1833,99 @@
 
     if (error || count === null) return;
 
-    // Actualizar todos los elementos que muestran el total
     const el = (id) => document.getElementById(id);
     if (el('badge-jugadores'))  el('badge-jugadores').textContent = count + ' jugadores';
     if (el('stat-inscritos'))   el('stat-inscritos').textContent = count;
     if (el('inscritos-num'))    el('inscritos-num').textContent = count + ' / 400';
 
-    // Barra de progreso
     const fill = document.querySelector('.progress-fill');
     if (fill) fill.style.width = Math.min((count / 400) * 100, 100) + '%';
 
-    // "de X" en cada ranking especial y principal
     document.querySelectorAll('.tu-pos-txt').forEach(el => {
       el.innerHTML = el.innerHTML.replace(/de \d+/, 'de ' + count);
     });
 
-    // Total en modales de ranking (generarJugadoresMock usa window.totalInscritos)
     window.totalInscritos = count;
   }
+
+  // ── Rankings desde Supabase ────────────────────────────────────────────────
+  const TABLA_RANKING = {
+    '__principal__': 'ranking',
+    'killer':        'ranking_killer',
+    'carnicero':     'ranking_carnicero',
+    'banderin':      'ranking_banderin',
+    'virgen':        'ranking_virgen',
+    'niña':          'ranking_pie_de_nina',
+    'mechacorta':    'ranking_mechacorta',
+  };
+
+  const EMOJIS = ['😎','🦁','🔥','⭐','🐺','🦊','🐉','🎯','💪','🌟','🦅','🐯','🏆','⚡','🎪','🌙','🦄','🐻','🦋','🌊'];
+
+  async function abrirRankingDesdeSupabase(key, cfg) {
+    // Mostrar modal inmediatamente con loading
+    const modal = document.getElementById('rankingModal');
+    document.getElementById('rmTitulo').textContent = cfg.titulo;
+    document.getElementById('rmSubtitulo').textContent = cfg.subtitulo;
+    document.getElementById('rmPremio').textContent = '🏆 ' + cfg.premio;
+    document.getElementById('rmPremio').style.color = cfg.color || 'var(--amarillo)';
+    document.getElementById('rmTabla').innerHTML =
+      '<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);font-family:\'Barlow\',sans-serif">Cargando clasificación...</td></tr>';
+    document.getElementById('rmInfo').textContent = '';
+    document.getElementById('rmPagActual').textContent = '';
+    document.getElementById('rmBtnPrev').disabled = true;
+    document.getElementById('rmBtnNext').disabled = true;
+    document.getElementById('rmBtnIrPos').style.display = 'none';
+    modal.style.display = 'flex';
+
+    // Obtener usuario actual y datos del ranking
+    const [{ data: { user } }, { data: rows, error }] = await Promise.all([
+      supabase.auth.getUser(),
+      supabase
+        .from(TABLA_RANKING[key])
+        .select('usuario_id, puntos_total, usuarios(nombre)')
+        .order('puntos_total', { ascending: false })
+    ]);
+
+    if (error || !rows || rows.length === 0) {
+      document.getElementById('rmTabla').innerHTML =
+        '<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);font-family:\'Barlow\',sans-serif;font-size:14px">🏆 Las clasificaciones estarán disponibles<br>desde el 11 de junio de 2026</td></tr>';
+      return;
+    }
+
+    // Transformar a formato compatible con renderTablaRanking
+    rankingDatos = rows.map((r, i) => ({
+      pos:    i + 1,
+      nombre: r.usuarios?.nombre || ('Jugador #' + (i + 1)),
+      emoji:  EMOJIS[i % EMOJIS.length],
+      valor:  r.puntos_total || 0,
+      esTu:   r.usuario_id === user?.id,
+    }));
+
+    rankingPagina = 1;
+    rankingModalActual = key;
+    renderTablaRanking(cfg);
+  }
+
+  // Sobreescribir las funciones globales con versiones que usan Supabase
+  window.abrirRankingPrincipal = function() {
+    abrirRankingDesdeSupabase('__principal__', {
+      titulo:    '🏅 Ranking Principal — L/E/V',
+      subtitulo: (window.totalInscritos || '—') + ' participantes · Aciertos totales',
+      premio:    'iPhone 17 Pro Max / Bose S1 Pro / PS5 / AirPods Pro',
+      color:     'var(--amarillo)',
+    });
+  };
+
+  window.abrirRankingEspecial = function(cat) {
+    const cfg = window.RANKING_CONFIG?.[cat];
+    if (!cfg) return;
+    abrirRankingDesdeSupabase(cat, {
+      titulo:    cfg.titulo,
+      subtitulo: cfg.subtitulo,
+      premio:    cfg.premio,
+      color:     cfg.color,
+    });
+  };
 
   cargarInscritos();
 </script>
