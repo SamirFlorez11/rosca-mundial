@@ -1732,10 +1732,10 @@ import { supabase } from '/js/supabase.js';
 
 // ── Auth: redirigir si no está logueado/activo ─────────────────────────────
 async function verificarAuth() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) { window.location.href = '/login.html'; return null; }
-  const { data: perfil } = await supabase.from('usuarios').select('id, nombre, activo, picks_data').eq('id', user.id).single();
-  if (!perfil?.activo) { window.location.href = '/login.html'; return null; }
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) { window.location.href = '/login.html'; return null; }
+  const { data: perfil } = await supabase.from('usuarios').select('id, nombre, activo, picks_data').eq('id', session.user.id).single();
+  if (!perfil?.activo) { window.location.href = '/dashboard.html'; return null; }
   return perfil;
 }
 
@@ -1755,8 +1755,9 @@ function cargarPicksEnState(picks_data) {
 
 // ── Guardar picks en Supabase ──────────────────────────────────────────────
 window.guardarPicksSupabase = async function(cat) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return false;
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return false;
+  const user = session.user;
 
   // Guardar solo la categoría confirmada (merge con lo que ya había)
   const { data: actual } = await supabase.from('usuarios').select('picks_data').eq('id', user.id).single();

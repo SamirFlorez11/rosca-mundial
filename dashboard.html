@@ -1058,7 +1058,7 @@
           <th style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:8px 20px 8px 0;font-weight:600;text-align:center">Puntos</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="ranking-principal-tbody">
       <tr style="background:rgba(240,180,41,0.06)">
         <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;" style="padding:13px 0 13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);text-align:center"><div class="rank-pos p1" style="font-size:22px">1</div></td>
         <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;"><div class="rank-user"><div class="rank-avatar" style="width:38px;height:38px;font-size:18px">😎</div><div><div class="rank-name">ElMaestro99</div><div style="font-size:11px;color:var(--muted);font-family:'Barlow',sans-serif">🥇 iPhone 17 Pro Max</div></div></div></td>
@@ -1898,8 +1898,16 @@
     ]);
 
     if (error || !rows || rows.length === 0) {
-      document.getElementById('rmTabla').innerHTML =
-        '<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);font-family:\'Barlow\',sans-serif;font-size:14px">🏆 Las clasificaciones estarán disponibles<br>desde el 11 de junio de 2026</td></tr>';
+      // Sin datos reales → usar usuarios registrados alfabéticamente con 0 pts
+      rankingDatos = window._usuariosRanking || [];
+      if (!rankingDatos.length) {
+        document.getElementById('rmTabla').innerHTML =
+          '<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);font-family:\'Barlow\',sans-serif;font-size:14px">🏆 Las clasificaciones estarán disponibles<br>desde el 11 de junio de 2026</td></tr>';
+        return;
+      }
+      rankingPagina = 1;
+      rankingModalActual = key;
+      renderTablaRanking(cfg);
       return;
     }
 
@@ -1915,6 +1923,75 @@
     rankingPagina = 1;
     rankingModalActual = key;
     renderTablaRanking(cfg);
+  }
+
+  // ── Usuarios reales en rankings (antes del 11 jun, 0 pts, orden alfabético) ─
+  const EMOJIS_ALPHA = ['⚽','🦁','🔥','⭐','🐺','🦊','🐉','🎯','💪','🌟','🦅','🐯','🏆','⚡','🎪','🌙','🦄','🐻','🦋','🌊'];
+
+  async function cargarUsuariosEnRankings() {
+    const { data: { session } } = await supabase.auth.getSession();
+    const userId = session?.user?.id;
+
+    const { data: usuarios } = await supabase
+      .from('usuarios')
+      .select('id, nombre')
+      .eq('activo', true)
+      .order('nombre', { ascending: true });
+
+    if (!usuarios?.length) return;
+
+    // Tabla ranking principal
+    const tbody = document.getElementById('ranking-principal-tbody');
+    if (tbody) {
+      const miIdx = usuarios.findIndex(u => u.id === userId);
+      let rows = usuarios.slice(0, 4).map((u, i) => `
+        <tr ${i===0?'style="background:rgba(240,180,41,0.06)"':i===1?'style="background:rgba(160,174,192,0.04)"':i===2?'style="background:rgba(205,124,47,0.04)"':''}>
+          <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center">
+            <div class="rank-pos ${i===0?'p1':i===1?'p2':i===2?'p3':'other'}" style="font-size:22px">${i+1}</div>
+          </td>
+          <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle">
+            <div class="rank-user"><div class="rank-avatar" style="width:38px;height:38px;font-size:18px">${EMOJIS_ALPHA[i]}</div>
+            <div><div class="rank-name ${u.id===userId?'you':''}">${u.nombre}</div></div></div>
+          </td>
+          <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center"><span style="font-size:16px;font-weight:700;color:var(--text)">0</span></td>
+          <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center"><span style="color:var(--muted)">0</span></td>
+          <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center"><span style="color:var(--muted)">—</span></td>
+          <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center"><span class="rank-stat pts">0</span></td>
+        </tr>`).join('');
+
+      if (miIdx >= 4) {
+        const me = usuarios[miIdx];
+        rows += `<tr><td colspan="6" style="padding:6px 0;text-align:center;color:var(--muted);font-size:18px;letter-spacing:6px">···</td></tr>
+        <tr style="background:rgba(252,209,22,0.05)">
+          <td style="padding:13px 0 13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><div class="rank-pos other" style="color:var(--amarillo)">${miIdx+1}</div></td>
+          <td style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);vertical-align:middle"><div class="rank-user"><div class="rank-avatar" style="width:38px;height:38px;font-size:18px;border-color:var(--amarillo)">⚽</div><div><div class="rank-name you">${me.nombre}</div><div style="font-size:11px;color:var(--amarillo);font-family:'Barlow',sans-serif;opacity:0.8">← Tu posición actual</div></div></div></td>
+          <td style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><span style="font-size:16px;font-weight:700;color:var(--text)">0</span></td>
+          <td style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><span style="color:var(--muted)">0</span></td>
+          <td style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><span style="color:var(--muted)">—</span></td>
+          <td style="padding:13px 20px 13px 0;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><span class="rank-stat pts">0</span></td>
+        </tr>`;
+      }
+      tbody.innerHTML = rows;
+    }
+
+    // Podiums especiales — top 3 alfabético con 0 pts
+    const top3 = usuarios.slice(0, 3);
+    document.querySelectorAll('.especial-podio').forEach(podio => {
+      podio.innerHTML = top3.map((u, i) => `
+        <div class="especial-row">
+          <div class="epos ${i===0?'p1':i===1?'p2':'p3'}">${i+1}</div>
+          <div class="eavatar">${EMOJIS_ALPHA[i]}</div>
+          <div class="ename ${u.id===userId?'you':''}">${u.nombre}</div>
+          <div class="evalue" style="${i===0?'color:var(--amarillo)':''}">0 pts</div>
+        </div>`).join('');
+    });
+
+    // Datos para modales: usuarios alfabéticos con 0 pts
+    window._usuariosRanking = usuarios.map((u, i) => ({
+      pos: i + 1, nombre: u.nombre,
+      emoji: EMOJIS_ALPHA[i % EMOJIS_ALPHA.length],
+      valor: 0, esTu: u.id === userId,
+    }));
   }
 
   // Sobreescribir las funciones globales con versiones que usan Supabase
@@ -1939,6 +2016,7 @@
   };
 
   cargarInscritos();
+  cargarUsuariosEnRankings();
 </script>
 <div id="toast"></div>
 </body>
