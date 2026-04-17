@@ -1586,11 +1586,14 @@ function ejecutarConfirmar() {
     mecha: 'El Mechacorta',
   };
   const cat = catActiva || '__todos__';
-  // Guardar picks en "DB" (localStorage simulado — en prod va a Supabase)
-  // Mostrar alerta llamativa
   const nombre = nombreCat[cat] || 'todos';
+  // Guardar en Supabase
+  if (window.guardarPicksSupabase) {
+    window.guardarPicksSupabase(cat).then(ok => {
+      if (!ok) console.error('Error guardando picks en Supabase');
+    });
+  }
   mostrarAlertaConfirmacion(nombre);
-  // Regresar al menú de categorías
   setTimeout(() => volverAlMenu(), 2200);
 }
 
@@ -1722,6 +1725,62 @@ function toggleSeccionResumen(id) {
 // =====================
 actualizarProgreso();
 actualizarMenuBadges();
+</script>
+
+<script type="module">
+import { supabase } from '/js/supabase.js';
+
+// ── Auth: redirigir si no está logueado/activo ─────────────────────────────
+async function verificarAuth() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) { window.location.href = '/login.html'; return null; }
+  const { data: perfil } = await supabase.from('usuarios').select('id, nombre, activo, picks_data').eq('id', user.id).single();
+  if (!perfil?.activo) { window.location.href = '/login.html'; return null; }
+  return perfil;
+}
+
+// ── Cargar picks guardados en STATE ───────────────────────────────────────
+function cargarPicksEnState(picks_data) {
+  if (!picks_data) return;
+  if (picks_data.lev)       Object.assign(STATE.lev, picks_data.lev);
+  if (picks_data.killer)    STATE.killer    = picks_data.killer;
+  if (picks_data.carnicero) STATE.carnicero = picks_data.carnicero;
+  if (picks_data.banderin)  STATE.banderin  = picks_data.banderin;
+  if (picks_data.virgen)    STATE.virgen    = picks_data.virgen;
+  if (picks_data.pied)      STATE.pied      = picks_data.pied;
+  if (picks_data.mecha)     STATE.mecha     = picks_data.mecha;
+  actualizarProgreso();
+  actualizarMenuBadges();
+}
+
+// ── Guardar picks en Supabase ──────────────────────────────────────────────
+window.guardarPicksSupabase = async function(cat) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  // Guardar solo la categoría confirmada (merge con lo que ya había)
+  const { data: actual } = await supabase.from('usuarios').select('picks_data').eq('id', user.id).single();
+  const base = actual?.picks_data || {};
+  const nuevo = { ...base };
+
+  if (cat === '__todos__' || cat === 'lev')       nuevo.lev       = STATE.lev;
+  if (cat === '__todos__' || cat === 'killer')     nuevo.killer    = STATE.killer;
+  if (cat === '__todos__' || cat === 'carnicero')  nuevo.carnicero = STATE.carnicero;
+  if (cat === '__todos__' || cat === 'banderin')   nuevo.banderin  = STATE.banderin;
+  if (cat === '__todos__' || cat === 'virgen')     nuevo.virgen    = STATE.virgen;
+  if (cat === '__todos__' || cat === 'pied')       nuevo.pied      = STATE.pied;
+  if (cat === '__todos__' || cat === 'mecha')      nuevo.mecha     = STATE.mecha;
+
+  const { error } = await supabase.from('usuarios').update({ picks_data: nuevo }).eq('id', user.id);
+  return !error;
+};
+
+// ── Inicializar ────────────────────────────────────────────────────────────
+(async () => {
+  const perfil = await verificarAuth();
+  if (!perfil) return;
+  cargarPicksEnState(perfil.picks_data);
+})();
 </script>
 </body>
 </html>

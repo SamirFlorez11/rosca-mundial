@@ -1660,7 +1660,7 @@
     }
   }
 
-  function guardarAlias() {
+  async function guardarAlias() {
     const val = document.getElementById('aliasInput').value.trim();
     const errEl = document.getElementById('alias-error');
     if (val.length < 3) {
@@ -1675,7 +1675,16 @@
       errEl.style.display = 'block';
       return;
     }
-    // Aquí iría la llamada a Supabase para guardar el alias
+    const { data: { user } } = await window.supabase.auth.getUser();
+    const { error } = await window.supabase
+      .from('usuarios')
+      .update({ nombre: val })
+      .eq('id', user.id);
+    if (error) {
+      errEl.textContent = '❌ Error al guardar. Intenta de nuevo.';
+      errEl.style.display = 'block';
+      return;
+    }
     closeAliasModal();
     showToast('✅ Nombre actualizado: <strong>' + val + '</strong><br><span style="font-size:12px;color:var(--muted)">Visible para todos los participantes</span>');
   }
@@ -1824,6 +1833,7 @@
 
 <script type="module">
   import { supabase } from '/js/supabase.js';
+  window.supabase = supabase;
 
   // ── Inscritos ──────────────────────────────────────────────────────────────
   async function cargarInscritos() {
