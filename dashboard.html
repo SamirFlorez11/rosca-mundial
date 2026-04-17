@@ -967,7 +967,7 @@
   <div class="dropdown-item"><span class="dropdown-item-icon">📄</span> Descargar mis picks (PDF)</div>
   <div class="dropdown-item"><span class="dropdown-item-icon">🔑</span> Cambiar contraseña</div>
   <div class="dropdown-divider"></div>
-  <div class="dropdown-item danger"><span class="dropdown-item-icon">🚪</span> Cerrar sesión</div>
+  <div class="dropdown-item danger" onclick="cerrarSesion()"><span class="dropdown-item-icon">🚪</span> Cerrar sesión</div>
 </div>
 
 <!-- MODAL ALIAS -->
@@ -2013,6 +2013,11 @@
       premio:    cfg.premio,
       color:     cfg.color,
     });
+  };
+
+  window.cerrarSesion = async function() {
+    await supabase.auth.signOut();
+    window.location.href = '/index.html';
   };
 
   cargarInscritos();
