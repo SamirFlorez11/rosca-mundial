@@ -37,6 +37,14 @@
   body.dia .countdown-banner { background: linear-gradient(135deg, #1e3a8a 0%, #132a6e 100%); }
   body.dia .countdown-label, body.dia .countdown-num, body.dia .countdown-sep { color: #fff; }
   body.dia .countdown-title { color: #fff; }
+  body.dia .mi-pos-num { color: #1e3a8a; }
+  body.dia .mi-pos-name { color: #1e3a8a; }
+  body.dia .mi-pos-pts { color: #1e3a8a; }
+  body.dia .mi-pos-pts strong { color: #1e3a8a; }
+  body.dia .mini-val { color: #1e3a8a; }
+  body.dia .mi-pos-title { color: #1e3a8a; }
+  .mi-pos-num { color: var(--amarillo); }
+
 
   /* Botón modo día/noche */
   .btn-tema {
@@ -128,42 +136,37 @@
 
   /* ALERTA PICKS - botón flotante */
   .picks-alert {
-    position: fixed;
-    top: 76px;
-    right: 20px;
-    z-index: 998;
     background: linear-gradient(135deg, #ff4444, #cc0000);
     border: 2px solid #ff6666;
-    border-radius: 12px;
-    padding: 12px 18px;
+    border-radius: 8px;
+    padding: 7px 13px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    cursor: pointer;
     cursor: pointer;
     animation: pulseAlert 2s infinite;
     box-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
-    max-width: 280px;
-    transition: transform 0.2s;
   }
 
-  .picks-alert:hover { transform: scale(1.03); }
+  .picks-alert:hover { opacity: 0.9; }
 
   @keyframes pulseAlert {
     0%, 100% { box-shadow: 0 0 20px rgba(255,68,68,0.4); }
     50% { box-shadow: 0 0 35px rgba(255,68,68,0.7); }
   }
 
-  .picks-alert-icon { font-size: 22px; flex-shrink: 0; }
+  .picks-alert-icon { font-size: 16px; flex-shrink: 0; }
 
   .picks-alert-text {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.3;
     color: #fff;
   }
 
-  .picks-alert-text strong { font-size: 15px; display: block; }
+  .picks-alert-text strong { font-size: 13px; display: inline; margin-right: 4px; }
 
   /* BTN IR A PICKS (siempre visible en navbar) */
   .btn-picks {
@@ -603,6 +606,7 @@
     font-weight: 600;
     font-size: 13px;
     flex: 1;
+    flex: 1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -616,6 +620,8 @@
     font-size: 14px;
     color: var(--text);
     flex-shrink: 0;
+    margin-left: auto;
+    text-align: right;
   }
 
   .especial-tu-pos {
@@ -985,6 +991,10 @@
   <button class="btn-tema" id="btnTema" onclick="toggleTema()" title="Cambiar modo día/noche" style="margin-left:14px">🌙</button>
   </div>
   <div class="nav-right">
+    <div class="picks-alert" id="picksAlert" onclick="goToPicks()" style="display:flex">
+      <div class="picks-alert-icon">⚠️</div>
+      <div class="picks-alert-text"><strong>¡Picks incompletos!</strong> Realiza antes del cierre.</div>
+    </div>
     <button class="btn-picks" onclick="goToPicks()">⚡ IR A PICKS</button>
     <div class="user-avatar" onclick="toggleDropdown()">⚽</div>
   </div>
@@ -1048,15 +1058,6 @@
       <button onclick="closeAliasModal()" style="background:none;border:1px solid var(--border);color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;padding:12px;border-radius:10px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#6b7a99'" onmouseout="this.style.borderColor='var(--border)'">CANCELAR</button>
       <button onclick="guardarAlias()" style="background:linear-gradient(135deg,var(--amarillo),#e5a800);color:#000;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;padding:12px;border-radius:10px;cursor:pointer;border:none;transition:all 0.2s" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">GUARDAR NOMBRE</button>
     </div>
-  </div>
-</div>
-
-<!-- ALERTA PICKS PENDIENTES -->
-<div class="picks-alert" onclick="goToPicks()">
-  <div class="picks-alert-icon">⚠️</div>
-  <div class="picks-alert-text">
-    <strong>¡Picks incompletos!</strong>
-    Realiza tus picks antes del cierre. Haz click aquí.
   </div>
 </div>
 
@@ -1568,7 +1569,7 @@
     const { data: { user } } = await window.supabase.auth.getUser();
     const { error } = await window.supabase
       .from('usuarios')
-      .update({ nombre: val })
+      .update({ nombre_usuario: val })
       .eq('id', user.id);
     if (error) {
       errEl.textContent = '❌ Error al guardar. Intenta de nuevo.';

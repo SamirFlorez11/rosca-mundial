@@ -27,6 +27,10 @@
     --border: #c5d0e0; --text: #0f172a; --muted: #4a5568; --amarillo: #1e3a8a;
   }
   body.dia .navbar { background: rgba(240,244,248,0.97); }
+  body.dia .cat-desc { color: #1e3a8a; }
+  body.dia #smNoteBottom { color: #1e3a8a !important; }
+  body.dia .sm-note { color: #1e3a8a; background: rgba(0,48,135,0.07); }
+
   .btn-tema {
     background: none; border: 1px solid var(--border); color: var(--muted);
     width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
@@ -148,14 +152,14 @@
   .cat-emoji { font-size: 28px; flex-shrink: 0; }
 
   .cat-info { flex: 1; }
-  .cat-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1.5px; }
+  .cat-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1.5px; color: var(--amarillo); }
   .cat-desc { font-family: 'Barlow', sans-serif; font-size: 12px; color: var(--muted); margin-top: 2px; }
 
   .cat-status {
     display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;
   }
   .cat-prize {
-    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; color: var(--amarillo);
   }
   .cat-progress {
     font-family: 'Barlow Condensed', sans-serif; font-size: 12px; color: var(--muted);
@@ -437,6 +441,21 @@
       <div class="menu-subtitle">Selecciona una categoría para hacer o editar tus picks. Debes completar las 169 decisiones antes del 11 de junio, 5:30 PM.</div>
     </div>
 
+    <div style="max-width:1200px;margin:8px auto 12px;padding:0 16px;text-align:center">
+      <button
+        id="btnGenerarPDF"
+        onclick="solicitarPDF()"
+        title="Disponible 30 min antes del partido inicial"
+        style="background:var(--card2);border:1px solid var(--border);color:var(--muted);
+               font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;
+               letter-spacing:1px;padding:10px 28px;border-radius:10px;cursor:not-allowed;
+               opacity:0.5;text-transform:uppercase;"
+        disabled>
+        📄 GENERAR PDF DE MIS PICKS
+      </button>
+      <div style="font-family:'Barlow',sans-serif;font-size:11px;color:var(--muted);margin-top:5px">Disponible a partir del cierre (11 jun, 5:30 PM)</div>
+    </div>
+
     <div class="cat-list">
 
       <!-- L/E/V Grupos -->
@@ -547,28 +566,11 @@
     </div><!-- /cat-list -->
 
     <!-- Nota Sportmonks -->
-    <div style="max-width:1200px;margin:8px 16px 24px;padding:14px 18px;background:rgba(0,48,135,0.12);border:1px solid rgba(0,48,135,0.35);border-radius:12px;font-family:'Barlow',sans-serif;font-size:13px;line-height:1.7;color:#a0b4cc">
+    <div style="max-width:1200px;margin:8px 16px 24px;padding:14px 18px;background:rgba(0,48,135,0.12);border:1px solid rgba(0,48,135,0.35);border-radius:12px;font-family:'Barlow',sans-serif;font-size:13px;line-height:1.7;color:#a0b4cc" id="smNoteBottom">
       <strong style="color:var(--amarillo)">📋 Sobre las listas de jugadores y equipos:</strong><br>
       Los 48 equipos del Mundial ya están disponibles. Las <strong style="color:#fff">prelistas de jugadores (~40-55 por selección)</strong> se cargan a partir del <strong style="color:#fff">11 de mayo de 2026</strong>, cuando salgan los llamados preliminares. Las listas <strong style="color:#fff">definitivas de 23 jugadores</strong> salen el <strong style="color:#fff">26 de mayo</strong>. Hasta entonces, El Killer usa las prelistas. <strong style="color:#fff">Fuente: Sportmonks (Season ID 26618)</strong>.
     </div>
 
-    <!-- Botón PDF (deshabilitado hasta el cierre de picks) -->
-    <div style="max-width:1200px;margin:0 16px 24px;text-align:center">
-      <button
-        id="btnGenerarPDF"
-        onclick="solicitarPDF()"
-        title="Esta opción estará disponible 30 minutos antes del inicio del partido inicial"
-        style="background:var(--card2);border:1px solid var(--border);color:var(--muted);
-               font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;
-               letter-spacing:1px;padding:11px 28px;border-radius:10px;cursor:not-allowed;
-               opacity:0.45;text-transform:uppercase;width:100%;max-width:400px;"
-        disabled>
-        📄 GENERAR PDF DE MIS PICKS
-      </button>
-      <div style="font-family:'Barlow',sans-serif;font-size:11px;color:var(--muted);margin-top:6px">
-        Disponible a partir del cierre (11 jun, 5:30 PM)
-      </div>
-    </div>
   </div><!-- /vista-menu -->
 
   <!-- ===== VISTA PICKS (split panel) ===== -->

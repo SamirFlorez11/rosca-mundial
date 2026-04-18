@@ -613,7 +613,8 @@
   ];
 
   var leftEl, rightEl;
-  var leftIdx = 0, rightIdx = 5; // Empezar con imágenes distintas en cada columna
+  var leftIdx = Math.floor(Math.random() * 10);
+  var rightIdx = (leftIdx + Math.floor(Math.random() * 9) + 1) % 10; // 2 aleatorias distintas
 
   function preload(url) {
     var img = new Image();
@@ -652,10 +653,7 @@
       leftEl.classList.add('visible');
       rightEl.classList.add('visible');
     }, 300);
-    // Preload next batch
-    for (var i = 1; i <= 3; i++) preload(POSTERS[i % POSTERS.length]);
-    // Rotate every 7 seconds
-    setInterval(rotate, 7000);
+    // Precargar imagen alternativa
   });
 })();
 
