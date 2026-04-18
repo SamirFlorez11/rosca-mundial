@@ -1896,6 +1896,20 @@
 
   cargarInscritos();
   cargarUsuariosEnRankings();
+
+  // ── Realtime: recarga rankings cuando el cron actualiza la BD ──────────────
+  supabase
+    .channel('ranking-live')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'ranking' }, () => {
+      cargarUsuariosEnRankings();
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'ranking_killer' }, () => {
+      cargarUsuariosEnRankings();
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'partidos' }, () => {
+      cargarUsuariosEnRankings();
+    })
+    .subscribe();
 </script>
 <div id="toast"></div>
 </body>

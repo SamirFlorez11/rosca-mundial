@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron-actualizar-datos",
-      "schedule": "0 12 * * *"
+      "schedule": "*/2 * * * *"
     }
   ],
   "rewrites": [

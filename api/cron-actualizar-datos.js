@@ -1,5 +1,5 @@
 // api/cron-actualizar-datos.js
-// Se ejecuta 1x/día (Hobby) → 12x/día cuando activemos Pro el 25 mayo
+// Se ejecuta cada 2 min (Vercel Pro). Solo llama a Sportmonks si hay partido en curso o a punto de comenzar.
 // Rosca Mundial 2026
 
 const SPORTMONKS_TOKEN    = process.env.SPORTMONKS_API_KEY;
@@ -361,6 +361,33 @@ async function recalcularRankingsEspeciales() {
 }
 
 // =============================================
+// DETECCIÓN DE PARTIDO ACTIVO
+// Devuelve true si hay partido en curso o que empieza en los próximos 10 min.
+// Cuando no hay partidos activos el cron sale en ~50ms sin tocar Sportmonks.
+// =============================================
+async function hayPartidoActivo() {
+  try {
+    const ahora   = new Date();
+    const en10min = new Date(ahora.getTime() + 10 * 60 * 1000);
+
+    // Partidos en curso
+    const enCurso = await supabaseQuery(
+      `partidos?estado=eq.en_curso&select=id&limit=1`
+    );
+    if (enCurso.length > 0) return true;
+
+    // Partidos que empiezan en los próximos 10 minutos
+    const porEmpezar = await supabaseQuery(
+      `partidos?estado=eq.programado&fecha_hora=gte.${ahora.toISOString()}&fecha_hora=lte.${en10min.toISOString()}&select=id&limit=1`
+    );
+    return porEmpezar.length > 0;
+  } catch {
+    // Si falla la consulta, preferimos ejecutar de todas formas
+    return true;
+  }
+}
+
+// =============================================
 // HANDLER PRINCIPAL
 // =============================================
 export default async function handler(req, res) {
@@ -373,14 +400,22 @@ export default async function handler(req, res) {
   const inicio = Date.now();
 
   try {
-    // 1. Gestión automática de fases (siempre, sin importar si Sportmonks está activo)
+    // 1. Gestión de fases — siempre, es solo lectura/escritura en Supabase
     await gestionarFasesAutomatico();
 
-    // 2. Datos de Sportmonks (solo cuando la API esté activa — 25 mayo)
+    // 2. Datos de Sportmonks — solo si hay partido activo o por empezar
     if (SPORTMONKS_TOKEN) {
-      await actualizarPartidos();
-      await actualizarEstadisticasEquipos();
-      await actualizarEstadisticasJugadores();
+      const activo = await hayPartidoActivo();
+      if (activo) {
+        console.log('⚽ Partido activo detectado — sincronizando con Sportmonks...');
+        await actualizarPartidos();
+        await actualizarEstadisticasEquipos();
+        await actualizarEstadisticasJugadores();
+      } else {
+        const duracionSkip = ((Date.now() - inicio) / 1000).toFixed(2);
+        console.log(`⏭️ Sin partidos activos — skip Sportmonks (${duracionSkip}s)`);
+        return res.status(200).json({ exito: true, skip: true, duracion: `${duracionSkip}s`, timestamp: new Date().toISOString() });
+      }
     } else {
       console.log('⏳ Sportmonks no activo todavía — saltando sync de datos');
     }
@@ -388,7 +423,7 @@ export default async function handler(req, res) {
     // 3. Log en Supabase
     await supabaseQuery('logs', 'POST', {
       accion: 'cron_ejecutado',
-      detalle: { mensaje: 'Cron ejecutado exitosamente', duracion: ((Date.now() - inicio) / 1000).toFixed(2) + 's', sportmonks_activo: !!SPORTMONKS_TOKEN }
+      detalle: { mensaje: 'Cron ejecutado con sync Sportmonks', duracion: ((Date.now() - inicio) / 1000).toFixed(2) + 's', sportmonks_activo: !!SPORTMONKS_TOKEN }
     });
 
     const duracion = ((Date.now() - inicio) / 1000).toFixed(2);
