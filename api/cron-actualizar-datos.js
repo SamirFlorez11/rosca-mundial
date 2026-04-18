@@ -168,8 +168,18 @@ async function actualizarPartidos() {
         updated_at: new Date().toISOString()
       });
 
-      if (estado === 'finalizado' && resultado) {
+      // Solo procesar predicciones una vez por partido finalizado
+      const yaEnBD = await supabaseQuery(
+        `partidos?sportmonks_id=eq.${partido.id}&select=estado,picks_procesados`
+      );
+      const estabaFinalizado = yaEnBD[0]?.estado === 'finalizado';
+      const yaProcesado     = yaEnBD[0]?.picks_procesados === true;
+
+      if (estado === 'finalizado' && resultado && !yaProcesado) {
         await actualizarPredicciones(partido.id, resultado);
+        await supabaseQuery(`partidos?sportmonks_id=eq.${partido.id}`, 'PATCH', {
+          picks_procesados: true
+        });
       }
       actualizados++;
     }
