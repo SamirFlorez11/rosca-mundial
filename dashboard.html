@@ -35,7 +35,7 @@
   body.dia .navbar { background: rgba(240,244,248,0.97); }
   body.dia .tricolor { filter: brightness(0.95); }
   body.dia .countdown-banner { background: linear-gradient(135deg, #1e3a8a 0%, #132a6e 100%); }
-  body.dia .countdown-label, body.dia .countdown-num, body.dia .countdown-sep { color: #fff; }
+  body.dia .countdown-lbl, body.dia .countdown-num, body.dia .countdown-sep { color: #fff; }
   body.dia .countdown-title { color: #fff; }
 
   body.dia .modal { background: #ffffff; border-color: #c5d0e0; color: #0f172a; }
@@ -50,7 +50,8 @@
   body.dia .mi-pos-pts strong { color: #1e3a8a; }
   body.dia .mini-val { color: #1e3a8a; }
   body.dia .mi-pos-title { color: #1e3a8a; }
-  .mi-pos-num { color: var(--amarillo); }
+  .mi-pos-num { color: #fff; }
+  .mini-val { color: #fff; }
 
 
   /* Botón modo día/noche */
@@ -1292,15 +1293,15 @@
         </div>
         <div class="mi-pos-stats">
           <div class="mi-mini-stat">
-            <div class="mini-val" style="color:#f97316">2°</div>
+            <div class="mini-val">2°</div>
             <div class="mini-lbl">El Killer</div>
           </div>
           <div class="mini-mini-stat" style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;text-align:center">
-            <div class="mini-val" style="color:#22c55e">89°</div>
+            <div class="mini-val">89°</div>
             <div class="mini-lbl">El Virgen</div>
           </div>
           <div class="mini-mini-stat" style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;text-align:center">
-            <div class="mini-val" style="color:#ef4444">34°</div>
+            <div class="mini-val">34°</div>
             <div class="mini-lbl">Carnicero</div>
           </div>
         </div>
@@ -1480,12 +1481,12 @@
 
   function openAliasModal() {
     document.getElementById('userDropdown').classList.remove('open');
-    // Precargar el alias actual en el input
+    const aliasActual  = window._aliasActual    || '';
+    const nombreReal   = window._nombreCompleto || '';
     const input = document.getElementById('aliasInput');
-    input.value = USUARIO_ALIAS_ACTUAL;
-    input.style.borderColor = 'var(--amarillo)';
-    // Si el alias actual es igual al nombre real, marcar "Nombre real"
-    if (USUARIO_ALIAS_ACTUAL === USUARIO_NOMBRE_REAL) {
+    input.value = aliasActual;
+    input.style.borderColor = aliasActual.length >= 3 ? 'var(--amarillo)' : 'var(--border)';
+    if (aliasActual === nombreReal) {
       selectTipo('real');
     }
     document.getElementById('aliasModal').classList.add('open');
@@ -1567,25 +1568,31 @@
       return;
     }
     const lower = val.toLowerCase();
-    const tieneProhibida = palabrasProhibidas.some(p => lower.includes(p));
-    if (tieneProhibida) {
+    const palabrasProhibidas = ['puta','culo','mierda','hijueputa','marica','negro','gordo','gay','fag','bitch','ass','fuck','pene','vagina','tetas','coño','cabron','idiota','estupido'];
+    if (palabrasProhibidas.some(p => lower.includes(p))) {
       errEl.textContent = '⚠️ Nombre inapropiado. Por favor elige otro.';
       errEl.style.display = 'block';
       return;
     }
-    const { data: { user } } = await window.supabase.auth.getUser();
-    const { error } = await window.supabase
+    errEl.style.display = 'none';
+    const btn = document.querySelector('#aliasModal button[onclick="guardarAlias()"]');
+    if (btn) { btn.textContent = 'GUARDANDO...'; btn.disabled = true; }
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error } = await supabase
       .from('usuarios')
       .update({ nombre_usuario: val })
       .eq('id', user.id);
+    if (btn) { btn.textContent = 'GUARDAR NOMBRE'; btn.disabled = false; }
     if (error) {
-      errEl.textContent = '❌ Error al guardar. Intenta de nuevo.';
+      errEl.textContent = '❌ Error al guardar: ' + error.message;
       errEl.style.display = 'block';
       return;
     }
+    window._aliasActual = val;
     closeAliasModal();
     showToast('✅ Nombre actualizado: <strong>' + val + '</strong><br><span style="font-size:12px;color:var(--muted)">Visible para todos los participantes</span>');
   }
+  window.guardarAlias = guardarAlias;
 
   // ===== MODALES RANKING COMPLETO =====
   const RANKING_CONFIG = {
@@ -1752,7 +1759,7 @@
     document.getElementById('rmSubtitulo').textContent = cfg.subtitulo;
     document.getElementById('rmPremio').textContent = '🏆 ' + cfg.premio;
     document.getElementById('rmPremio').style.color = cfg.color || 'var(--amarillo)';
-    document.getElementById('rmTabla').innerHTML =
+    document.getElementById('rmTablaBody').innerHTML =
       '<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);font-family:\'Barlow\',sans-serif">Cargando clasificación...</td></tr>';
     document.getElementById('rmInfo').textContent = '';
     document.getElementById('rmPagActual').textContent = '';
@@ -1774,7 +1781,7 @@
       // Sin datos reales → usar usuarios registrados alfabéticamente con 0 pts
       window.rankingDatos = window._usuariosRanking || [];
       if (!window.rankingDatos.length) {
-        document.getElementById('rmTabla').innerHTML =
+        document.getElementById('rmTablaBody').innerHTML =
           '<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);font-family:\'Barlow\',sans-serif;font-size:14px">🏆 Las clasificaciones estarán disponibles<br>desde el 11 de junio de 2026</td></tr>';
         return;
       }
@@ -1893,6 +1900,21 @@
     await supabase.auth.signOut();
     window.location.href = '/index.html';
   };
+
+  // ── Cargar alias real del usuario actual ───────────────────────────────────
+  (async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const { data } = await supabase
+      .from('usuarios')
+      .select('nombre_completo, nombre_usuario')
+      .eq('id', session.user.id)
+      .single();
+    if (data) {
+      window._aliasActual    = data.nombre_usuario || data.nombre_completo || '';
+      window._nombreCompleto = data.nombre_completo || '';
+    }
+  })();
 
   cargarInscritos();
   cargarUsuariosEnRankings();

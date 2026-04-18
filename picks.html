@@ -156,14 +156,14 @@
   .cat-emoji { font-size: 28px; flex-shrink: 0; }
 
   .cat-info { flex: 1; }
-  .cat-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1.5px; color: #1e3a8a; }
+  .cat-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1.5px; color: var(--amarillo); }
   .cat-desc { font-family: 'Barlow', sans-serif; font-size: 12px; color: var(--muted); margin-top: 2px; }
 
   .cat-status {
     display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;
   }
   .cat-prize {
-    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; color: #1e3a8a;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; color: var(--amarillo);
   }
   .cat-progress {
     font-family: 'Barlow Condensed', sans-serif; font-size: 12px; color: var(--muted);
@@ -467,11 +467,11 @@
       <div class="cat-row lev" onclick="abrirCategoria('lev')">
         <div class="cat-emoji">⚽</div>
         <div class="cat-info">
-          <div class="cat-name" style="color:#4a90d9">Predicciones L/E/V</div>
+          <div class="cat-name">Predicciones L/E/V</div>
           <div class="cat-desc">Local · Empate · Visitante por cada partido — Fase de Grupos (72) + Eliminatorias (32)</div>
         </div>
         <div class="cat-status">
-          <div class="cat-prize" style="color:#4a90d9">🥇 iPhone / Bose / PS5 / AirPods</div>
+          <div class="cat-prize">🥇 iPhone / Bose / PS5 / AirPods</div>
           <div class="cat-progress"><span id="lev-prog">0</span>/104 partidos</div>
           <div class="cat-badge incompleto" id="lev-badge">Incompleto</div>
         </div>
@@ -482,11 +482,11 @@
       <div class="cat-row killer" onclick="abrirCategoria('killer')">
         <div class="cat-emoji">⚔️</div>
         <div class="cat-info">
-          <div class="cat-name" style="color:#f97316">El Killer</div>
+          <div class="cat-name">El Killer</div>
           <div class="cat-desc">15 jugadores con más Goles + Asistencias. Máximo 3 del mismo equipo.</div>
         </div>
         <div class="cat-status">
-          <div class="cat-prize" style="color:#f97316">$800.000 COP</div>
+          <div class="cat-prize">$800.000 COP</div>
           <div class="cat-progress"><span id="killer-prog">0</span>/15 jugadores</div>
           <div class="cat-badge vacio" id="killer-badge">Sin picks</div>
         </div>
@@ -497,11 +497,11 @@
       <div class="cat-row carnicero" onclick="abrirCategoria('carnicero')">
         <div class="cat-emoji">🔪</div>
         <div class="cat-info">
-          <div class="cat-name" style="color:#ef4444">El Carnicero</div>
+          <div class="cat-name">El Carnicero</div>
           <div class="cat-desc">10 equipos con más tarjetas. Amarilla = 1 pt, Roja = 2 pts.</div>
         </div>
         <div class="cat-status">
-          <div class="cat-prize" style="color:#ef4444">$600.000 COP</div>
+          <div class="cat-prize">$600.000 COP</div>
           <div class="cat-progress"><span id="carnicero-prog">0</span>/10 equipos</div>
           <div class="cat-badge vacio" id="carnicero-badge">Sin picks</div>
         </div>
@@ -512,11 +512,11 @@
       <div class="cat-row banderin" onclick="abrirCategoria('banderin')">
         <div class="cat-emoji">🚩</div>
         <div class="cat-info">
-          <div class="cat-name" style="color:#3b82f6">El Banderín</div>
+          <div class="cat-name">El Banderín</div>
           <div class="cat-desc">10 equipos con más corners a lo largo del torneo.</div>
         </div>
         <div class="cat-status">
-          <div class="cat-prize" style="color:#3b82f6">$500.000 COP</div>
+          <div class="cat-prize">$500.000 COP</div>
           <div class="cat-progress"><span id="banderin-prog">0</span>/10 equipos</div>
           <div class="cat-badge vacio" id="banderin-badge">Sin picks</div>
         </div>
@@ -527,11 +527,11 @@
       <div class="cat-row virgen" onclick="abrirCategoria('virgen')">
         <div class="cat-emoji">🕊️</div>
         <div class="cat-info">
-          <div class="cat-name" style="color:#22c55e">El Virgen</div>
+          <div class="cat-name">El Virgen</div>
           <div class="cat-desc">10 equipos con menos goles recibidos + anotados en todo el torneo.</div>
         </div>
         <div class="cat-status">
-          <div class="cat-prize" style="color:#22c55e">$400.000 COP</div>
+          <div class="cat-prize">$400.000 COP</div>
           <div class="cat-progress"><span id="virgen-prog">0</span>/10 equipos</div>
           <div class="cat-badge vacio" id="virgen-badge">Sin picks</div>
         </div>
@@ -542,11 +542,11 @@
       <div class="cat-row pied" onclick="abrirCategoria('pied')">
         <div class="cat-emoji">🎀</div>
         <div class="cat-info">
-          <div class="cat-name" style="color:#ec4899">El Pie de Niña</div>
+          <div class="cat-name">El Pie de Niña</div>
           <div class="cat-desc">10 equipos con menos tarjetas. Amarilla = 1 pt, Roja = 2 pts.</div>
         </div>
         <div class="cat-status">
-          <div class="cat-prize" style="color:#ec4899">$300.000 COP</div>
+          <div class="cat-prize">$300.000 COP</div>
           <div class="cat-progress"><span id="pied-prog">0</span>/10 equipos</div>
           <div class="cat-badge vacio" id="pied-badge">Sin picks</div>
         </div>
@@ -557,11 +557,11 @@
       <div class="cat-row mecha" onclick="abrirCategoria('mecha')">
         <div class="cat-emoji">✂️</div>
         <div class="cat-info">
-          <div class="cat-name" style="color:#8b5cf6">El Mechacorta</div>
+          <div class="cat-name">El Mechacorta</div>
           <div class="cat-desc">10 equipos con menos corners a lo largo del torneo.</div>
         </div>
         <div class="cat-status">
-          <div class="cat-prize" style="color:#8b5cf6">$200.000 COP</div>
+          <div class="cat-prize">$200.000 COP</div>
           <div class="cat-progress"><span id="mecha-prog">0</span>/10 equipos</div>
           <div class="cat-badge vacio" id="mecha-badge">Sin picks</div>
         </div>
