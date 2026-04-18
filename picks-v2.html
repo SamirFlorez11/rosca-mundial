@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROSCA MUNDIAL V2 — Mis Picks</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A1428;
+    --card: #111827;
+    --card2: #1a2235;
+    --border: #1e2d45;
+    --text: #e8eaf0;
+    --muted: #6b7a99;
+    --amarillo: #FCD116;
+    --azul: #003087;
+    --rojo: #CE1126;
+    --green: #22c55e;
+    --gold: #f0b429;
+  }
+
+  body.dia {
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --card2: #e8edf5;
+    --border: #c5d0e0;
+    --text: #0f172a;
+    --muted: #4a5568;
+    --amarillo: #1e3a8a;
+  }
+  body.dia .navbar { background: rgba(240,244,248,0.97); }
+  body.dia .tricolor-bar { background: rgba(240,244,248,0.97); }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* TRICOLOR STRIP */
+  .tricolor {
+    height: 5px;
+    background: linear-gradient(90deg, var(--amarillo) 33.33%, var(--azul) 33.33% 66.66%, var(--rojo) 66.66%);
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  }
+
+  /* NAVBAR */
+  .navbar {
+    position: fixed; top: 5px; left: 0; right: 0; z-index: 999;
+    background: rgba(10,20,40,0.97);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .nav-left { display: flex; align-items: center; gap: 8px; }
+
+  .nav-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 2px; color: var(--amarillo); line-height: 1;
+    text-decoration: none;
+  }
+  .nav-brand span {
+    color: var(--text); font-size: 10px; display: block;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 600; letter-spacing: 0.5px;
+  }
+
+  .nav-badge-v2 {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 11px;
+    background: linear-gradient(135deg, var(--amarillo), #e5a800);
+    color: #000; padding: 2px 8px; border-radius: 5px; letter-spacing: 1px;
+  }
+
+  .btn-tema {
+    background: none; border: 1px solid var(--border); color: var(--muted);
+    width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
+    font-size: 17px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; flex-shrink: 0; margin-left: 20px;
+  }
+  .btn-tema:hover { border-color: var(--amarillo); color: var(--amarillo); }
+
+  /* MAIN */
+  .main {
+    padding-top: 80px;
+    max-width: 860px;
+    margin: 0 auto;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 60px;
+  }
+
+  /* PAGE HEADER */
+  .page-header {
+    padding: 28px 0 20px;
+    text-align: center;
+  }
+  .page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px; letter-spacing: 4px; color: var(--amarillo);
+  }
+  .page-subtitle {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 600;
+    font-size: 14px; color: var(--muted); letter-spacing: 1.5px; margin-top: 4px;
+    text-transform: uppercase;
+  }
+  .page-desc {
+    font-family: 'Barlow', sans-serif; font-size: 13px; color: var(--muted);
+    margin-top: 10px; line-height: 1.6; max-width: 520px; margin-left: auto; margin-right: auto;
+  }
+
+  /* DEADLINE BADGE */
+  .deadline-banner {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: rgba(206,17,38,0.1); border: 1px solid rgba(206,17,38,0.3);
+    border-radius: 10px; padding: 10px 18px; margin: 0 0 24px;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 13px;
+    color: #f87171; letter-spacing: 0.5px;
+  }
+  .deadline-banner .dl-icon { font-size: 16px; }
+
+  /* PROGRESS STRIP */
+  .progress-strip {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 20px; margin-bottom: 24px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .prog-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+  .prog-track { flex: 1; height: 7px; background: var(--card2); border-radius: 99px; overflow: hidden; }
+  .prog-fill { height: 100%; background: linear-gradient(90deg, var(--azul), var(--amarillo)); border-radius: 99px; transition: width 0.4s ease; width: 0%; }
+  .prog-count { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--amarillo); white-space: nowrap; }
+
+  /* PICK SECTIONS */
+  .pick-section {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    margin-bottom: 20px; overflow: hidden; transition: border-color 0.2s;
+  }
+  .pick-section.completed { border-color: rgba(34,197,94,0.4); }
+  .pick-section.active { border-color: rgba(252,209,22,0.4); }
+
+  .pick-section-header {
+    padding: 16px 20px;
+    background: var(--card2);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 14px; cursor: pointer;
+    user-select: none;
+  }
+  .pick-section-header:hover { background: rgba(30,45,69,0.8); }
+
+  .pick-icon { font-size: 26px; flex-shrink: 0; }
+  .pick-info { flex: 1; }
+  .pick-name {
+    font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px;
+  }
+  .pick-hint { font-family: 'Barlow', sans-serif; font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .pick-selected-preview {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 15px;
+    color: var(--amarillo);
+  }
+  .pick-selected-preview .sel-flag { font-size: 20px; }
+
+  .pick-badge {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
+    padding: 3px 10px; border-radius: 6px; letter-spacing: 0.5px; flex-shrink: 0;
+  }
+  .pick-badge.done { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .pick-badge.pending { background: rgba(107,122,153,0.12); color: var(--muted); }
+
+  .pick-chevron { font-size: 16px; color: var(--muted); flex-shrink: 0; transition: transform 0.25s; }
+  .pick-section.open .pick-chevron { transform: rotate(90deg); }
+
+  /* PICK BODY (collapsible) */
+  .pick-body {
+    display: none;
+    padding: 16px 20px;
+  }
+  .pick-section.open .pick-body { display: block; }
+
+  /* SEARCH BAR */
+  .search-wrap {
+    position: relative; margin-bottom: 14px;
+  }
+  .search-wrap input {
+    width: 100%; background: var(--card2); border: 1px solid var(--border);
+    border-radius: 9px; padding: 10px 14px 10px 38px;
+    font-family: 'Barlow', sans-serif; font-size: 14px; color: var(--text);
+    outline: none; transition: border-color 0.2s;
+  }
+  .search-wrap input:focus { border-color: rgba(252,209,22,0.5); }
+  .search-wrap input::placeholder { color: var(--muted); }
+  .search-icon {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    font-size: 15px; pointer-events: none; color: var(--muted);
+  }
+
+  /* TEAMS GRID */
+  .teams-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+    max-height: 360px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .teams-grid::-webkit-scrollbar { width: 5px; }
+  .teams-grid::-webkit-scrollbar-track { background: var(--card2); border-radius: 3px; }
+  .teams-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .team-card {
+    background: var(--card2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 10px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+    cursor: pointer; transition: all 0.18s; text-align: center;
+  }
+  .team-card:hover { border-color: rgba(252,209,22,0.4); background: rgba(252,209,22,0.05); transform: translateY(-2px); }
+  .team-card.selected {
+    border-color: var(--amarillo); background: rgba(252,209,22,0.12);
+    box-shadow: 0 0 0 1px var(--amarillo);
+  }
+  .team-card.disabled {
+    opacity: 0.3; cursor: not-allowed; pointer-events: none;
+  }
+  .team-card.hidden { display: none; }
+
+  .team-flag { font-size: 28px; line-height: 1; }
+  .team-name {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 12px;
+    line-height: 1.2; color: var(--text);
+  }
+  .team-grupo {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 10px; color: var(--muted);
+    background: rgba(107,122,153,0.15); padding: 1px 6px; border-radius: 4px;
+  }
+
+  /* PLAYERS LIST */
+  .players-list {
+    display: flex; flex-direction: column; gap: 6px;
+    max-height: 380px; overflow-y: auto; padding-right: 4px;
+  }
+  .players-list::-webkit-scrollbar { width: 5px; }
+  .players-list::-webkit-scrollbar-track { background: var(--card2); border-radius: 3px; }
+  .players-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .player-row {
+    background: var(--card2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+    cursor: pointer; transition: all 0.18s;
+  }
+  .player-row:hover { border-color: rgba(252,209,22,0.4); background: rgba(252,209,22,0.05); }
+  .player-row.selected {
+    border-color: var(--amarillo); background: rgba(252,209,22,0.1);
+    box-shadow: 0 0 0 1px var(--amarillo);
+  }
+  .player-row.hidden { display: none; }
+
+  .player-flag { font-size: 22px; flex-shrink: 0; }
+  .player-info { flex: 1; }
+  .player-name {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px;
+  }
+  .player-team-name {
+    font-family: 'Barlow', sans-serif; font-size: 11px; color: var(--muted);
+  }
+  .player-check { font-size: 16px; color: var(--amarillo); }
+
+  /* PRIZES SECTION */
+  .prizes-section {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    margin-bottom: 24px; overflow: hidden;
+  }
+  .prizes-header {
+    padding: 14px 20px; background: var(--card2); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .prizes-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; color: var(--amarillo);
+  }
+  .prizes-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+  .prize-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; background: var(--card2); border-radius: 9px;
+    border: 1px solid var(--border);
+  }
+  .prize-num {
+    font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--amarillo);
+    width: 28px; flex-shrink: 0; text-align: center;
+  }
+  .prize-icon { font-size: 18px; flex-shrink: 0; }
+  .prize-desc { font-family: 'Barlow', sans-serif; font-size: 13px; flex: 1; }
+  .prize-desc strong { font-weight: 600; color: var(--text); }
+  .prize-desc span { color: var(--muted); font-size: 12px; display: block; margin-top: 1px; }
+  .prize-divider {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px; color: var(--muted);
+    letter-spacing: 1px; text-transform: uppercase; padding: 4px 0; text-align: center;
+    border-top: 1px solid var(--border); margin-top: 4px; padding-top: 10px;
+  }
+
+  /* SUMMARY CONFIRM CARD */
+  .summary-card {
+    background: var(--card); border: 1px solid rgba(252,209,22,0.3);
+    border-radius: 14px; padding: 20px; margin-bottom: 20px; display: none;
+  }
+  .summary-card.visible { display: block; }
+  .summary-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px;
+    color: var(--amarillo); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .summary-rows { display: flex; flex-direction: column; gap: 8px; }
+  .summary-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; background: var(--card2); border-radius: 9px;
+    border: 1px solid var(--border);
+  }
+  .summary-row-icon { font-size: 20px; flex-shrink: 0; }
+  .summary-row-label {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 12px;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; width: 110px; flex-shrink: 0;
+  }
+  .summary-row-value {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px;
+    color: var(--text); flex: 1; display: flex; align-items: center; gap: 8px;
+  }
+  .summary-row-flag { font-size: 20px; }
+
+  /* SAVE BUTTON */
+  .btn-save {
+    width: 100%; padding: 16px; border: none; border-radius: 12px; cursor: pointer;
+    font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--amarillo), #e5a800);
+    color: #000; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .btn-save:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(252,209,22,0.4); }
+  .btn-save:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-save.loading { pointer-events: none; }
+
+  /* SUCCESS STATE */
+  .success-banner {
+    background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.35);
+    border-radius: 14px; padding: 28px 24px; text-align: center; display: none; margin-bottom: 20px;
+  }
+  .success-banner.visible { display: block; }
+  .success-icon { font-size: 48px; margin-bottom: 12px; }
+  .success-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; color: #22c55e;
+  }
+  .success-msg { font-family: 'Barlow', sans-serif; font-size: 14px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
+
+  /* LOCKED STATE */
+  .locked-banner {
+    background: rgba(107,122,153,0.08); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px; text-align: center; margin-bottom: 20px; display: none;
+  }
+  .locked-banner.visible { display: block; }
+  .locked-icon { font-size: 36px; margin-bottom: 8px; }
+  .locked-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--muted);
+  }
+  .locked-msg { font-family: 'Barlow', sans-serif; font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+  /* LOADING OVERLAY */
+  #loading-overlay {
+    position: fixed; inset: 0; background: rgba(10,20,40,0.85);
+    display: flex; align-items: center; justify-content: center; z-index: 9999;
+    flex-direction: column; gap: 14px;
+  }
+  #loading-overlay.hidden { display: none; }
+  .loader-spinner {
+    width: 44px; height: 44px; border: 3px solid var(--border);
+    border-top-color: var(--amarillo); border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  .loader-text {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 14px; color: var(--muted); letter-spacing: 1px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ERROR TOAST */
+  #toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: #1e1e2e; border: 1px solid rgba(248,113,113,0.4); color: #f87171;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 600;
+    padding: 12px 22px; border-radius: 10px; z-index: 9998;
+    transition: transform 0.3s ease; white-space: nowrap; letter-spacing: 0.5px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.success-toast { border-color: rgba(34,197,94,0.4); color: #22c55e; background: #0d1c14; }
+
+  /* NO RESULTS */
+  .no-results {
+    text-align: center; padding: 20px; color: var(--muted);
+    font-family: 'Barlow', sans-serif; font-size: 14px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 540px) {
+    .main { padding-left: 12px; padding-right: 12px; }
+    .teams-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+    .page-title { font-size: 30px; }
+    .navbar { padding: 0 16px; }
+    .summary-row-label { width: 90px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tricolor"></div>
+
+<nav class="navbar">
+  <div class="nav-left">
+    <a href="dashboard.html" class="nav-brand">
+      ROSCA MUNDIAL
+      <span>MUNDIAL USA · MÉXICO · CANADÁ 2026</span>
+    </a>
+    <button class="btn-tema" id="btn-tema" title="Cambiar tema">🌙</button>
+    <span class="nav-badge-v2">V2</span>
+  </div>
+</nav>
+
+<div id="loading-overlay">
+  <div class="loader-spinner"></div>
+  <div class="loader-text">CARGANDO...</div>
+</div>
+
+<div id="toast"></div>
+
+<main class="main" id="main-content" style="display:none">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="page-title">🏆 MIS PICKS V2</div>
+    <div class="page-subtitle">ROSCA MUNDIAL — EDICIÓN SIMPLIFICADA</div>
+    <p class="page-desc">Haz tus 4 predicciones para el Mundial 2026. Selecciona el campeón, subcampeón, tercer puesto y el máximo goleador.</p>
+  </div>
+
+  <!-- DEADLINE -->
+  <div class="deadline-banner">
+    <span class="dl-icon">🔒</span>
+    <span>FECHA LÍMITE: <strong>11 de junio 2026 · 5:30 PM Colombia</strong></span>
+  </div>
+
+  <!-- SUCCESS BANNER -->
+  <div class="success-banner" id="success-banner">
+    <div class="success-icon">✅</div>
+    <div class="success-title">¡PICKS GUARDADOS!</div>
+    <div class="success-msg">Tus predicciones han sido guardadas exitosamente.<br>Recuerda que se bloquean el <strong>11 de junio de 2026 a las 5:30 PM Colombia</strong>.</div>
+  </div>
+
+  <!-- LOCKED BANNER -->
+  <div class="locked-banner" id="locked-banner">
+    <div class="locked-icon">🔒</div>
+    <div class="locked-title">PICKS BLOQUEADOS</div>
+    <div class="locked-msg">El período de predicciones ha cerrado. Aquí están tus picks guardados.</div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-strip">
+    <span class="prog-label">Progreso</span>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+    <span class="prog-count"><span id="prog-num">0</span>/4</span>
+  </div>
+
+  <!-- PICK 1: CAMPEÓN -->
+  <div class="pick-section" id="sec-campeon">
+    <div class="pick-section-header" onclick="toggleSection('campeon')">
+      <span class="pick-icon">🏆</span>
+      <div class="pick-info">
+        <div class="pick-name">Campeón Mundial</div>
+        <div class="pick-hint" id="hint-campeon">Selecciona el país que ganará el Mundial 2026</div>
+      </div>
+      <div id="preview-campeon" class="pick-selected-preview" style="display:none"></div>
+      <span class="pick-badge pending" id="badge-campeon">PENDIENTE</span>
+      <span class="pick-chevron">›</span>
+    </div>
+    <div class="pick-body">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-campeon" placeholder="Buscar equipo..." oninput="filterTeams('campeon', this.value)">
+      </div>
+      <div class="teams-grid" id="grid-campeon"></div>
+    </div>
+  </div>
+
+  <!-- PICK 2: SUBCAMPEÓN -->
+  <div class="pick-section" id="sec-subcampeon">
+    <div class="pick-section-header" onclick="toggleSection('subcampeon')">
+      <span class="pick-icon">🥈</span>
+      <div class="pick-info">
+        <div class="pick-name">Subcampeón</div>
+        <div class="pick-hint" id="hint-subcampeon">Selecciona el equipo finalista perdedor</div>
+      </div>
+      <div id="preview-subcampeon" class="pick-selected-preview" style="display:none"></div>
+      <span class="pick-badge pending" id="badge-subcampeon">PENDIENTE</span>
+      <span class="pick-chevron">›</span>
+    </div>
+    <div class="pick-body">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-subcampeon" placeholder="Buscar equipo..." oninput="filterTeams('subcampeon', this.value)">
+      </div>
+      <div class="teams-grid" id="grid-subcampeon"></div>
+    </div>
+  </div>
+
+  <!-- PICK 3: TERCER PUESTO -->
+  <div class="pick-section" id="sec-tercero">
+    <div class="pick-section-header" onclick="toggleSection('tercero')">
+      <span class="pick-icon">🥉</span>
+      <div class="pick-info">
+        <div class="pick-name">Tercer Puesto</div>
+        <div class="pick-hint" id="hint-tercero">Selecciona el equipo que ganará el tercer lugar</div>
+      </div>
+      <div id="preview-tercero" class="pick-selected-preview" style="display:none"></div>
+      <span class="pick-badge pending" id="badge-tercero">PENDIENTE</span>
+      <span class="pick-chevron">›</span>
+    </div>
+    <div class="pick-body">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-tercero" placeholder="Buscar equipo..." oninput="filterTeams('tercero', this.value)">
+      </div>
+      <div class="teams-grid" id="grid-tercero"></div>
+    </div>
+  </div>
+
+  <!-- PICK 4: GOLEADOR -->
+  <div class="pick-section" id="sec-goleador">
+    <div class="pick-section-header" onclick="toggleSection('goleador')">
+      <span class="pick-icon">⚽</span>
+      <div class="pick-info">
+        <div class="pick-name">Máximo Goleador</div>
+        <div class="pick-hint" id="hint-goleador">Selecciona al jugador con más goles en el torneo</div>
+      </div>
+      <div id="preview-goleador" class="pick-selected-preview" style="display:none"></div>
+      <span class="pick-badge pending" id="badge-goleador">PENDIENTE</span>
+      <span class="pick-chevron">›</span>
+    </div>
+    <div class="pick-body">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-goleador" placeholder="Buscar jugador..." oninput="filterPlayers(this.value)">
+      </div>
+      <div class="players-list" id="list-goleador"></div>
+    </div>
+  </div>
+
+  <!-- CONFIRMATION SUMMARY -->
+  <div class="summary-card" id="summary-card">
+    <div class="summary-title">📋 Confirmación de Picks</div>
+    <div class="summary-rows" id="summary-rows"></div>
+  </div>
+
+  <!-- PRIZES -->
+  <div class="prizes-section">
+    <div class="prizes-header">
+      <span style="font-size:20px">🏅</span>
+      <div class="prizes-title">Premios V2</div>
+    </div>
+    <div class="prizes-body">
+      <div class="prize-row">
+        <div class="prize-num">1°</div>
+        <div class="prize-icon">🥇</div>
+        <div class="prize-desc">
+          <strong>1er Lugar Ranking</strong>
+          <span>Más picks correctos de los 4. Empate: primero en registrarse gana.</span>
+        </div>
+      </div>
+      <div class="prize-row">
+        <div class="prize-num">2°</div>
+        <div class="prize-icon">🥈</div>
+        <div class="prize-desc">
+          <strong>2do Lugar Ranking</strong>
+          <span>Segundo en total de picks correctos.</span>
+        </div>
+      </div>
+      <div class="prize-row">
+        <div class="prize-num">3°</div>
+        <div class="prize-icon">🥉</div>
+        <div class="prize-desc">
+          <strong>3er Lugar Ranking</strong>
+          <span>Tercero en total de picks correctos.</span>
+        </div>
+      </div>
+      <div class="prize-row">
+        <div class="prize-num">4°</div>
+        <div class="prize-icon">🎖️</div>
+        <div class="prize-desc">
+          <strong>4to Lugar Ranking</strong>
+          <span>Cuarto en total de picks correctos.</span>
+        </div>
+      </div>
+      <div class="prize-divider">PREMIOS ESPECIALES</div>
+      <div class="prize-row">
+        <div class="prize-num">⚽</div>
+        <div class="prize-icon">🎯</div>
+        <div class="prize-desc">
+          <strong>Premio Killer</strong>
+          <span>Para quien acierte el Máximo Goleador del torneo.</span>
+        </div>
+      </div>
+      <div class="prize-row">
+        <div class="prize-num">🏆</div>
+        <div class="prize-icon">🎉</div>
+        <div class="prize-desc">
+          <strong>Premio 1er Acierto</strong>
+          <span>Para quien acierte el Campeón Mundial.</span>
+        </div>
+      </div>
+      <div class="prize-row">
+        <div class="prize-num">🥈</div>
+        <div class="prize-icon">🎊</div>
+        <div class="prize-desc">
+          <strong>Premio 2do Acierto</strong>
+          <span>Para quien acierte el Subcampeón.</span>
+        </div>
+      </div>
+      <div class="prize-row">
+        <div class="prize-num">🥉</div>
+        <div class="prize-icon">🎁</div>
+        <div class="prize-desc">
+          <strong>Premio 3er Acierto</strong>
+          <span>Para quien acierte el Tercer Puesto.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAVE BUTTON -->
+  <button class="btn-save" id="btn-save" disabled onclick="guardarPicks()">
+    <span id="btn-save-text">💾 GUARDAR PICKS</span>
+  </button>
+
+</main>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const supabase = createClient(
+  'https://hwhlmuixnxevzbabkqcy.supabase.co',
+  'sb_publishable_Sub3P-1VhdcnNfhNzeet1A_yhQt_wJS'
+);
+
+// ============================================================
+// DATA
+// ============================================================
+const EQUIPOS = [
+  {id:'usa',nombre:'Estados Unidos',flag:'🇺🇸',grupo:'A'},
+  {id:'mex',nombre:'México',flag:'🇲🇽',grupo:'A'},
+  {id:'can',nombre:'Canadá',flag:'🇨🇦',grupo:'A'},
+  {id:'uru',nombre:'Uruguay',flag:'🇺🇾',grupo:'A'},
+  {id:'bra',nombre:'Brasil',flag:'🇧🇷',grupo:'B'},
+  {id:'arg',nombre:'Argentina',flag:'🇦🇷',grupo:'B'},
+  {id:'col',nombre:'Colombia',flag:'🇨🇴',grupo:'B'},
+  {id:'ecu',nombre:'Ecuador',flag:'🇪🇨',grupo:'B'},
+  {id:'fra',nombre:'Francia',flag:'🇫🇷',grupo:'C'},
+  {id:'esp',nombre:'España',flag:'🇪🇸',grupo:'C'},
+  {id:'por',nombre:'Portugal',flag:'🇵🇹',grupo:'C'},
+  {id:'mar',nombre:'Marruecos',flag:'🇲🇦',grupo:'C'},
+  {id:'ger',nombre:'Alemania',flag:'🇩🇪',grupo:'D'},
+  {id:'eng',nombre:'Inglaterra',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',grupo:'D'},
+  {id:'ned',nombre:'Países Bajos',flag:'🇳🇱',grupo:'D'},
+  {id:'bel',nombre:'Bélgica',flag:'🇧🇪',grupo:'D'},
+  {id:'jpn',nombre:'Japón',flag:'🇯🇵',grupo:'E'},
+  {id:'kor',nombre:'Corea del Sur',flag:'🇰🇷',grupo:'E'},
+  {id:'aus',nombre:'Australia',flag:'🇦🇺',grupo:'E'},
+  {id:'irn',nombre:'Irán',flag:'🇮🇷',grupo:'E'},
+  {id:'cro',nombre:'Croacia',flag:'🇭🇷',grupo:'F'},
+  {id:'ser',nombre:'Serbia',flag:'🇷🇸',grupo:'F'},
+  {id:'sui',nombre:'Suiza',flag:'🇨🇭',grupo:'F'},
+  {id:'aut',nombre:'Austria',flag:'🇦🇹',grupo:'F'},
+  {id:'sen',nombre:'Senegal',flag:'🇸🇳',grupo:'G'},
+  {id:'egy',nombre:'Egipto',flag:'🇪🇬',grupo:'G'},
+  {id:'nig',nombre:'Nigeria',flag:'🇳🇬',grupo:'G'},
+  {id:'civ',nombre:'Costa de Marfil',flag:'🇨🇮',grupo:'G'},
+  {id:'sau',nombre:'Arabia Saudita',flag:'🇸🇦',grupo:'H'},
+  {id:'gha',nombre:'Ghana',flag:'🇬🇭',grupo:'H'},
+  {id:'mli',nombre:'Malí',flag:'🇲🇱',grupo:'H'},
+  {id:'cmr',nombre:'Camerún',flag:'🇨🇲',grupo:'H'},
+  {id:'chi',nombre:'Chile',flag:'🇨🇱',grupo:'I'},
+  {id:'per',nombre:'Perú',flag:'🇵🇪',grupo:'I'},
+  {id:'ven',nombre:'Venezuela',flag:'🇻🇪',grupo:'I'},
+  {id:'par',nombre:'Paraguay',flag:'🇵🇾',grupo:'I'},
+  {id:'cri',nombre:'Costa Rica',flag:'🇨🇷',grupo:'J'},
+  {id:'pan',nombre:'Panamá',flag:'🇵🇦',grupo:'J'},
+  {id:'jam',nombre:'Jamaica',flag:'🇯🇲',grupo:'J'},
+  {id:'hnd',nombre:'Honduras',flag:'🇭🇳',grupo:'J'},
+  {id:'sco',nombre:'Escocia',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',grupo:'K'},
+  {id:'tur',nombre:'Turquía',flag:'🇹🇷',grupo:'K'},
+  {id:'hun',nombre:'Hungría',flag:'🇭🇺',grupo:'K'},
+  {id:'rom',nombre:'Rumanía',flag:'🇷🇴',grupo:'K'},
+  {id:'pol',nombre:'Polonia',flag:'🇵🇱',grupo:'L'},
+  {id:'ukr',nombre:'Ucrania',flag:'🇺🇦',grupo:'L'},
+  {id:'den',nombre:'Dinamarca',flag:'🇩🇰',grupo:'L'},
+  {id:'slv',nombre:'El Salvador',flag:'🇸🇻',grupo:'L'}
+];
+
+const GOLEADORES = [
+  {id:'arg-1',nombre:'Lionel Messi',equipo:'arg',flag:'🇦🇷'},
+  {id:'arg-7',nombre:'Lautaro Martínez',equipo:'arg',flag:'🇦🇷'},
+  {id:'arg-2',nombre:'Julián Álvarez',equipo:'arg',flag:'🇦🇷'},
+  {id:'bra-1',nombre:'Vinicius Jr.',equipo:'bra',flag:'🇧🇷'},
+  {id:'bra-2',nombre:'Rodrygo',equipo:'bra',flag:'🇧🇷'},
+  {id:'col-1',nombre:'Luis Díaz',equipo:'col',flag:'🇨🇴'},
+  {id:'col-2',nombre:'Falcao García',equipo:'col',flag:'🇨🇴'},
+  {id:'fra-1',nombre:'Kylian Mbappé',equipo:'fra',flag:'🇫🇷'},
+  {id:'fra-2',nombre:'Olivier Giroud',equipo:'fra',flag:'🇫🇷'},
+  {id:'esp-1',nombre:'Álvaro Morata',equipo:'esp',flag:'🇪🇸'},
+  {id:'esp-2',nombre:'Ferran Torres',equipo:'esp',flag:'🇪🇸'},
+  {id:'por-1',nombre:'Cristiano Ronaldo',equipo:'por',flag:'🇵🇹'},
+  {id:'por-2',nombre:'Bruno Fernandes',equipo:'por',flag:'🇵🇹'},
+  {id:'eng-1',nombre:'Harry Kane',equipo:'eng',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},
+  {id:'eng-2',nombre:'Marcus Rashford',equipo:'eng',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},
+  {id:'ger-1',nombre:'Kai Havertz',equipo:'ger',flag:'🇩🇪'},
+  {id:'ger-2',nombre:'Florian Wirtz',equipo:'ger',flag:'🇩🇪'},
+  {id:'ned-1',nombre:'Memphis Depay',equipo:'ned',flag:'🇳🇱'},
+  {id:'mar-1',nombre:'Youssef En-Nesyri',equipo:'mar',flag:'🇲🇦'},
+  {id:'usa-1',nombre:'Christian Pulisic',equipo:'usa',flag:'🇺🇸'},
+  {id:'mex-1',nombre:'Santiago Giménez',equipo:'mex',flag:'🇲🇽'},
+  {id:'jpn-1',nombre:'Takumi Minamino',equipo:'jpn',flag:'🇯🇵'},
+  {id:'sen-1',nombre:'Sadio Mané',equipo:'sen',flag:'🇸🇳'},
+  {id:'nig-1',nombre:'Victor Osimhen',equipo:'nig',flag:'🇳🇬'},
+  {id:'uru-1',nombre:'Darwin Núñez',equipo:'uru',flag:'🇺🇾'},
+  {id:'cro-1',nombre:'Ivan Perišić',equipo:'cro',flag:'🇭🇷'},
+  {id:'ecu-1',nombre:'Enner Valencia',equipo:'ecu',flag:'🇪🇨'},
+  {id:'pol-1',nombre:'Robert Lewandowski',equipo:'pol',flag:'🇵🇱'},
+  {id:'kor-1',nombre:'Son Heung-min',equipo:'kor',flag:'🇰🇷'},
+  {id:'den-1',nombre:'Erling Haaland',equipo:'den',flag:'🇩🇰'}
+];
+
+// ============================================================
+// STATE
+// ============================================================
+const DEADLINE = new Date('2026-06-11T17:30:00-05:00'); // Colombia = UTC-5
+
+let STATE = {
+  campeon: null,
+  subcampeon: null,
+  tercero: null,
+  goleador: null
+};
+
+let isLocked = false;
+let isSaved = false;
+let currentUserId = null;
+
+// ============================================================
+// THEME
+// ============================================================
+const tema = localStorage.getItem('rosca-tema') || 'noche';
+if (tema === 'dia') document.body.classList.add('dia');
+document.getElementById('btn-tema').textContent = tema === 'dia' ? '☀️' : '🌙';
+
+document.getElementById('btn-tema').addEventListener('click', () => {
+  const esDia = document.body.classList.toggle('dia');
+  const nuevo = esDia ? 'dia' : 'noche';
+  localStorage.setItem('rosca-tema', nuevo);
+  document.getElementById('btn-tema').textContent = esDia ? '☀️' : '🌙';
+});
+
+// ============================================================
+// UTILS
+// ============================================================
+function showToast(msg, type = 'error') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = type === 'success' ? 'show success-toast' : 'show';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.className = ''; }, 3200);
+}
+
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.add('hidden');
+  document.getElementById('main-content').style.display = '';
+}
+
+function getEquipo(id) { return EQUIPOS.find(e => e.id === id); }
+function getGoleador(id) { return GOLEADORES.find(g => g.id === id); }
+function getEquipoNombre(id) { return EQUIPOS.find(e => e.id === id)?.nombre || ''; }
+
+// ============================================================
+// DEADLINE CHECK
+// ============================================================
+function checkDeadline() {
+  isLocked = new Date() > DEADLINE;
+  return isLocked;
+}
+
+// ============================================================
+// BUILD GRIDS
+// ============================================================
+function buildTeamGrid(slot) {
+  const container = document.getElementById(`grid-${slot}`);
+  container.innerHTML = '';
+  EQUIPOS.forEach(eq => {
+    const card = document.createElement('div');
+    card.className = 'team-card';
+    card.dataset.id = eq.id;
+    card.dataset.nombre = eq.nombre.toLowerCase();
+    card.innerHTML = `
+      <span class="team-flag">${eq.flag}</span>
+      <span class="team-name">${eq.nombre}</span>
+      <span class="team-grupo">Grupo ${eq.grupo}</span>
+    `;
+    card.addEventListener('click', () => {
+      if (!isLocked) selectTeam(slot, eq.id);
+    });
+    container.appendChild(card);
+  });
+  refreshGridState(slot);
+}
+
+function buildPlayerList() {
+  const container = document.getElementById('list-goleador');
+  container.innerHTML = '';
+  GOLEADORES.forEach(g => {
+    const eq = getEquipo(g.equipo);
+    const row = document.createElement('div');
+    row.className = 'player-row';
+    row.dataset.id = g.id;
+    row.dataset.nombre = g.nombre.toLowerCase() + ' ' + (eq?.nombre || '').toLowerCase();
+    row.innerHTML = `
+      <span class="player-flag">${g.flag}</span>
+      <div class="player-info">
+        <div class="player-name">${g.nombre}</div>
+        <div class="player-team-name">${eq?.flag || ''} ${eq?.nombre || ''}</div>
+      </div>
+      <span class="player-check" style="display:none">✓</span>
+    `;
+    row.addEventListener('click', () => {
+      if (!isLocked) selectGoleador(g.id);
+    });
+    container.appendChild(row);
+  });
+}
+
+// ============================================================
+// SELECTION
+// ============================================================
+function selectTeam(slot, teamId) {
+  STATE[slot] = teamId;
+  refreshAllGridStates();
+  updatePickUI(slot);
+  updateProgress();
+  updateSummary();
+  updateSaveButton();
+  // Auto-close and open next
+  closeSection(slot);
+  const next = {campeon: 'subcampeon', subcampeon: 'tercero', tercero: 'goleador'}[slot];
+  if (next && !STATE[next]) {
+    setTimeout(() => openSection(next), 150);
+  }
+}
+
+function selectGoleador(playerId) {
+  STATE.goleador = playerId;
+  refreshPlayerList();
+  updatePickUI('goleador');
+  updateProgress();
+  updateSummary();
+  updateSaveButton();
+  closeSection('goleador');
+}
+
+// ============================================================
+// GRID STATE (disabled / selected)
+// ============================================================
+const TEAM_SLOTS = ['campeon', 'subcampeon', 'tercero'];
+
+function refreshGridState(slot) {
+  const container = document.getElementById(`grid-${slot}`);
+  const picked = new Set(TEAM_SLOTS.filter(s => s !== slot && STATE[s]).map(s => STATE[s]));
+  container.querySelectorAll('.team-card').forEach(card => {
+    const id = card.dataset.id;
+    card.classList.remove('selected', 'disabled');
+    if (id === STATE[slot]) card.classList.add('selected');
+    else if (picked.has(id)) card.classList.add('disabled');
+  });
+}
+
+function refreshAllGridStates() {
+  TEAM_SLOTS.forEach(refreshGridState);
+}
+
+function refreshPlayerList() {
+  document.querySelectorAll('.player-row').forEach(row => {
+    const isSelected = row.dataset.id === STATE.goleador;
+    row.classList.toggle('selected', isSelected);
+    row.querySelector('.player-check').style.display = isSelected ? '' : 'none';
+  });
+}
+
+// ============================================================
+// PICK UI UPDATE
+// ============================================================
+function updatePickUI(slot) {
+  const sec = document.getElementById(`sec-${slot}`);
+  const badge = document.getElementById(`badge-${slot}`);
+  const preview = document.getElementById(`preview-${slot}`);
+  const hint = document.getElementById(`hint-${slot}`);
+
+  if (slot === 'goleador') {
+    const g = STATE.goleador ? getGoleador(STATE.goleador) : null;
+    if (g) {
+      sec.classList.add('completed'); sec.classList.remove('active');
+      badge.textContent = 'LISTO'; badge.className = 'pick-badge done';
+      preview.style.display = 'flex';
+      preview.innerHTML = `<span class="sel-flag">${g.flag}</span>${g.nombre}`;
+      if (hint) hint.textContent = g.nombre;
+    } else {
+      sec.classList.remove('completed', 'active');
+      badge.textContent = 'PENDIENTE'; badge.className = 'pick-badge pending';
+      preview.style.display = 'none';
+    }
+  } else {
+    const eq = STATE[slot] ? getEquipo(STATE[slot]) : null;
+    if (eq) {
+      sec.classList.add('completed'); sec.classList.remove('active');
+      badge.textContent = 'LISTO'; badge.className = 'pick-badge done';
+      preview.style.display = 'flex';
+      preview.innerHTML = `<span class="sel-flag">${eq.flag}</span>${eq.nombre}`;
+      if (hint) hint.textContent = eq.nombre;
+    } else {
+      sec.classList.remove('completed', 'active');
+      badge.textContent = 'PENDIENTE'; badge.className = 'pick-badge pending';
+      preview.style.display = 'none';
+    }
+  }
+}
+
+// ============================================================
+// PROGRESS
+// ============================================================
+function updateProgress() {
+  const count = ['campeon','subcampeon','tercero','goleador'].filter(k => STATE[k]).length;
+  document.getElementById('prog-fill').style.width = `${count * 25}%`;
+  document.getElementById('prog-num').textContent = count;
+}
+
+// ============================================================
+// SUMMARY
+// ============================================================
+function updateSummary() {
+  const allDone = STATE.campeon && STATE.subcampeon && STATE.tercero && STATE.goleador;
+  const card = document.getElementById('summary-card');
+  if (!allDone) { card.classList.remove('visible'); return; }
+  card.classList.add('visible');
+
+  const eq1 = getEquipo(STATE.campeon);
+  const eq2 = getEquipo(STATE.subcampeon);
+  const eq3 = getEquipo(STATE.tercero);
+  const gol = getGoleador(STATE.goleador);
+
+  document.getElementById('summary-rows').innerHTML = `
+    <div class="summary-row">
+      <span class="summary-row-icon">🏆</span>
+      <span class="summary-row-label">Campeón</span>
+      <span class="summary-row-value"><span class="summary-row-flag">${eq1.flag}</span>${eq1.nombre}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-row-icon">🥈</span>
+      <span class="summary-row-label">Subcampeón</span>
+      <span class="summary-row-value"><span class="summary-row-flag">${eq2.flag}</span>${eq2.nombre}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-row-icon">🥉</span>
+      <span class="summary-row-label">3er Puesto</span>
+      <span class="summary-row-value"><span class="summary-row-flag">${eq3.flag}</span>${eq3.nombre}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-row-icon">⚽</span>
+      <span class="summary-row-label">Goleador</span>
+      <span class="summary-row-value"><span class="summary-row-flag">${gol.flag}</span>${gol.nombre}</span>
+    </div>
+  `;
+}
+
+// ============================================================
+// SAVE BUTTON
+// ============================================================
+function updateSaveButton() {
+  const btn = document.getElementById('btn-save');
+  const allDone = STATE.campeon && STATE.subcampeon && STATE.tercero && STATE.goleador;
+  btn.disabled = !allDone || isLocked;
+}
+
+// ============================================================
+// SEARCH / FILTER
+// ============================================================
+window.filterTeams = function(slot, query) {
+  const q = query.trim().toLowerCase();
+  const container = document.getElementById(`grid-${slot}`);
+  let any = false;
+  container.querySelectorAll('.team-card').forEach(card => {
+    const match = !q || card.dataset.nombre.includes(q);
+    card.classList.toggle('hidden', !match);
+    if (match) any = true;
+  });
+  // No-results message
+  let nr = container.nextElementSibling;
+  if (nr && nr.classList.contains('no-results')) nr.remove();
+  if (!any && q) {
+    const msg = document.createElement('div');
+    msg.className = 'no-results'; msg.textContent = 'Sin resultados';
+    container.after(msg);
+  }
+};
+
+window.filterPlayers = function(query) {
+  const q = query.trim().toLowerCase();
+  const container = document.getElementById('list-goleador');
+  let any = false;
+  container.querySelectorAll('.player-row').forEach(row => {
+    const match = !q || row.dataset.nombre.includes(q);
+    row.classList.toggle('hidden', !match);
+    if (match) any = true;
+  });
+  let nr = container.nextElementSibling;
+  if (nr && nr.classList.contains('no-results')) nr.remove();
+  if (!any && q) {
+    const msg = document.createElement('div');
+    msg.className = 'no-results'; msg.textContent = 'Sin resultados';
+    container.after(msg);
+  }
+};
+
+// ============================================================
+// SECTION TOGGLE
+// ============================================================
+window.toggleSection = function(slot) {
+  const sec = document.getElementById(`sec-${slot}`);
+  const isOpen = sec.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.pick-section.open').forEach(s => {
+    s.classList.remove('open', 'active');
+  });
+  if (!isOpen) openSection(slot);
+};
+
+function openSection(slot) {
+  const sec = document.getElementById(`sec-${slot}`);
+  sec.classList.add('open', 'active');
+  // Clear search
+  const search = document.getElementById(`search-${slot}`);
+  if (search) { search.value = ''; }
+  if (slot === 'goleador') filterPlayers('');
+  else filterTeams(slot, '');
+}
+
+function closeSection(slot) {
+  const sec = document.getElementById(`sec-${slot}`);
+  sec.classList.remove('open', 'active');
+}
+
+// ============================================================
+// LOAD EXISTING PICKS
+// ============================================================
+function loadPicksFromData(picksData) {
+  if (!picksData) return;
+  if (picksData.campeon) STATE.campeon = picksData.campeon;
+  if (picksData.subcampeon) STATE.subcampeon = picksData.subcampeon;
+  if (picksData.tercero) STATE.tercero = picksData.tercero;
+  if (picksData.goleador) STATE.goleador = picksData.goleador;
+}
+
+function renderLockedView() {
+  // Show locked banner + summary
+  document.getElementById('locked-banner').classList.add('visible');
+  document.getElementById('btn-save').style.display = 'none';
+  // Show picks as readonly (sections collapsed, readonly state)
+  document.querySelectorAll('.pick-section-header').forEach(h => {
+    h.style.cursor = 'default';
+    h.onclick = null;
+  });
+  document.querySelectorAll('.pick-chevron').forEach(c => c.style.display = 'none');
+}
+
+// ============================================================
+// SAVE PICKS
+// ============================================================
+window.guardarPicks = async function() {
+  if (isLocked) return;
+  if (!STATE.campeon || !STATE.subcampeon || !STATE.tercero || !STATE.goleador) {
+    showToast('Completa los 4 picks antes de guardar');
+    return;
+  }
+
+  const btn = document.getElementById('btn-save');
+  const btnText = document.getElementById('btn-save-text');
+  btn.classList.add('loading');
+  btn.disabled = true;
+  btnText.textContent = '⏳ GUARDANDO...';
+
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+
+    const userId = session.user.id;
+
+    // Read current picks_data to avoid overwriting v1 picks
+    const { data: actual, error: readErr } = await supabase
+      .from('usuarios')
+      .select('picks_data')
+      .eq('id', userId)
+      .single();
+
+    if (readErr) throw readErr;
+
+    const base = actual?.picks_data || {};
+    const nuevo = {
+      ...base,
+      v2: {
+        campeon: STATE.campeon,
+        subcampeon: STATE.subcampeon,
+        tercero: STATE.tercero,
+        goleador: STATE.goleador,
+        version: 'v2',
+        saved_at: new Date().toISOString()
+      }
+    };
+
+    const { error } = await supabase
+      .from('usuarios')
+      .update({ picks_data: nuevo })
+      .eq('id', userId);
+
+    if (error) throw error;
+
+    isSaved = true;
+    document.getElementById('success-banner').classList.add('visible');
+    document.getElementById('summary-card').classList.remove('visible');
+    btn.style.display = 'none';
+    showToast('¡Picks guardados exitosamente!', 'success');
+
+    // Scroll to top of page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  } catch (err) {
+    console.error('Error guardando picks:', err);
+    showToast('Error al guardar. Intenta de nuevo.');
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btnText.textContent = '💾 GUARDAR PICKS';
+  }
+};
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  try {
+    // Auth check
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = 'login.html';
+      return;
+    }
+    currentUserId = session.user.id;
+
+    // Check deadline
+    checkDeadline();
+
+    // Fetch user profile + existing picks
+    const { data: perfil, error: perfilErr } = await supabase
+      .from('usuarios')
+      .select('id, nombre, activo, picks_data')
+      .eq('id', currentUserId)
+      .single();
+
+    if (perfilErr) throw perfilErr;
+
+    // Build UI
+    buildTeamGrid('campeon');
+    buildTeamGrid('subcampeon');
+    buildTeamGrid('tercero');
+    buildPlayerList();
+
+    // Load existing v2 picks if any
+    const existingV2 = perfil?.picks_data?.v2 || null;
+    if (existingV2) {
+      loadPicksFromData(existingV2);
+      isSaved = true;
+    }
+
+    // Refresh visual state
+    refreshAllGridStates();
+    refreshPlayerList();
+    ['campeon','subcampeon','tercero','goleador'].forEach(updatePickUI);
+    updateProgress();
+    updateSummary();
+    updateSaveButton();
+
+    // Handle locked state
+    if (isLocked) {
+      renderLockedView();
+    } else if (isSaved) {
+      // Show success banner (already has picks, not locked yet — can update)
+      document.getElementById('success-banner').classList.add('visible');
+      document.getElementById('success-banner').querySelector('.success-msg').innerHTML =
+        'Tus picks están guardados. Puedes modificarlos hasta el <strong>11 de junio de 2026 a las 5:30 PM Colombia</strong>.';
+      document.getElementById('btn-save').textContent = '🔄 ACTUALIZAR PICKS';
+      // Re-enable button since they have existing picks and can update
+      const btn = document.getElementById('btn-save');
+      const allDone = STATE.campeon && STATE.subcampeon && STATE.tercero && STATE.goleador;
+      btn.disabled = !allDone;
+    }
+
+    hideLoading();
+
+    // Open first incomplete section
+    if (!isLocked) {
+      const firstIncomplete = ['campeon','subcampeon','tercero','goleador'].find(k => !STATE[k]);
+      if (firstIncomplete) openSection(firstIncomplete);
+    }
+
+  } catch (err) {
+    console.error('Error en init:', err);
+    hideLoading();
+    showToast('Error al cargar la página. Recarga.');
+  }
+}
+
+init();
+</script>
+</body>
+</html>

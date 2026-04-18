@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rosca Mundial V2 — Inscripción Picks Rápidos 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --navy:#0D1B3E;--navy-light:#1a2d5a;--gold:#E8A020;--gold-dark:#c07818;
+  --red:#CE1126;--cream:#FAFBFF;--white:#ffffff;--border:#d8e2f0;
+}
+body{font-family:"Nunito",sans-serif;background:var(--navy);min-height:100vh;display:flex;align-items:stretch;overflow-x:hidden;}
+
+/* MODALES */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--white);border-radius:20px;max-width:580px;width:100%;max-height:88vh;overflow-y:auto;position:relative;}
+.modal-header{background:var(--navy);padding:22px 28px 18px;border-radius:20px 20px 0 0;position:sticky;top:0;z-index:1;}
+.modal-header h2{font-family:"Bebas Neue",sans-serif;font-size:24px;letter-spacing:2px;color:var(--gold);line-height:1;}
+.modal-header p{font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;}
+.modal-close{position:absolute;top:14px;right:18px;background:rgba(255,255,255,0.1);border:none;color:white;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.modal-body{padding:24px 28px;}
+.reg-section{margin-bottom:16px;}
+.reg-section h3{font-family:"Bebas Neue",sans-serif;font-size:17px;letter-spacing:1px;color:var(--navy);border-bottom:2px solid var(--gold);padding-bottom:5px;margin-bottom:10px;margin-top:16px;}
+.reg-section h3:first-child{margin-top:0;}
+.reg-section p,.reg-section li{font-size:13px;color:#444;line-height:1.7;font-weight:600;margin-bottom:5px;}
+.reg-section ul,.reg-section ol{padding-left:18px;}
+.reg-highlight{background:#FFF8E8;border-left:3px solid var(--gold);padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#555;font-weight:600;line-height:1.6;}
+.v2-pick-pill{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:var(--gold);font-family:"Bebas Neue",sans-serif;font-size:13px;letter-spacing:1px;padding:4px 12px;border-radius:20px;margin:3px 2px;}
+
+/* BRAND PANEL */
+.brand-panel{width:42%;background:var(--navy);display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden;}
+.brand-panel::before{content:"";position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(232,160,32,0.08) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);}
+/* V2 poster background */
+.brand-panel::after{content:"";position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1920&q=80') center/cover no-repeat;opacity:0.15;z-index:0;}
+.brand-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:40px 32px;width:100%;}
+.colombia-stripe{position:absolute;top:0;left:0;right:0;height:5px;display:flex;}
+.stripe-yellow{flex:2;background:#F5C400;}
+.stripe-blue{flex:1;background:#003087;}
+.stripe-red{flex:1;background:#CE1126;}
+.nav-buttons{display:flex;flex-direction:column;gap:8px;width:100%;max-width:280px;margin-bottom:32px;}
+.nav-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.75);padding:8px 14px;border-radius:8px;font-family:"Nunito",sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+.nav-btn:hover{background:rgba(232,160,32,0.15);border-color:rgba(232,160,32,0.4);color:var(--gold);}
+.logo-area{text-align:center;margin-bottom:24px;}
+.logo-img{width:110px;height:110px;object-fit:contain;border-radius:50%;box-shadow:0 0 40px rgba(232,160,32,0.25);}
+.brand-v2-badge{font-family:"Nunito",sans-serif;font-size:10px;font-weight:800;letter-spacing:4px;text-transform:uppercase;color:var(--gold);background:rgba(232,160,32,0.12);border:1px solid rgba(232,160,32,0.25);border-radius:20px;padding:3px 14px;display:inline-block;margin-bottom:8px;}
+.brand-title{font-family:"Bebas Neue",sans-serif;font-size:48px;letter-spacing:6px;color:var(--gold);line-height:1;text-align:center;}
+.brand-subtitle{font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-top:4px;text-align:center;}
+.brand-picks-showcase{display:flex;flex-direction:column;gap:8px;width:100%;max-width:260px;margin-top:24px;}
+.pick-preview{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 14px;}
+.pick-preview-num{font-family:"Bebas Neue",sans-serif;font-size:22px;color:var(--gold);width:28px;flex-shrink:0;line-height:1;}
+.pick-preview-info{flex:1;}
+.pick-preview-title{font-family:"Bebas Neue",sans-serif;font-size:14px;letter-spacing:1px;color:#fff;line-height:1;}
+.pick-preview-sub{font-size:10px;color:rgba(255,255,255,0.4);font-weight:600;margin-top:1px;}
+.progress-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px 18px;width:100%;max-width:280px;margin-top:20px;}
+.progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.progress-label{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);}
+.progress-count{font-family:"Bebas Neue",sans-serif;font-size:20px;color:var(--gold);letter-spacing:2px;}
+.progress-bar-bg{background:rgba(255,255,255,0.1);border-radius:999px;height:6px;overflow:hidden;margin-bottom:4px;}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,#c07818,var(--gold));border-radius:999px;width:0;transition:width 1.5s ease;}
+.progress-pct{font-size:10px;color:rgba(255,255,255,0.3);text-align:right;}
+
+/* FORM PANEL */
+.form-panel{flex:1;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;overflow-y:auto;}
+.form-container{width:100%;max-width:440px;}
+.form-eyebrow{font-size:11px;font-weight:800;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:6px;}
+.form-title{font-family:"Bebas Neue",sans-serif;font-size:36px;color:var(--navy);letter-spacing:2px;line-height:1.1;margin-bottom:6px;}
+.form-subtitle{font-size:13px;color:#666;font-weight:600;margin-bottom:18px;line-height:1.5;}
+.form-note{background:#EEF4FF;border-left:3px solid #185FA5;padding:9px 13px;border-radius:0 8px 8px 0;font-size:12px;color:#0C447C;font-weight:700;margin-bottom:20px;line-height:1.5;}
+.field-wrap{margin-bottom:14px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+label{display:block;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#888;margin-bottom:5px;}
+input{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-family:"Nunito",sans-serif;font-size:14px;font-weight:600;color:var(--navy);background:var(--white);transition:border-color 0.2s;outline:none;}
+input:focus{border-color:var(--navy);}
+input.error{border-color:var(--red);}
+.error-msg{font-size:11px;color:var(--red);font-weight:700;margin-top:4px;display:none;}
+input.error + .error-msg{display:block;}
+.input-hint{font-size:10px;color:#aaa;margin-top:3px;font-weight:600;}
+.pago-section{background:var(--navy);border-radius:13px;padding:16px;margin-bottom:14px;}
+.pago-title{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:10px;}
+.pago-metodos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.pago-metodo{padding:9px 6px;border-radius:9px;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);cursor:pointer;text-align:center;transition:all 0.2s;}
+.pago-metodo.active{border-color:var(--gold);background:rgba(232,160,32,0.1);}
+.pago-metodo-icon{font-size:18px;display:block;margin-bottom:3px;}
+.pago-metodo-label{font-size:10px;font-weight:800;color:rgba(255,255,255,0.6);letter-spacing:1px;}
+.pago-total{display:flex;justify-content:space-between;align-items:center;padding-top:11px;border-top:1px solid rgba(255,255,255,0.08);}
+.pago-total-label{font-size:12px;color:rgba(255,255,255,0.4);font-weight:600;}
+.pago-total-value{font-family:"Bebas Neue",sans-serif;font-size:25px;color:var(--gold);letter-spacing:2px;}
+.terminos-box{background:#FFF8E8;border:2px solid var(--gold);border-radius:11px;padding:13px 15px;margin-bottom:14px;}
+.terminos{display:flex;align-items:flex-start;gap:10px;}
+.terminos input[type="checkbox"]{width:17px;height:17px;flex-shrink:0;margin-top:2px;accent-color:var(--navy);cursor:pointer;}
+.terminos label{font-size:13px;font-weight:700;color:#444;text-transform:none;letter-spacing:0;cursor:pointer;line-height:1.5;}
+.terminos label a{color:var(--navy);text-decoration:underline;cursor:pointer;}
+.terminos-warning{font-size:11px;color:var(--red);font-weight:700;margin-top:6px;display:none;}
+.terminos-warning.show{display:block;}
+.btn-submit{width:100%;padding:14px;background:var(--navy);color:var(--white);border:none;border-radius:12px;font-family:"Bebas Neue",sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;}
+.btn-submit:hover{background:var(--navy-light);transform:translateY(-1px);}
+.btn-wompi-badge{background:rgba(255,255,255,0.12);border-radius:5px;padding:2px 7px;font-size:10px;letter-spacing:1px;color:rgba(255,255,255,0.6);}
+.success-overlay{display:none;position:fixed;inset:0;background:rgba(13,27,62,0.96);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center;padding:40px;}
+.success-overlay.show{display:flex;animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fillBar{to{width:0%}}
+@media(max-width:768px){body{flex-direction:column;}.brand-panel{width:100%;}.logo-img{width:100px;height:100px;}.brand-title{font-size:36px;}.form-panel{padding:28px 20px;}.form-row{grid-template-columns:1fr;gap:0;}}
+</style>
+</head>
+<body>
+
+<!-- MODAL ¿QUÉ ES? -->
+<div class="modal-overlay" id="modalQueEs">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>¿Qué es Rosca Mundial V2?</h2>
+      <p>Copa Mundial 2026 — Picks Rápidos</p>
+      <button class="modal-close" onclick="closeModal('modalQueEs')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="reg-highlight">
+        Rosca Mundial V2 es la versión <strong>simple y rápida</strong> de la polla deportiva del Mundial 2026. Solo 4 predicciones antes del inicio del torneo — ¡sin complicaciones!
+      </div>
+      <div class="reg-section">
+        <h3>¿Cómo funciona?</h3>
+        <p>Cada participante paga <strong>$30.000 COP</strong> una sola vez y hace <strong>4 predicciones</strong> antes del primer partido:</p>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;">
+          <span class="v2-pick-pill">🏆 Campeón Mundial</span>
+          <span class="v2-pick-pill">🥈 Subcampeón</span>
+          <span class="v2-pick-pill">🥉 3er Puesto</span>
+          <span class="v2-pick-pill">⚽ Máximo Goleador</span>
+        </div>
+        <p>Las predicciones se cierran el <strong>Jueves 11 de Junio de 2026 a las 5:30 PM (Colombia)</strong>, 30 minutos antes del partido inaugural.</p>
+
+        <h3>Ranking y Premios</h3>
+        <p>El ranking se determina por el total de predicciones correctas (0–4 puntos). Los 4 primeros del ranking ganan los premios principales. Hay 8 premios en total:</p>
+        <ul>
+          <li>🥇 1er lugar ranking — Premio principal</li>
+          <li>🥈 2do lugar ranking</li>
+          <li>🥉 3er lugar ranking</li>
+          <li>🏅 4to lugar ranking</li>
+          <li>⚽ El Killer — quien acierte el máximo goleador</li>
+          <li>🏆 Premio 1er acierto — quien acierte el campeón</li>
+          <li>🥈 Premio 2do acierto — quien acierte el subcampeón</li>
+          <li>🥉 Premio 3er acierto — quien acierte el 3er puesto</li>
+        </ul>
+        <p style="margin-top:8px;font-size:12px;color:#888;">Los premios de acierto se otorgan a <em>un solo ganador</em>. Si varios participantes aciertan, se aplican los criterios de desempate.</p>
+
+        <h3>Criterios de desempate</h3>
+        <ol>
+          <li>Mayor puntaje en el ranking general (más predicciones correctas).</li>
+          <li>Mayor puntaje en El Killer (tabla del goleador).</li>
+          <li>Fecha de registro: gana quien se haya registrado primero en la plataforma.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL REGLAMENTO -->
+<div class="modal-overlay" id="modalReglas">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>Reglamento V2</h2>
+      <p>Picks Rápidos 2026 — Términos oficiales</p>
+      <button class="modal-close" onclick="closeModal('modalReglas')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="reg-section">
+        <h3>1. Inscripción</h3>
+        <p>Inscripción: <strong>$30.000 COP</strong>, pago único e irrevocable mediante Wompi. Máximo <strong>2,000 participantes</strong>. El pago confirma la aceptación del reglamento.</p>
+
+        <h3>2. Las 4 predicciones</h3>
+        <p>Cada participante selecciona, una sola vez y de forma definitiva:</p>
+        <ul>
+          <li><strong>🏆 Campeón Mundial</strong> — equipo ganador del torneo.</li>
+          <li><strong>🥈 Subcampeón</strong> — equipo finalista perdedor.</li>
+          <li><strong>🥉 Tercer puesto</strong> — equipo ganador del partido por el tercer lugar.</li>
+          <li><strong>⚽ Máximo Goleador</strong> — jugador con más goles anotados en el torneo.</li>
+        </ul>
+        <p>Los tres equipos seleccionados deben ser distintos. Las predicciones no pueden modificarse una vez guardadas.</p>
+
+        <h3>3. Cierre de predicciones</h3>
+        <p>El cierre es el <strong>11 de Junio de 2026 a las 5:30 PM (hora Colombia, UTC–5)</strong>. Cualquier predicción no completada antes de esa hora queda descalificada automáticamente.</p>
+
+        <h3>4. Ranking y puntuación</h3>
+        <p>Cada predicción correcta otorga <strong>1 punto</strong>. El ranking se ordena de mayor a menor puntaje (máximo 4 puntos). Los datos oficiales provienen de <strong>Sportmonks</strong>.</p>
+
+        <h3>5. Premios</h3>
+        <ul>
+          <li>🥇 1er lugar ranking</li>
+          <li>🥈 2do lugar ranking</li>
+          <li>🥉 3er lugar ranking</li>
+          <li>🏅 4to lugar ranking</li>
+          <li>⚽ El Killer: quien acierte el goleador</li>
+          <li>🏆 Premio 1er acierto: quien acierte el campeón</li>
+          <li>🥈 Premio 2do acierto: quien acierte el subcampeón</li>
+          <li>🥉 Premio 3er acierto: quien acierte el 3er puesto</li>
+        </ul>
+        <p style="margin-top:6px;font-size:12px;color:#888;">Los montos exactos de cada premio se publicarán el 15 de Mayo de 2026 una vez se conozca el número final de participantes.</p>
+
+        <h3>6. Criterios de desempate</h3>
+        <ol>
+          <li>Mayor puntaje en el ranking general.</li>
+          <li>Mayor puntaje en la categoría goleador (El Killer).</li>
+          <li>Fecha de registro: gana quien se haya registrado <em>primero</em> en la plataforma.</li>
+        </ol>
+
+        <h3>7. Datos y privacidad</h3>
+        <p>Los datos personales se usan exclusivamente para la operación de Rosca Mundial V2. No se comparten con terceros. El correo registrado recibirá notificaciones del torneo.</p>
+
+        <h3>8. Disposiciones generales</h3>
+        <p>El organizador se reserva el derecho de descalificar participantes por conducta irregular. En caso de cancelación del torneo por FIFA, los pagos serán reembolsados íntegramente.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BRAND PANEL -->
+<div class="brand-panel">
+  <div class="colombia-stripe"><div class="stripe-yellow"></div><div class="stripe-blue"></div><div class="stripe-red"></div></div>
+  <div class="brand-content">
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="openModal('modalQueEs')"><span>⚽</span> ¿Qué es Rosca V2?</button>
+      <button class="nav-btn" onclick="openModal('modalReglas')"><span>📋</span> Reglamento V2</button>
+      <button class="nav-btn" onclick="window.location.href='index.html'"><span>🏠</span> Ir a Rosca V1</button>
+    </div>
+
+    <div class="logo-area">
+      <img src="logo-rosca-mundial.png" alt="Rosca Mundial" class="logo-img" onerror="this.style.display='none'">
+    </div>
+
+    <div class="brand-v2-badge">PICKS RÁPIDOS · 2026</div>
+    <div class="brand-title">POLLA V2</div>
+    <div class="brand-subtitle">MUNDIAL USA · MÉXICO · CANADÁ 2026</div>
+
+    <div class="brand-picks-showcase">
+      <div class="pick-preview">
+        <div class="pick-preview-num">1</div>
+        <div class="pick-preview-info">
+          <div class="pick-preview-title">🏆 CAMPEÓN MUNDIAL</div>
+          <div class="pick-preview-sub">Equipo ganador del torneo</div>
+        </div>
+      </div>
+      <div class="pick-preview">
+        <div class="pick-preview-num">2</div>
+        <div class="pick-preview-info">
+          <div class="pick-preview-title">🥈 SUBCAMPEÓN</div>
+          <div class="pick-preview-sub">Finalista perdedor</div>
+        </div>
+      </div>
+      <div class="pick-preview">
+        <div class="pick-preview-num">3</div>
+        <div class="pick-preview-info">
+          <div class="pick-preview-title">🥉 TERCER PUESTO</div>
+          <div class="pick-preview-sub">Ganador del 3° vs 4°</div>
+        </div>
+      </div>
+      <div class="pick-preview">
+        <div class="pick-preview-num">4</div>
+        <div class="pick-preview-info">
+          <div class="pick-preview-title">⚽ MÁXIMO GOLEADOR</div>
+          <div class="pick-preview-sub">Jugador con más goles</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-card">
+      <div class="progress-header">
+        <span class="progress-label">Inscritos V2</span>
+        <span class="progress-count" id="inscritosCount">0 / 2,000</span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-pct" id="progressPct">0% completado</div>
+    </div>
+  </div>
+</div>
+
+<!-- FORM PANEL -->
+<div class="form-panel">
+  <div class="form-container">
+    <div class="form-eyebrow">Inscripción 2026 — V2</div>
+    <div class="form-title">Polla Rápida V2</div>
+    <div class="form-subtitle">Completa tus datos y realiza el pago para asegurar tu cupo. Luego harás tus 4 predicciones.</div>
+    <div class="form-note">💡 Una vez confirmado el pago podrás seleccionar tus <strong>4 predicciones</strong>: campeón, subcampeón, 3er puesto y goleador.</div>
+
+    <form id="regForm" novalidate>
+      <div class="field-wrap">
+        <label for="nombre">Nombre completo</label>
+        <input type="text" id="nombre" placeholder="Ej: Carlos Andrés Pérez">
+        <div class="error-msg">Ingresa tu nombre completo (nombre y apellido)</div>
+      </div>
+      <div class="field-wrap">
+        <div class="form-row">
+          <div>
+            <label for="correo">Correo electrónico</label>
+            <input type="email" id="correo" placeholder="tucorreo@gmail.com" autocomplete="email">
+            <div class="error-msg">Ingresa un correo válido</div>
+          </div>
+          <div>
+            <label for="celular">Celular</label>
+            <input type="tel" id="celular" placeholder="300 123 4567" maxlength="15">
+            <div class="error-msg">Ingresa tu celular</div>
+          </div>
+        </div>
+      </div>
+      <div class="field-wrap">
+        <div class="form-row">
+          <div>
+            <label for="documento">Número de documento</label>
+            <input type="text" id="documento" placeholder="1234567890" maxlength="20">
+            <div class="error-msg">Ingresa tu documento</div>
+          </div>
+          <div>
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" placeholder="Mín. 8 caracteres">
+            <div class="error-msg" id="pwError">Mín. 8 caracteres, 1 mayúscula, 1 especial</div>
+            <div class="input-hint">Mín. 8 car. · 1 mayús. · 1 especial (!@#$...)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pago-section">
+        <div class="pago-title">Método de pago — Wompi</div>
+        <div class="pago-metodos">
+          <div class="pago-metodo active" onclick="selectPago(this)"><span class="pago-metodo-icon">🏦</span><span class="pago-metodo-label">PSE</span></div>
+          <div class="pago-metodo" onclick="selectPago(this)"><span class="pago-metodo-icon">📱</span><span class="pago-metodo-label">Nequi</span></div>
+          <div class="pago-metodo" onclick="selectPago(this)"><span class="pago-metodo-icon">💳</span><span class="pago-metodo-label">Tarjeta</span></div>
+        </div>
+        <div class="pago-total">
+          <span class="pago-total-label">Inscripción única V2</span>
+          <span class="pago-total-value">$30.000 COP</span>
+        </div>
+      </div>
+
+      <div class="terminos-box">
+        <div class="terminos">
+          <input type="checkbox" id="terminos">
+          <label for="terminos">He leído el <a onclick="openModal('modalReglas');return false;" href="#">reglamento oficial de Rosca V2</a>, lo entiendo y estoy de acuerdo con todos sus términos.</label>
+        </div>
+        <div class="terminos-warning" id="terminosWarning">⚠️ Debes aceptar el reglamento para continuar</div>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        <span>Inscribirme y pagar</span>
+        <span class="btn-wompi-badge">WOMPI</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+  <div style="font-size:64px;">🎉</div>
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);letter-spacing:3px;">¡REGISTRO EXITOSO!</div>
+  <div style="font-size:15px;color:rgba(255,255,255,0.8);max-width:340px;line-height:1.6;font-weight:600;">
+    Revisa tu correo <strong id="successEmail" style="color:var(--gold);"></strong>.<br>
+    Luego de confirmar el pago, haz tus <strong>4 predicciones</strong>.
+  </div>
+  <button onclick="window.location.href='picks-v2.html'" style="margin-top:10px;background:var(--gold);color:var(--navy);font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;padding:14px 36px;border:none;border-radius:12px;cursor:pointer;">
+    ⚽ HACER MIS PREDICCIONES
+  </button>
+</div>
+
+<script>
+// Modals
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', function(e) { if (e.target === m) m.classList.remove('open'); });
+});
+
+// Payment method selector
+function selectPago(el) {
+  document.querySelectorAll('.pago-metodo').forEach(m => m.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Validators
+function validarCorreo(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); }
+function validarPassword(v) { return v.length >= 8 && /[A-Z]/.test(v) && /[a-z]/.test(v) && /[!@#$%^&*(),.?":{}|<>_\-+=/\\[\]~`]/.test(v); }
+
+// Inscritos V2 counter
+(function() {
+  var SUPA_URL = 'https://hwhlmuixnxevzbabkqcy.supabase.co';
+  var ANON_KEY = 'sb_publishable_Sub3P-1VhdcnNfhNzeet1A_yhQt_wJS';
+  fetch(SUPA_URL + '/rest/v1/usuarios?activo=eq.true&version=eq.v2&select=id', {
+    headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY, 'Prefer': 'count=exact', 'Range': '0-0' }
+  }).then(function(r) {
+    var total = parseInt((r.headers.get('content-range') || '').split('/')[1] || '0', 10);
+    var pct = Math.min(Math.round(total / 20), 100); // /2000 * 100
+    var c = document.getElementById('inscritosCount');
+    var f = document.getElementById('progressFill');
+    var p = document.getElementById('progressPct');
+    if (c) c.textContent = total + ' / 2,000';
+    if (f) f.style.width = pct + '%';
+    if (p) p.textContent = pct + '% completado';
+  }).catch(function() {});
+})();
+</script>
+
+<script>
+// Form submission
+document.getElementById('regForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  let valid = true;
+  const nombre = document.getElementById('nombre');
+  const correo = document.getElementById('correo');
+  const celular = document.getElementById('celular');
+  const documento = document.getElementById('documento');
+  const password = document.getElementById('password');
+  [nombre, correo, celular, documento, password].forEach(f => f.classList.remove('error'));
+
+  if (!nombre.value.trim() || nombre.value.trim().split(' ').filter(Boolean).length < 2) { nombre.classList.add('error'); valid = false; }
+  if (!validarCorreo(correo.value)) { correo.classList.add('error'); valid = false; }
+  if (celular.value.replace(/\D/g, '').length < 7) { celular.classList.add('error'); valid = false; }
+  if (documento.value.trim().length < 5) { documento.classList.add('error'); valid = false; }
+  if (!validarPassword(password.value)) { password.classList.add('error'); valid = false; }
+
+  const t = document.getElementById('terminos');
+  const w = document.getElementById('terminosWarning');
+  if (!t.checked) { w.classList.add('show'); valid = false; } else { w.classList.remove('show'); }
+  if (!valid) return;
+
+  const btn = document.querySelector('.btn-submit');
+  btn.disabled = true;
+  btn.innerHTML = '<span>Procesando...</span>';
+
+  const payload = {
+    nombre_completo: nombre.value.trim(),
+    correo: correo.value.trim().toLowerCase(),
+    celular: celular.value.trim(),
+    documento: documento.value.trim(),
+    password: password.value,
+    version: 'v2'
+  };
+
+  try {
+    const res = await fetch('/api/registro', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      btn.disabled = false;
+      btn.innerHTML = '<span>Inscribirme y pagar</span><span class="btn-wompi-badge">WOMPI</span>';
+      const errMsg = data.error || 'Error al registrarte. Intenta de nuevo.';
+      let alertBox = document.getElementById('reg-error-msg');
+      if (!alertBox) {
+        alertBox = document.createElement('div');
+        alertBox.id = 'reg-error-msg';
+        alertBox.style.cssText = 'background:rgba(206,17,38,0.12);border:1px solid rgba(206,17,38,0.3);color:#CE1126;font-size:13px;font-weight:700;padding:12px 16px;border-radius:10px;margin-top:12px;text-align:center;';
+        btn.parentNode.insertBefore(alertBox, btn.nextSibling);
+      }
+      alertBox.textContent = errMsg;
+      return;
+    }
+
+    const usuarioId = data.usuario_id;
+    document.getElementById('successEmail').textContent = payload.correo;
+
+    // Wompi widget
+    const wompiContainer = document.getElementById('wompi-container') || (() => {
+      const div = document.createElement('div');
+      div.id = 'wompi-container';
+      div.style.cssText = 'margin-top:20px;display:flex;justify-content:center;';
+      document.querySelector('.btn-submit').parentNode.insertBefore(div, document.querySelector('.btn-submit'));
+      return div;
+    })();
+
+    wompiContainer.innerHTML = '';
+    const script = document.createElement('script');
+    script.src = 'https://checkout.wompi.co/widget.js';
+    script.setAttribute('data-render', 'button');
+    script.setAttribute('data-public-key', 'pub_prod_dcEpPgbY0uKrMGVD6X3GEcsQGMeW686d');
+    script.setAttribute('data-currency', 'COP');
+    script.setAttribute('data-amount-in-cents', '3000000');
+    script.setAttribute('data-reference', usuarioId);
+
+    const firmaRes = await fetch('/api/firma', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ referencia: usuarioId })
+    });
+    const firmaData = await firmaRes.json();
+    script.setAttribute('data-signature:integrity', firmaData.firma);
+    script.setAttribute('data-redirect-url', 'https://roscamundial.com/picks-v2.html');
+    wompiContainer.appendChild(script);
+
+    btn.style.display = 'none';
+    document.getElementById('successOverlay').classList.add('show');
+
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerHTML = '<span>Inscribirme y pagar</span><span class="btn-wompi-badge">WOMPI</span>';
+    console.error(err);
+  }
+});
+</script>
+</body>
+</html>
