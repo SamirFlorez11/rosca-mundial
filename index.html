@@ -601,16 +601,16 @@
   // ── World Cup poster backgrounds ─────────────────────────────────────────────
 (function() {
   var POSTERS = [
-    'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1920&q=80',      // Estadio lleno de fans
-    'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1920&q=80',      // Celebración de gol
-    'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1920&q=80',      // Estadio de noche
-    'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1920&q=80',      // Balón en el pasto
-    'https://images.unsplash.com/photo-1556056504-5c7696c4c28d?w=1920&q=80',         // Interior estadio
-    'https://images.pexels.com/photos/1884574/pexels-photo-1884574.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',   // Fans festejando
-    'https://images.pexels.com/photos/274422/pexels-photo-274422.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',    // Acción en el campo
-    'https://images.pexels.com/photos/1618200/pexels-photo-1618200.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',  // Estadio exterior al atardecer
-    'https://images.pexels.com/photos/47730/the-ball-stadion-football-the-pitch-47730.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop', // Remate al arco
-    'https://images.pexels.com/photos/3621104/pexels-photo-3621104.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop'   // Multitud con banderas
+    'https://images.unsplash.com/photo-1705593973313-75de7bf95b56?q=80&w=1920&auto=format&fit=crop',
+    'https://cdn.pixabay.com/photo/2013/12/12/21/48/football-stadium-227561_1280.jpg',
+    'https://cdn.pixabay.com/photo/2018/06/30/23/53/stadium-3508631_1280.jpg',
+    'https://cdn.pixabay.com/photo/2015/05/22/04/01/brazil-778269_1280.jpg',
+    'https://cdn.pixabay.com/photo/2016/08/24/23/08/cristiano-ronaldo-1618341_1280.jpg',
+    'https://images.unsplash.com/photo-1671395781342-fd36baf0eda3?q=80&w=1920&auto=format&fit=crop',
+    'https://images.pexels.com/photos/27271701/pexels-photo-27271701.jpeg?auto=compress&cs=tinysrgb&w=1920',
+    'https://images.pexels.com/photos/19875958/pexels-photo-19875958.jpeg?auto=compress&cs=tinysrgb&w=1920',
+    'https://images.pexels.com/photos/27132896/pexels-photo-27132896.jpeg?auto=compress&cs=tinysrgb&w=1920',
+    'https://images.pexels.com/photos/27007399/pexels-photo-27007399.jpeg?auto=compress&cs=tinysrgb&w=1920'
   ];
 
   var leftEl, rightEl;
@@ -699,7 +699,7 @@
   (function() {
     var SUPA_URL = 'https://hwhlmuixnxevzbabkqcy.supabase.co';
     var ANON_KEY = 'sb_publishable_Sub3P-1VhdcnNfhNzeet1A_yhQt_wJS';
-    fetch(SUPA_URL + '/rest/v1/usuarios?activo=eq.true&select=id', {
+    fetch(SUPA_URL + '/rest/v1/usuarios?activo=eq.true&es_admin=eq.false&select=id', {
       headers: {
         'apikey': ANON_KEY,
         'Authorization': 'Bearer ' + ANON_KEY,
