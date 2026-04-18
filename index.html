@@ -327,6 +327,7 @@
       <button class="nav-btn" onclick="openModal('modalQueEs')"><span class="nav-btn-icon">⚽</span> ¿Qué es Rosca Mundial?</button>
       <button class="nav-btn" onclick="openModal('modalQuien')"><span class="nav-btn-icon">👤</span> ¿Quién está detrás?</button>
       <button class="nav-btn" onclick="openModal('modalReglas')"><span class="nav-btn-icon">📋</span> Paso a paso y reglamento</button>
+      <button class="nav-btn" id="btnV2Landing" style="display:none;border-color:rgba(232,160,32,0.45);color:var(--gold);background:rgba(232,160,32,0.1);" onclick="window.location.href='index-v2.html'"><span class="nav-btn-icon">⚡</span> Rosca V2 — Picks Rápidos</button>
     </div>
     <img id="logoImg" alt="Rosca Mundial" class="logo-img">
     <div class="brand-title">ROSCA<br><span>MUNDIAL</span></div>
@@ -668,6 +669,21 @@
     }
     tick();
     setInterval(tick, 1000);
+  })();
+
+  // ── Detectar si V2 está activa y mostrar botón ───────────────────────────
+  (function() {
+    var SUPA_URL = 'https://hwhlmuixnxevzbabkqcy.supabase.co';
+    var ANON_KEY = 'sb_publishable_Sub3P-1VhdcnNfhNzeet1A_yhQt_wJS';
+    fetch(SUPA_URL + '/rest/v1/versiones_config?version=eq.v2&select=activa', {
+      headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY }
+    }).then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data && data[0] && data[0].activa === true) {
+        var btn = document.getElementById('btnV2Landing');
+        if (btn) btn.style.display = 'flex';
+      }
+    }).catch(function(){});
   })();
 
   // ── Contador de inscritos desde Supabase ─────────────────────────────────

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Rosca Mundial 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --amarillo:#FCD116; --azul:#003087; --rojo:#CE1126;
+  --bg:#0a0e1a; --card:#111827; --card2:#1a2235;
+  --border:#1e2d45; --text:#e8eaf0; --muted:#6b7a99;
+  --gold:#f0b429; --green:#22c55e; --orange:#f97316; --red2:#ef4444;
+}
+body.dia {
+  --bg:#f0f4f8; --card:#ffffff; --card2:#e8edf5;
+  --border:#c5d0e0; --text:#0f172a; --muted:#4a5568; --amarillo:#1e3a8a;
+}
+body.dia .navbar { background: rgba(240,244,248,0.97); }
+body.dia .tricolor { filter: brightness(0.95); }
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Barlow',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+/* TRICOLOR */
+.tricolor { height:5px; background:linear-gradient(90deg,var(--amarillo) 33.33%,var(--azul) 33.33% 66.66%,var(--rojo) 66.66%); position:fixed; top:0; left:0; right:0; z-index:1000; }
+
+/* NAVBAR */
+.navbar { position:fixed; top:5px; left:0; right:0; z-index:999; background:rgba(10,14,26,0.97); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); padding:0 24px; height:60px; display:flex; align-items:center; justify-content:space-between; }
+.nav-left { display:flex; align-items:center; gap:12px; }
+.nav-brand { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px; color:var(--amarillo); }
+.nav-brand span { color:var(--text); font-size:10px; display:block; font-family:'Barlow Condensed',sans-serif; font-weight:600; }
+.admin-badge { background:linear-gradient(135deg,var(--rojo),#a00); color:#fff; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:11px; letter-spacing:2px; padding:3px 10px; border-radius:6px; }
+.nav-right { display:flex; align-items:center; gap:12px; }
+.btn-tema { background:none; border:1px solid var(--border); color:var(--muted); width:34px; height:34px; border-radius:8px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; }
+.btn-signout { background:none; border:1px solid var(--border); color:var(--muted); font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:1px; padding:6px 14px; border-radius:8px; cursor:pointer; transition:all 0.2s; }
+.btn-signout:hover { border-color:var(--rojo); color:var(--rojo); }
+
+/* MAIN */
+.main { padding: 80px 24px 40px; max-width: 1200px; margin: 0 auto; }
+.page-title { font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:3px; color:var(--amarillo); margin-bottom:4px; }
+.page-sub { font-size:13px; color:var(--muted); margin-bottom:28px; }
+
+/* STATS GRID */
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+.stat-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; }
+.stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.stat-card.gold::before { background:linear-gradient(90deg,var(--gold),#ffd666); }
+.stat-card.blue::before { background:linear-gradient(90deg,var(--azul),#4a90d9); }
+.stat-card.green::before { background:linear-gradient(90deg,var(--green),#4ade80); }
+.stat-card.orange::before { background:linear-gradient(90deg,var(--orange),#fb923c); }
+.stat-icon { font-size:26px; margin-bottom:8px; }
+.stat-value { font-family:'Bebas Neue',sans-serif; font-size:36px; color:var(--text); letter-spacing:1px; line-height:1; }
+.stat-label { font-size:11px; color:var(--muted); font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-top:4px; }
+.stat-sub { font-size:11px; color:var(--muted); margin-top:6px; }
+
+/* SECCIÓN */
+.section-title { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:2px; color:var(--text); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.section-title span { font-size:12px; color:var(--muted); font-family:'Barlow',sans-serif; letter-spacing:0; font-weight:600; }
+
+/* VERSIONES PANEL */
+.versiones-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:28px; }
+.version-panel { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; }
+.version-panel.v2-panel { border-color:rgba(252,209,22,0.2); }
+.vp-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.vp-name { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px; color:var(--text); }
+.vp-badge { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:11px; letter-spacing:1px; padding:3px 10px; border-radius:20px; }
+.vp-badge.activa { background:rgba(34,197,94,0.15); color:var(--green); border:1px solid rgba(34,197,94,0.3); }
+.vp-badge.inactiva { background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.25); }
+.vp-stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px; }
+.vp-stat { background:var(--card2); border-radius:10px; padding:10px 14px; }
+.vp-stat-val { font-family:'Bebas Neue',sans-serif; font-size:24px; color:var(--amarillo); letter-spacing:1px; }
+.vp-stat-lbl { font-size:10px; color:var(--muted); font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-top:2px; }
+.vp-deadline { font-size:12px; color:var(--muted); margin-bottom:16px; }
+.vp-deadline strong { color:var(--text); }
+.btn-activar { width:100%; padding:13px; font-family:'Bebas Neue',sans-serif; font-size:17px; letter-spacing:3px; border:none; border-radius:11px; cursor:pointer; transition:all 0.2s; }
+.btn-activar.activar { background:linear-gradient(135deg,var(--green),#16a34a); color:#fff; }
+.btn-activar.activar:hover { transform:translateY(-1px); box-shadow:0 4px 20px rgba(34,197,94,0.35); }
+.btn-activar.desactivar { background:rgba(239,68,68,0.12); color:#f87171; border:1px solid rgba(239,68,68,0.3); }
+.btn-activar.desactivar:hover { background:rgba(239,68,68,0.2); }
+.btn-activar:disabled { opacity:0.4; cursor:not-allowed; transform:none !important; }
+.vp-info { font-size:12px; color:var(--muted); margin-top:10px; text-align:center; line-height:1.5; }
+
+/* TABLA USUARIOS */
+.table-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:28px; }
+.table-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.table-search { background:var(--card2); border:1px solid var(--border); border-radius:9px; padding:8px 14px; color:var(--text); font-family:'Barlow',sans-serif; font-size:13px; width:240px; outline:none; }
+.table-search:focus { border-color:var(--amarillo); }
+.table-filters { display:flex; gap:8px; }
+.filter-btn { background:var(--card2); border:1px solid var(--border); color:var(--muted); font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px; letter-spacing:1px; padding:6px 12px; border-radius:8px; cursor:pointer; transition:all 0.2s; }
+.filter-btn.active { border-color:var(--amarillo); color:var(--amarillo); background:rgba(252,209,22,0.08); }
+.tabla { width:100%; border-collapse:collapse; }
+.tabla th { padding:10px 16px; text-align:left; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--border); background:var(--card2); }
+.tabla td { padding:12px 16px; font-size:13px; border-bottom:1px solid rgba(30,45,69,0.5); }
+.tabla tr:last-child td { border-bottom:none; }
+.tabla tr:hover td { background:var(--card2); }
+.badge-v { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:11px; letter-spacing:1px; padding:2px 8px; border-radius:20px; }
+.badge-v1 { background:rgba(0,48,135,0.2); color:#4a90d9; border:1px solid rgba(0,48,135,0.3); }
+.badge-v2 { background:rgba(252,209,22,0.12); color:var(--amarillo); border:1px solid rgba(252,209,22,0.25); }
+.badge-activo { background:rgba(34,197,94,0.1); color:var(--green); font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; }
+.badge-inactivo { background:rgba(239,68,68,0.1); color:#f87171; font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; }
+.badge-picks { background:rgba(34,197,94,0.1); color:var(--green); font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; }
+.badge-nopicks { background:rgba(249,115,22,0.12); color:var(--orange); font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; }
+.table-empty { padding:32px; text-align:center; color:var(--muted); font-size:13px; }
+.table-footer { padding:12px 20px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+.table-count { font-size:12px; color:var(--muted); }
+.pagination { display:flex; gap:6px; }
+.pg-btn { background:var(--card2); border:1px solid var(--border); color:var(--muted); font-size:12px; font-weight:700; padding:5px 10px; border-radius:7px; cursor:pointer; }
+.pg-btn:hover, .pg-btn.active { border-color:var(--amarillo); color:var(--amarillo); }
+
+/* MODAL CONFIRMAR */
+.confirm-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:500; align-items:center; justify-content:center; }
+.confirm-overlay.open { display:flex; }
+.confirm-box { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:32px; max-width:400px; width:100%; text-align:center; }
+.confirm-icon { font-size:48px; margin-bottom:12px; }
+.confirm-title { font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:2px; color:var(--text); margin-bottom:8px; }
+.confirm-msg { font-size:14px; color:var(--muted); line-height:1.6; margin-bottom:24px; }
+.confirm-btns { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.btn-cancel { background:none; border:1px solid var(--border); color:var(--muted); font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px; padding:11px; border-radius:10px; cursor:pointer; }
+.btn-ok { background:linear-gradient(135deg,var(--green),#16a34a); color:#fff; border:none; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px; padding:11px; border-radius:10px; cursor:pointer; }
+.btn-ok.danger { background:linear-gradient(135deg,var(--red2),#b91c1c); }
+
+/* TOAST */
+.toast { position:fixed; bottom:24px; right:24px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 20px; font-size:13px; font-weight:700; color:var(--text); z-index:9999; transform:translateY(80px); opacity:0; transition:all 0.3s; max-width:320px; }
+.toast.show { transform:translateY(0); opacity:1; }
+.toast.success { border-color:rgba(34,197,94,0.4); }
+.toast.error { border-color:rgba(239,68,68,0.4); }
+
+/* LOADING */
+#loadingScreen { position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:2000; flex-direction:column; gap:14px; }
+.loading-spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--amarillo); border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+@media(max-width:900px) {
+  .stats-grid { grid-template-columns:repeat(2,1fr); }
+  .versiones-grid { grid-template-columns:1fr; }
+}
+@media(max-width:600px) {
+  .stats-grid { grid-template-columns:1fr 1fr; }
+  .main { padding:72px 14px 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadingScreen">
+  <div class="loading-spinner"></div>
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:var(--muted);">VERIFICANDO ACCESO...</div>
+</div>
+
+<div class="tricolor"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-left">
+    <div class="nav-brand">
+      ROSCA MUNDIAL
+      <span>PANEL DE ADMINISTRACIÓN</span>
+    </div>
+    <button class="btn-tema" id="btnTema" onclick="toggleTema()" title="Cambiar modo">🌙</button>
+    <span class="admin-badge">⚙️ ADMIN</span>
+  </div>
+  <div class="nav-right">
+    <button class="btn-signout" onclick="cerrarSesion()">Cerrar sesión</button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main" id="mainContent" style="display:none;">
+
+  <div class="page-title">Panel de Administración</div>
+  <div class="page-sub" id="adminNombre">Rosca Mundial 2026</div>
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card gold">
+      <div class="stat-icon">👥</div>
+      <div class="stat-value" id="statV1">—</div>
+      <div class="stat-label">Inscritos V1</div>
+      <div class="stat-sub" id="statV1Pct">de 400 cupos</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-value" id="statV2">—</div>
+      <div class="stat-label">Inscritos V2</div>
+      <div class="stat-sub" id="statV2Pct">de 2,000 cupos</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon">✅</div>
+      <div class="stat-value" id="statPicksOk">—</div>
+      <div class="stat-label">Picks completos V1</div>
+      <div class="stat-sub">usuarios con picks guardados</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-value" id="statSinPicks">—</div>
+      <div class="stat-label">Sin picks V1</div>
+      <div class="stat-sub">inscritos pendientes</div>
+    </div>
+  </div>
+
+  <!-- CONTROL DE VERSIONES -->
+  <div class="section-title">🎛️ Control de versiones <span>Gestiona qué versión está activa en el landing</span></div>
+  <div class="versiones-grid">
+
+    <!-- V1 -->
+    <div class="version-panel">
+      <div class="vp-header">
+        <div class="vp-name">🏆 ROSCA V1 — CLÁSICA</div>
+        <span class="vp-badge activa">SIEMPRE ACTIVA</span>
+      </div>
+      <div class="vp-stats">
+        <div class="vp-stat">
+          <div class="vp-stat-val" id="v1Inscritos">—</div>
+          <div class="vp-stat-lbl">Inscritos</div>
+        </div>
+        <div class="vp-stat">
+          <div class="vp-stat-val">400</div>
+          <div class="vp-stat-lbl">Max cupos</div>
+        </div>
+        <div class="vp-stat">
+          <div class="vp-stat-val">$60K</div>
+          <div class="vp-stat-lbl">Precio COP</div>
+        </div>
+        <div class="vp-stat">
+          <div class="vp-stat-val" id="v1Picks">—</div>
+          <div class="vp-stat-lbl">Con picks</div>
+        </div>
+      </div>
+      <div class="vp-deadline">Cierre picks: <strong>11 Jun 2026 · 6:00 PM Colombia</strong></div>
+      <button class="btn-activar" disabled style="background:var(--card2);color:var(--muted);border:1px solid var(--border);">
+        ✅ V1 ACTIVA (PRINCIPAL)
+      </button>
+      <div class="vp-info">La V1 siempre está visible en index.html</div>
+    </div>
+
+    <!-- V2 -->
+    <div class="version-panel v2-panel">
+      <div class="vp-header">
+        <div class="vp-name">⚡ ROSCA V2 — PICKS RÁPIDOS</div>
+        <span class="vp-badge" id="v2Badge">Cargando...</span>
+      </div>
+      <div class="vp-stats">
+        <div class="vp-stat">
+          <div class="vp-stat-val" id="v2Inscritos">—</div>
+          <div class="vp-stat-lbl">Inscritos</div>
+        </div>
+        <div class="vp-stat">
+          <div class="vp-stat-val">2,000</div>
+          <div class="vp-stat-lbl">Max cupos</div>
+        </div>
+        <div class="vp-stat">
+          <div class="vp-stat-val">$30K</div>
+          <div class="vp-stat-lbl">Precio COP</div>
+        </div>
+        <div class="vp-stat">
+          <div class="vp-stat-val" id="v2Picks">—</div>
+          <div class="vp-stat-lbl">Con picks</div>
+        </div>
+      </div>
+      <div class="vp-deadline">Cierre picks: <strong>11 Jun 2026 · 6:00 PM Colombia</strong></div>
+      <button class="btn-activar" id="btnToggleV2" onclick="confirmarToggleV2()" disabled>
+        Cargando...
+      </button>
+      <div class="vp-info" id="v2Info">Cuando actives V2, aparecerá automáticamente en el landing (index.html) como una opción junto a V1.</div>
+    </div>
+
+  </div>
+
+  <!-- TABLA USUARIOS -->
+  <div class="section-title">👤 Usuarios registrados</div>
+  <div class="table-card">
+    <div class="table-header">
+      <input class="table-search" id="searchInput" placeholder="🔍  Buscar por nombre, correo o alias..." oninput="filtrarTabla()">
+      <div class="table-filters">
+        <button class="filter-btn active" onclick="setFiltro('todos',this)">Todos</button>
+        <button class="filter-btn" onclick="setFiltro('v1',this)">V1</button>
+        <button class="filter-btn" onclick="setFiltro('v2',this)">V2</button>
+        <button class="filter-btn" onclick="setFiltro('activo',this)">Activos</button>
+        <button class="filter-btn" onclick="setFiltro('sin_picks',this)">Sin picks</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Alias</th>
+            <th>Correo</th>
+            <th>Ver.</th>
+            <th>Estado</th>
+            <th>Picks</th>
+            <th>Registro</th>
+          </tr>
+        </thead>
+        <tbody id="tablaBody">
+          <tr><td colspan="8" class="table-empty">Cargando usuarios...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-footer">
+      <div class="table-count" id="tableCount">—</div>
+      <div class="pagination" id="paginacion"></div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- MODAL CONFIRMAR TOGGLE V2 -->
+<div class="confirm-overlay" id="confirmModal">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirmIcon">⚡</div>
+    <div class="confirm-title" id="confirmTitle">ACTIVAR V2</div>
+    <div class="confirm-msg" id="confirmMsg">¿Estás seguro? Esto hará que Rosca V2 aparezca en el landing público.</div>
+    <div class="confirm-btns">
+      <button class="btn-cancel" onclick="cerrarConfirm()">CANCELAR</button>
+      <button class="btn-ok" id="btnConfirmOk" onclick="ejecutarToggleV2()">CONFIRMAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const supabase = createClient(
+  'https://hwhlmuixnxevzbabkqcy.supabase.co',
+  'sb_publishable_Sub3P-1VhdcnNfhNzeet1A_yhQt_wJS'
+);
+
+// ─── ESTADO ─────────────────────────────────────────────────────────────────
+let todosUsuarios = [];
+let filtroActual = 'todos';
+let paginaActual = 1;
+const POR_PAGINA = 20;
+let v2Activa = false;
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+
+    // Verificar que es admin
+    const { data: perfil, error } = await supabase
+      .from('usuarios')
+      .select('nombre_completo, es_admin, nombre_usuario')
+      .eq('id', session.user.id)
+      .single();
+
+    if (error || !perfil?.es_admin) {
+      window.location.href = 'dashboard.html';
+      return;
+    }
+
+    document.getElementById('adminNombre').textContent =
+      'Bienvenido, ' + (perfil.nombre_completo || perfil.nombre_usuario || session.user.email);
+
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+
+    await Promise.all([
+      cargarStats(),
+      cargarVersiones(),
+      cargarUsuarios()
+    ]);
+
+  } catch (err) {
+    console.error(err);
+    window.location.href = 'login.html';
+  }
+}
+
+// ─── STATS ────────────────────────────────────────────────────────────────────
+async function cargarStats() {
+  const [resV1, resV2, resPicks] = await Promise.all([
+    supabase.from('usuarios').select('id', { count: 'exact' }).eq('activo', true).eq('version', 'v1'),
+    supabase.from('usuarios').select('id', { count: 'exact' }).eq('activo', true).eq('version', 'v2'),
+    supabase.from('usuarios').select('id', { count: 'exact' }).eq('activo', true).eq('version', 'v1').eq('picks_completos', true)
+  ]);
+
+  const v1 = resV1.count || 0;
+  const v2 = resV2.count || 0;
+  const picksOk = resPicks.count || 0;
+  const sinPicks = v1 - picksOk;
+
+  document.getElementById('statV1').textContent = v1;
+  document.getElementById('statV2').textContent = v2;
+  document.getElementById('statPicksOk').textContent = picksOk;
+  document.getElementById('statSinPicks').textContent = Math.max(0, sinPicks);
+  document.getElementById('statV1Pct').textContent = Math.round(v1/4) + '% de 400 cupos';
+  document.getElementById('statV2Pct').textContent = Math.round(v2/20) + '% de 2,000 cupos';
+  document.getElementById('v1Inscritos').textContent = v1;
+  document.getElementById('v2Inscritos').textContent = v2;
+  document.getElementById('v1Picks').textContent = picksOk;
+  document.getElementById('v2Picks').textContent = '—';
+}
+
+// ─── VERSIONES ────────────────────────────────────────────────────────────────
+async function cargarVersiones() {
+  const { data, error } = await supabase
+    .from('versiones_config')
+    .select('*');
+
+  if (error || !data) return;
+
+  const v2Config = data.find(r => r.version === 'v2');
+  if (!v2Config) return;
+
+  v2Activa = v2Config.activa;
+  actualizarUIV2(v2Activa);
+}
+
+function actualizarUIV2(activa) {
+  const badge = document.getElementById('v2Badge');
+  const btn = document.getElementById('btnToggleV2');
+  const info = document.getElementById('v2Info');
+
+  if (activa) {
+    badge.textContent = '✅ ACTIVA';
+    badge.className = 'vp-badge activa';
+    btn.textContent = '🔴 DESACTIVAR V2';
+    btn.className = 'btn-activar desactivar';
+    info.textContent = 'V2 está visible en el landing. Los usuarios pueden inscribirse.';
+  } else {
+    badge.textContent = '⏸ INACTIVA';
+    badge.className = 'vp-badge inactiva';
+    btn.textContent = '🟢 ACTIVAR V2 EN EL LANDING';
+    btn.className = 'btn-activar activar';
+    info.textContent = 'Cuando actives V2, aparecerá automáticamente en el landing junto a V1.';
+  }
+  btn.disabled = false;
+}
+
+// ─── TOGGLE V2 ───────────────────────────────────────────────────────────────
+window.confirmarToggleV2 = function() {
+  const icon = document.getElementById('confirmIcon');
+  const title = document.getElementById('confirmTitle');
+  const msg = document.getElementById('confirmMsg');
+  const okBtn = document.getElementById('btnConfirmOk');
+
+  if (!v2Activa) {
+    icon.textContent = '🟢';
+    title.textContent = 'ACTIVAR ROSCA V2';
+    msg.textContent = 'Esto publicará la opción de Rosca V2 en el landing principal. Los usuarios podrán inscribirse en V2 desde ese momento.';
+    okBtn.className = 'btn-ok';
+    okBtn.textContent = 'SÍ, ACTIVAR V2';
+  } else {
+    icon.textContent = '🔴';
+    title.textContent = 'DESACTIVAR ROSCA V2';
+    msg.textContent = 'Esto ocultará la opción de V2 del landing. Los usuarios ya inscritos en V2 no se verán afectados.';
+    okBtn.className = 'btn-ok danger';
+    okBtn.textContent = 'SÍ, DESACTIVAR';
+  }
+
+  document.getElementById('confirmModal').classList.add('open');
+};
+
+window.cerrarConfirm = function() {
+  document.getElementById('confirmModal').classList.remove('open');
+};
+
+window.ejecutarToggleV2 = async function() {
+  cerrarConfirm();
+  const btn = document.getElementById('btnToggleV2');
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+
+  const nuevaActiva = !v2Activa;
+
+  const { error } = await supabase
+    .from('versiones_config')
+    .update({ activa: nuevaActiva })
+    .eq('version', 'v2');
+
+  if (error) {
+    showToast('❌ Error al actualizar. Intenta de nuevo.', 'error');
+    btn.disabled = false;
+    actualizarUIV2(v2Activa);
+    return;
+  }
+
+  v2Activa = nuevaActiva;
+  actualizarUIV2(v2Activa);
+  showToast(nuevaActiva ? '✅ V2 activada correctamente' : '⏸ V2 desactivada', 'success');
+};
+
+// ─── USUARIOS ────────────────────────────────────────────────────────────────
+async function cargarUsuarios() {
+  const { data, error } = await supabase
+    .from('usuarios')
+    .select('id, nombre_completo, nombre_usuario, correo, activo, picks_completos, version, created_at')
+    .order('created_at', { ascending: true });
+
+  if (error || !data) { return; }
+
+  todosUsuarios = data;
+  renderTabla();
+}
+
+window.setFiltro = function(f, el) {
+  filtroActual = f;
+  paginaActual = 1;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderTabla();
+};
+
+window.filtrarTabla = function() {
+  paginaActual = 1;
+  renderTabla();
+};
+
+function renderTabla() {
+  const q = (document.getElementById('searchInput').value || '').toLowerCase();
+
+  let lista = todosUsuarios.filter(u => {
+    const matchQ = !q ||
+      (u.nombre_completo || '').toLowerCase().includes(q) ||
+      (u.correo || '').toLowerCase().includes(q) ||
+      (u.nombre_usuario || '').toLowerCase().includes(q);
+    if (!matchQ) return false;
+    if (filtroActual === 'v1') return u.version === 'v1';
+    if (filtroActual === 'v2') return u.version === 'v2';
+    if (filtroActual === 'activo') return u.activo;
+    if (filtroActual === 'sin_picks') return !u.picks_completos && u.version === 'v1';
+    return true;
+  });
+
+  const total = lista.length;
+  const totalPag = Math.ceil(total / POR_PAGINA);
+  const inicio = (paginaActual - 1) * POR_PAGINA;
+  const pagina = lista.slice(inicio, inicio + POR_PAGINA);
+
+  const tbody = document.getElementById('tablaBody');
+  if (pagina.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="table-empty">No hay usuarios con ese filtro</td></tr>';
+  } else {
+    tbody.innerHTML = pagina.map((u, i) => {
+      const fecha = new Date(u.created_at).toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'2-digit' });
+      const ver = u.version === 'v2'
+        ? '<span class="badge-v badge-v2">V2</span>'
+        : '<span class="badge-v badge-v1">V1</span>';
+      const estado = u.activo
+        ? '<span class="badge-activo">Activo</span>'
+        : '<span class="badge-inactivo">Inactivo</span>';
+      const picks = u.picks_completos
+        ? '<span class="badge-picks">✓ Completos</span>'
+        : (u.version === 'v2' ? '<span style="color:var(--muted);font-size:12px;">—</span>' : '<span class="badge-nopicks">Pendiente</span>');
+      return `<tr>
+        <td style="color:var(--muted);font-size:12px;">${inicio + i + 1}</td>
+        <td style="font-weight:600;">${u.nombre_completo || '—'}</td>
+        <td style="color:var(--muted);">${u.nombre_usuario || '—'}</td>
+        <td style="font-size:12px;color:var(--muted);">${u.correo || '—'}</td>
+        <td>${ver}</td>
+        <td>${estado}</td>
+        <td>${picks}</td>
+        <td style="font-size:12px;color:var(--muted);">${fecha}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('tableCount').textContent =
+    `Mostrando ${Math.min(inicio+1,total)}–${Math.min(inicio+POR_PAGINA,total)} de ${total} usuarios`;
+
+  // Paginación
+  const pg = document.getElementById('paginacion');
+  pg.innerHTML = '';
+  for (let p = 1; p <= Math.min(totalPag, 10); p++) {
+    const b = document.createElement('button');
+    b.className = 'pg-btn' + (p === paginaActual ? ' active' : '');
+    b.textContent = p;
+    b.onclick = () => { paginaActual = p; renderTabla(); };
+    pg.appendChild(b);
+  }
+}
+
+// ─── AUTH ────────────────────────────────────────────────────────────────────
+window.cerrarSesion = async function() {
+  await supabase.auth.signOut();
+  window.location.href = 'login.html';
+};
+
+// ─── TEMA ─────────────────────────────────────────────────────────────────────
+window.toggleTema = function() {
+  const esDia = document.body.classList.toggle('dia');
+  document.getElementById('btnTema').textContent = esDia ? '☀️' : '🌙';
+  localStorage.setItem('rosca-tema', esDia ? 'dia' : 'noche');
+};
+(function() {
+  const t = localStorage.getItem('rosca-tema');
+  if (t === 'dia') {
+    document.body.classList.add('dia');
+    const btn = document.getElementById('btnTema');
+    if (btn) btn.textContent = '☀️';
+  }
+})();
+
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+window.showToast = function(msg, tipo = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + tipo + ' show';
+  setTimeout(() => t.classList.remove('show'), 3500);
+};
+
+init();
+</script>
+</body>
+</html>
