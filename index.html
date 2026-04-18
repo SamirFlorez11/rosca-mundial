@@ -43,8 +43,8 @@
   .stripe-red{flex:1;background:#CE1126;}
   .brand-content{position:relative;z-index:1;text-align:center;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px 32px;}
   .nav-buttons{display:flex;flex-direction:row;gap:6px;margin-bottom:20px;width:100%;justify-content:center;flex-wrap:wrap;}
-  .nav-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.75);padding:7px 12px;border-radius:8px;font-family:"Nunito",sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:5px;}
-  .nav-btn:hover{background:rgba(232,160,32,0.15);border-color:rgba(232,160,32,0.4);color:var(--gold);}
+  .nav-btn{background:#1A2F5E;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.85);padding:7px 12px;border-radius:8px;font-family:"Nunito",sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:5px;}
+  .nav-btn:hover{background:#243d6e;border-color:rgba(232,160,32,0.5);color:var(--gold);}
   .nav-btn-icon{font-size:13px;}
   .logo-img{width:220px;height:220px;object-fit:contain;margin-bottom:10px;animation:floatLogo 4s ease-in-out infinite;}
   @keyframes floatLogo{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
@@ -60,7 +60,7 @@
   @keyframes fillBar{to{width:0%;}}
   .progress-pct{font-size:11px;color:rgba(255,255,255,0.3);text-align:right;}
   .form-panel{flex:1;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;overflow-y:auto;}
-  .form-container{width:100%;max-width:440px;background:var(--cream);border-radius:16px;position:relative;z-index:1;}
+  .form-container{width:100%;max-width:440px;position:relative;z-index:1;}
   .form-eyebrow{font-size:11px;font-weight:800;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:6px;}
   .form-title{font-family:"Bebas Neue",sans-serif;font-size:36px;color:var(--navy);letter-spacing:2px;line-height:1.1;margin-bottom:6px;}
   .form-subtitle{font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:6px;font-weight:600;}
@@ -336,7 +336,6 @@
       <button class="nav-btn" onclick="openModal('modalQueEs')"><span class="nav-btn-icon">⚽</span> ¿Qué es Rosca Mundial?</button>
       <button class="nav-btn" onclick="openModal('modalQuien')"><span class="nav-btn-icon">👤</span> ¿Quién está detrás?</button>
       <button class="nav-btn" onclick="openModal('modalReglas')"><span class="nav-btn-icon">📋</span> Paso a paso y reglamento</button>
-      <button class="nav-btn" id="btnV2Landing" style="display:none;border-color:rgba(232,160,32,0.45);color:var(--gold);background:rgba(232,160,32,0.1);" onclick="window.location.href='index-v2.html'"><span class="nav-btn-icon">⚡</span> Rosca V2 — Picks Rápidos</button>
     </div>
     <img id="logoImg" alt="Rosca Mundial" class="logo-img">
     <div class="brand-title">ROSCA<br><span>MUNDIAL</span></div>
@@ -678,21 +677,6 @@
     }
     tick();
     setInterval(tick, 1000);
-  })();
-
-  // ── Detectar si V2 está activa y mostrar botón ───────────────────────────
-  (function() {
-    var SUPA_URL = 'https://hwhlmuixnxevzbabkqcy.supabase.co';
-    var ANON_KEY = 'sb_publishable_Sub3P-1VhdcnNfhNzeet1A_yhQt_wJS';
-    fetch(SUPA_URL + '/rest/v1/versiones_config?version=eq.v2&select=activa', {
-      headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY }
-    }).then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data && data[0] && data[0].activa === true) {
-        var btn = document.getElementById('btnV2Landing');
-        if (btn) btn.style.display = 'flex';
-      }
-    }).catch(function(){});
   })();
 
   // ── Contador de inscritos desde Supabase ─────────────────────────────────
