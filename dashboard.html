@@ -37,6 +37,13 @@
   body.dia .countdown-banner { background: linear-gradient(135deg, #1e3a8a 0%, #132a6e 100%); }
   body.dia .countdown-label, body.dia .countdown-num, body.dia .countdown-sep { color: #fff; }
   body.dia .countdown-title { color: #fff; }
+
+  body.dia .modal { background: #ffffff; border-color: #c5d0e0; color: #0f172a; }
+  body.dia .modal-close { background: rgba(0,0,0,0.08); color: #333; }
+  body.dia .modal input, body.dia .modal select { background: #e8edf5 !important; border-color: #c5d0e0 !important; color: #0f172a !important; }
+  body.dia .modal label { color: #4a5568 !important; }
+  body.dia #opt-real, body.dia #opt-alias { border-color: #c5d0e0; background: #f0f4f8; }
+  body.dia #opt-real.selected, body.dia #opt-alias.selected { border-color: #1e3a8a; background: rgba(30,58,138,0.08); }
   body.dia .mi-pos-num { color: #1e3a8a; }
   body.dia .mi-pos-name { color: #1e3a8a; }
   body.dia .mi-pos-pts { color: #1e3a8a; }
@@ -578,6 +585,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    justify-content: space-between;
   }
 
   .epos {
@@ -605,7 +613,6 @@
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 600;
     font-size: 13px;
-    flex: 1;
     flex: 1;
     white-space: nowrap;
     overflow: hidden;
