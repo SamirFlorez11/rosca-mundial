@@ -143,6 +143,15 @@
   .form-panel { position: relative; }
 </style>
 <script>
+  // ── Redirigir tokens de auth al manejador correcto ───────────────────────
+  (function() {
+    var h = window.location.hash;
+    var q = window.location.search;
+    if (h.includes('type=recovery') || q.includes('type=recovery')) {
+      window.location.replace('/restablecer-password.html' + h + q);
+    }
+  })();
+
   function openModal(id){document.getElementById(id).classList.add("show");document.body.style.overflow="hidden";}
   function closeModal(id){document.getElementById(id).classList.remove("show");document.body.style.overflow="";}
   function selectPago(el){document.querySelectorAll(".pago-metodo").forEach(m=>m.classList.remove("active"));el.classList.add("active");}
