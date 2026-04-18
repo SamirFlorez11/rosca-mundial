@@ -1808,7 +1808,7 @@ function seccionResumen(cat, icono, nombre, hecho, max, color, renderDetalle) {
   return `<div style="margin-bottom:14px;background:var(--card2);border:1px solid var(--border);border-radius:12px;overflow:hidden">
     <div style="padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);cursor:pointer" onclick="toggleSeccionResumen('res-${cat}')">
       <span style="font-size:18px">${icono}</span>
-      <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:${color};flex:1">${nombre}</span>
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--amarillo);flex:1">${nombre}</span>
       <span style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;${completo?'color:#22c55e':'color:var(--amarillo)'}">${hecho}/${max}</span>
       <span style="font-size:14px;color:var(--muted)" id="arr-${cat}">▾</span>
     </div>
