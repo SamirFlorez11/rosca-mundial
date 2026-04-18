@@ -46,6 +46,11 @@
   .nav-btn{background:#1A2F5E;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.85);padding:7px 12px;border-radius:8px;font-family:"Nunito",sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:5px;}
   .nav-btn:hover{background:#243d6e;border-color:rgba(232,160,32,0.5);color:var(--gold);}
   .nav-btn-icon{font-size:13px;}
+  .nav-buttons-secondary{display:flex;flex-direction:row;gap:6px;margin-top:12px;margin-bottom:12px;width:100%;justify-content:center;flex-wrap:wrap;}
+  .nav-btn-sec{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);padding:5px 10px;border-radius:7px;font-family:"Nunito",sans-serif;font-size:10px;font-weight:600;cursor:pointer;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:4px;}
+  .nav-btn-sec:hover{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);}
+  body.dia .nav-btn-sec{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.1);color:rgba(0,0,0,0.4);}
+  body.dia .nav-btn-sec:hover{background:rgba(0,0,0,0.09);color:rgba(0,0,0,0.65);}
   .logo-img{width:220px;height:220px;object-fit:contain;margin-bottom:10px;animation:floatLogo 4s ease-in-out infinite;}
   @keyframes floatLogo{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
   .brand-title{font-family:"Bebas Neue",sans-serif;font-size:50px;letter-spacing:4px;color:var(--white);line-height:1;margin-bottom:4px;}
@@ -333,13 +338,15 @@
   <div class="colombia-stripe"><div class="stripe-yellow"></div><div class="stripe-blue"></div><div class="stripe-red"></div></div>
   <div class="brand-content">
     <div class="nav-buttons">
-      <button class="nav-btn" onclick="openModal('modalQueEs')"><span class="nav-btn-icon">⚽</span> ¿Qué es Rosca Mundial?</button>
-      <button class="nav-btn" onclick="openModal('modalQuien')"><span class="nav-btn-icon">👤</span> ¿Quién está detrás?</button>
-      <button class="nav-btn" onclick="openModal('modalReglas')"><span class="nav-btn-icon">📋</span> Paso a paso y reglamento</button>
+      <button class="nav-btn" onclick="openModal('modalQueEs')"><span class="nav-btn-icon">⚽</span> ¿Qué es Rosca Mundial y cómo participo?</button>
     </div>
     <img id="logoImg" alt="Rosca Mundial" class="logo-img">
     <div class="brand-title">ROSCA<br><span>MUNDIAL</span></div>
     <div class="brand-year">2026</div>
+    <div class="nav-buttons-secondary">
+      <button class="nav-btn-sec" onclick="openModal('modalQuien')"><span>👤</span> ¿Quién está detrás?</button>
+      <button class="nav-btn-sec" onclick="openModal('modalReglas')"><span>📋</span> Paso a paso y reglamento</button>
+    </div>
     <div class="progress-card">
       <div class="progress-header"><span class="progress-label">Inscritos pagados</span><span class="progress-count">187 / 400</span></div>
       <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
