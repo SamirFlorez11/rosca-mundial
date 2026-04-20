@@ -64,6 +64,8 @@
   .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-dark),var(--gold));border-radius:999px;width:0;animation:fillBar 1.5s ease-out forwards;}
   @keyframes fillBar{to{width:0%;}}
   .progress-pct{font-size:11px;color:rgba(255,255,255,0.3);text-align:right;}
+  .btn-invitado{display:block;width:100%;max-width:280px;margin-top:12px;padding:13px 16px;background:rgba(255,255,255,0.07);border:2px dashed rgba(255,255,255,0.3);border-radius:12px;color:rgba(255,255,255,0.75);font-family:"Bebas Neue",sans-serif;font-size:17px;letter-spacing:3px;text-decoration:none;text-align:center;transition:all 0.25s;cursor:pointer;}
+  .btn-invitado:hover{background:rgba(255,255,255,0.14);border-color:var(--gold);color:var(--gold);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.3);}
   .form-panel{flex:1;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;overflow-y:auto;}
   .form-container{width:100%;max-width:440px;position:relative;z-index:1;}
   .form-eyebrow{font-size:11px;font-weight:800;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:6px;}
@@ -364,6 +366,8 @@
       <div style="margin-top:12px;width:100%;padding:10px 16px;background:rgba(206,17,38,0.12);border:1px solid rgba(206,17,38,0.3);border-radius:8px;text-align:center;">
         <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.75);line-height:1.6;">⚠️ <strong style="color:var(--gold);">ROSCA MUNDIAL</strong> se llevará a cabo únicamente si se completan los <strong style="color:var(--gold);">400 cupos</strong>. De lo contrario, se realizará la devolución total del dinero a cada participante.</span>
       </div>
+
+      <a href="/dashboard.html?invitado=1" class="btn-invitado">👁 INGRESAR COMO INVITADO</a>
 
       <div class="timer-section">
         <div class="timer-label">⏱ Primer partido: Jueves 11 Jun 2026 · 6:00 PM (Col)</div>

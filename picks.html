@@ -404,6 +404,12 @@
 </head>
 <body>
 
+<!-- BANNER INVITADO (oculto por defecto, se muestra si no hay sesión) -->
+<div id="banner-registrar" style="display:none;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;background:linear-gradient(90deg,rgba(206,17,38,0.18),rgba(0,48,135,0.18));border-bottom:2px solid rgba(252,209,22,0.4);padding:12px 20px;position:sticky;top:0;z-index:1000;">
+  <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.9);">👁 Modo Invitado — Tus picks se guardan en este dispositivo únicamente.</span>
+  <a href="/index.html" style="background:var(--amarillo, #FCD116);color:#0D1B3E;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;padding:9px 20px;border-radius:10px;text-decoration:none;font-weight:900;transition:all 0.2s;white-space:nowrap;">⚽ REGISTRARME PARA CONFIRMAR MIS PICKS</a>
+</div>
+
 <div class="tricolor"></div>
 
 <!-- NAVBAR -->
@@ -1853,13 +1859,25 @@ actualizarMenuBadges();
 <script type="module">
 import { supabase } from '/js/supabase.js';
 
-// ── Auth: redirigir si no está logueado/activo ─────────────────────────────
+const LS_KEY = 'rosca_picks_invitado';
+
+// ── Auth: permitir invitados ───────────────────────────────────────────────
 async function verificarAuth() {
   const { data: { session } } = await supabase.auth.getSession();
-  if (!session) { window.location.href = '/login.html'; return null; }
+  if (!session) {
+    // Modo invitado: mostrar banner, usar localStorage
+    mostrarBannerInvitado();
+    const savedRaw = localStorage.getItem(LS_KEY);
+    const picks_data = savedRaw ? JSON.parse(savedRaw) : null;
+    return { id: null, nombre: 'Invitado', activo: true, picks_data, esInvitado: true };
+  }
   const { data: perfil } = await supabase.from('usuarios').select('id, nombre, activo, picks_data').eq('id', session.user.id).single();
-  // Si la consulta falla, igual dejamos pasar con sesión válida
   return perfil || { id: session.user.id, nombre: '', activo: true, picks_data: null };
+}
+
+function mostrarBannerInvitado() {
+  const banner = document.getElementById('banner-registrar');
+  if (banner) banner.style.display = 'flex';
 }
 
 // ── Cargar picks guardados en STATE ───────────────────────────────────────
@@ -1876,13 +1894,25 @@ function cargarPicksEnState(picks_data) {
   actualizarMenuBadges();
 }
 
-// ── Guardar picks en Supabase ──────────────────────────────────────────────
+// ── Guardar picks (Supabase para usuarios, localStorage para invitados) ────
 window.guardarPicksSupabase = async function(cat) {
   const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return false;
-  const user = session.user;
 
-  // Guardar solo la categoría confirmada (merge con lo que ya había)
+  if (!session) {
+    // Invitado: guardar en localStorage
+    const current = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+    if (cat === '__todos__' || cat === 'lev')       current.lev       = STATE.lev;
+    if (cat === '__todos__' || cat === 'killer')     current.killer    = STATE.killer;
+    if (cat === '__todos__' || cat === 'carnicero')  current.carnicero = STATE.carnicero;
+    if (cat === '__todos__' || cat === 'banderin')   current.banderin  = STATE.banderin;
+    if (cat === '__todos__' || cat === 'virgen')     current.virgen    = STATE.virgen;
+    if (cat === '__todos__' || cat === 'pied')       current.pied      = STATE.pied;
+    if (cat === '__todos__' || cat === 'mecha')      current.mecha     = STATE.mecha;
+    localStorage.setItem(LS_KEY, JSON.stringify(current));
+    return true;
+  }
+
+  const user = session.user;
   const { data: actual } = await supabase.from('usuarios').select('picks_data').eq('id', user.id).single();
   const base = actual?.picks_data || {};
   const nuevo = { ...base };

@@ -1716,6 +1716,35 @@
   import { supabase } from '/js/supabase.js';
   window.supabase = supabase;
 
+  // ── Modo invitado ──────────────────────────────────────────────────────────
+  const esInvitado = new URLSearchParams(window.location.search).get('invitado') === '1';
+  window.esInvitado = esInvitado;
+
+  if (esInvitado) {
+    // Banner de invitado
+    const banner = document.createElement('div');
+    banner.id = 'banner-invitado';
+    banner.innerHTML = '👁 Modo Invitado — Los nombres están ocultos. <a href="/index.html" style="color:var(--amarillo);font-weight:800;text-decoration:underline;">¡Inscríbete para participar!</a>';
+    banner.style.cssText = 'background:rgba(206,17,38,0.15);border-bottom:1px solid rgba(206,17,38,0.3);padding:10px 20px;text-align:center;font-size:12px;font-weight:700;color:rgba(255,255,255,0.85);position:sticky;top:62px;z-index:90;';
+    document.body.insertBefore(banner, document.body.firstChild);
+
+    // Ocultar dropdown y avatar
+    setTimeout(() => {
+      const avatar = document.querySelector('.user-avatar');
+      if (avatar) { avatar.textContent = '👤'; avatar.style.cursor = 'default'; avatar.onclick = null; }
+      const dropdown = document.getElementById('userDropdown');
+      if (dropdown) dropdown.style.display = 'none';
+      // Reemplazar Mi Posición con mensaje para invitado
+      const posNum  = document.querySelector('.mi-pos-num');
+      const posName = document.querySelector('.mi-pos-name');
+      const posPts  = document.querySelector('.mi-pos-pts');
+      if (posNum)  posNum.textContent  = '--';
+      if (posName) posName.textContent = 'Invitado';
+      if (posPts)  posPts.innerHTML    = 'Inicia sesión para ver tu posición';
+      document.querySelectorAll('.mini-val').forEach(el => { el.textContent = '--'; });
+    }, 100);
+  }
+
   // ── Inscritos ──────────────────────────────────────────────────────────────
   async function cargarInscritos() {
     const { count, error } = await supabase
@@ -1823,10 +1852,13 @@
 
     if (!usuarios?.length) return;
 
+    // En modo invitado, ocultar nombres reales
+    const nombreVisible = (u, i) => esInvitado ? `Participante ${i + 1}` : (u.nombre_usuario || u.nombre_completo);
+
     // Tabla ranking principal
     const tbody = document.getElementById('ranking-principal-tbody');
     if (tbody) {
-      const miIdx = usuarios.findIndex(u => u.id === userId);
+      const miIdx = esInvitado ? -1 : usuarios.findIndex(u => u.id === userId);
       let rows = usuarios.slice(0, 4).map((u, i) => `
         <tr ${i===0?'style="background:rgba(240,180,41,0.06)"':i===1?'style="background:rgba(160,174,192,0.04)"':i===2?'style="background:rgba(205,124,47,0.04)"':''}>
           <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center">
@@ -1834,7 +1866,7 @@
           </td>
           <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle">
             <div class="rank-user"><div class="rank-avatar" style="width:38px;height:38px;font-size:18px">${EMOJIS_ALPHA[i]}</div>
-            <div><div class="rank-name ${u.id===userId?'you':''}">${u.nombre_usuario||u.nombre_completo}</div></div></div>
+            <div><div class="rank-name ${!esInvitado&&u.id===userId?'you':''}">${nombreVisible(u,i)}</div></div></div>
           </td>
           <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center"><span style="font-size:16px;font-weight:700;color:var(--text)">0</span></td>
           <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center"><span style="color:var(--muted)">0</span></td>
@@ -1842,7 +1874,7 @@
           <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center"><span class="rank-stat pts">0</span></td>
         </tr>`).join('');
 
-      if (miIdx >= 4) {
+      if (!esInvitado && miIdx >= 4) {
         const me = usuarios[miIdx];
         rows += `<tr><td colspan="6" style="padding:6px 0;text-align:center;color:var(--muted);font-size:18px;letter-spacing:6px">···</td></tr>
         <tr style="background:rgba(252,209,22,0.05)">
@@ -1864,16 +1896,16 @@
         <div class="especial-row">
           <div class="epos ${i===0?'p1':i===1?'p2':'p3'}">${i+1}</div>
           <div class="eavatar">${EMOJIS_ALPHA[i]}</div>
-          <div class="ename ${u.id===userId?'you':''}">${u.nombre_usuario||u.nombre_completo}</div>
+          <div class="ename ${!esInvitado&&u.id===userId?'you':''}">${nombreVisible(u,i)}</div>
           <div class="evalue" style="${i===0?'color:var(--amarillo)':''}">0 pts</div>
         </div>`).join('');
     });
 
     // Datos para modales: usuarios alfabéticos con 0 pts
     window._usuariosRanking = usuarios.map((u, i) => ({
-      pos: i + 1, nombre: u.nombre_usuario||u.nombre_completo,
+      pos: i + 1, nombre: nombreVisible(u, i),
       emoji: EMOJIS_ALPHA[i % EMOJIS_ALPHA.length],
-      valor: 0, esTu: u.id === userId,
+      valor: 0, esTu: !esInvitado && u.id === userId,
     }));
   }
 

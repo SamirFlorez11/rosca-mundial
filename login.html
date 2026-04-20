@@ -259,6 +259,27 @@
 
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+  /* Poster backgrounds */
+  .poster-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .poster-bg.visible { opacity: 0.22; }
+
+  /* Nav buttons sobre el panel izquierdo */
+  .nav-buttons { display: flex; flex-direction: row; gap: 6px; margin-bottom: 14px; width: 100%; justify-content: center; flex-wrap: wrap; }
+  .nav-btn { background: rgba(0,0,0,0.38); border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.88); padding: 7px 12px; border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
+  .nav-btn:hover { background: rgba(0,0,0,0.56); border-color: var(--amarillo); color: var(--amarillo); }
+  .nav-buttons-secondary { display: flex; flex-direction: row; gap: 6px; margin-top: 8px; margin-bottom: 10px; width: 100%; justify-content: center; flex-wrap: wrap; }
+  .nav-btn-sec { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.5); padding: 5px 10px; border-radius: 7px; font-family: 'Nunito', sans-serif; font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
+  .nav-btn-sec:hover { background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.8); }
+
   /* ===== PANEL DERECHO — FORMULARIO ===== */
   .form-panel {
     flex: 1;
@@ -546,6 +567,31 @@
     transition: all 0.2s;
   }
   body.dia .btn-tema-fixed { background: rgba(0,0,0,0.08); border-color: rgba(0,0,0,0.15); color: #333; }
+
+  /* Estilos modales de info */
+  .modal-header{background:#0D1B3E;padding:22px 28px 18px;border-radius:20px 20px 0 0;position:sticky;top:0;z-index:1;}
+  .modal-header h2{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:#E8A020;margin-bottom:2px;}
+  .modal-header p{font-size:11px;color:rgba(255,255,255,0.4);font-weight:600;letter-spacing:1px;}
+  .modal-close{position:absolute;top:14px;right:18px;background:rgba(255,255,255,0.1);border:none;color:white;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .modal-close:hover{background:rgba(255,255,255,0.2);}
+  .modal-body{padding:24px 28px;}
+  .samir-card{display:flex;gap:18px;align-items:flex-start;margin-bottom:18px;}
+  .samir-photo{width:90px;height:90px;border-radius:50%;object-fit:cover;object-position:center top;border:3px solid #E8A020;flex-shrink:0;}
+  .samir-info h3{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:1px;color:#0D1B3E;margin-bottom:4px;}
+  .samir-badge{display:inline-block;background:#0D1B3E;color:#E8A020;font-size:10px;font-weight:800;letter-spacing:2px;padding:3px 10px;border-radius:20px;text-transform:uppercase;margin-bottom:8px;}
+  .samir-desc{font-size:13px;color:#6B7280;line-height:1.6;font-weight:600;}
+  .paso{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
+  .paso-num{width:28px;height:28px;border-radius:50%;background:#0D1B3E;color:#E8A020;font-family:'Bebas Neue',sans-serif;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+  .paso h4{font-size:13px;font-weight:800;color:#0D1B3E;margin-bottom:3px;}
+  .paso p{font-size:13px;color:#6B7280;line-height:1.5;font-weight:600;}
+  .reg-section{margin-bottom:16px;}
+  .reg-section h3{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;color:#0D1B3E;border-bottom:2px solid #E8A020;padding-bottom:5px;margin-bottom:10px;margin-top:16px;}
+  .reg-section h3:first-child{margin-top:0;}
+  .reg-section p,.reg-section li{font-size:13px;color:#444;line-height:1.7;font-weight:600;margin-bottom:5px;}
+  .reg-section ul,.reg-section ol{padding-left:18px;}
+  .reg-highlight{background:#FFF8E8;border-left:3px solid #E8A020;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:12px;font-size:13px;color:#555;font-weight:600;line-height:1.6;}
+  .sportmonks-box{background:#E6F1FB;border-left:3px solid #185FA5;padding:12px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:13px;color:#0C447C;font-weight:600;line-height:1.6;}
+  .fase-pill{display:inline-block;background:#0D1B3E;color:#E8A020;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;margin:2px 2px 2px 0;letter-spacing:1px;}
 </style>
 </head>
 <body>
@@ -553,18 +599,26 @@
 
 <!-- PANEL IZQUIERDO -->
 <div class="brand-panel">
+  <div class="poster-bg" id="posterLeft"></div>
   <div class="star"></div>
   <div class="star"></div>
   <div class="star"></div>
   <div class="star"></div>
 
   <div class="brand-content">
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="openModal('modalQueEs')"><span>⚽</span> ¿Qué es Rosca Mundial y cómo participo?</button>
+    </div>
     <div class="logo-wrap">
       <img id="logoImg" alt="Rosca Mundial" class="logo-img">
     </div>
 
     <div class="brand-title">ROSCA<br><span>MUNDIAL</span></div>
     <div class="brand-year">2026</div>
+    <div class="nav-buttons-secondary">
+      <button class="nav-btn-sec" onclick="openModal('modalQuien')"><span>👤</span> ¿Quién está detrás?</button>
+      <button class="nav-btn-sec" onclick="openModal('modalReglas')"><span>📋</span> Paso a paso y reglamento</button>
+    </div>
 
     <div class="countdown-wrap">
       <div class="countdown-label">⏱ Primer partido · 11 Jun 2026 · 6:00 PM Col</div>
@@ -647,6 +701,116 @@
   </div>
 </div>
 
+<!-- MODAL QUE ES -->
+<div class="modal-overlay" id="modalQueEs">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>¿Qué es Rosca Mundial?</h2>
+      <p>Copa Mundial 2026</p>
+      <button class="modal-close" onclick="closeModal('modalQueEs')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="reg-highlight">
+        Rosca Mundial es la polla deportiva más emocionante de la Copa Mundial 2026, diseñada para unir a la comunidad y poner a prueba tus conocimientos en torno al fútbol de selecciones.
+      </div>
+      <div class="reg-section">
+        <h3>¿En qué consiste?</h3>
+        <p>Cada participante paga una inscripción única de <strong>$60.000 COP</strong>. La competencia tiene dos componentes principales:</p>
+        <p style="margin-top:10px;"><strong>🏆 Ranking principal — 4 primeros puestos</strong></p>
+        <p>Se basa en acertar el resultado de cada partido del mundial: <strong>Local (L)</strong>, <strong>Empate (E)</strong> o <strong>Visitante (V)</strong>. Cada acierto otorga 1 punto. Las fases se desbloquean de forma secuencial:</p>
+        <p style="margin:8px 0 4px;">
+          <span class="fase-pill">Fase de grupos</span><span class="fase-pill">16avos</span><span class="fase-pill">8vos</span><span class="fase-pill">Cuartos</span><span class="fase-pill">Semis</span><span class="fase-pill">Final</span>
+        </p>
+        <p>Las predicciones de cada fase se habilitan una vez finalizada la fase anterior. No se pueden cambiar una vez cerradas.</p>
+        <p style="margin-top:12px;"><strong>⚽ 6 Categorías especiales</strong></p>
+        <p>Cada participante hace sus selecciones al inicio del mundial: <strong>15 jugadores</strong> para El Killer (máx. 3 del mismo equipo) y <strong>10 equipos</strong> para cada una de las otras 5 categorías.</p>
+        <h3>Premios</h3>
+        <ul>
+          <li>🥇 1er lugar — iPhone 17 Pro Max 256 GB</li>
+          <li>🥈 2do lugar — Bose S1 Pro+</li>
+          <li>🥉 3er lugar — PlayStation 5</li>
+          <li>🏅 4to lugar — AirPods Pro</li>
+          <li>⚽ El Killer — $1.000.000 COP</li>
+          <li>🟨 El Carnicero — $750.000 COP</li>
+          <li>📐 El Banderín — $500.000 COP</li>
+          <li>🤍 El Virgen — $400.000 COP</li>
+          <li>🕊️ El Pie de Niña — $300.000 COP</li>
+          <li>✂️ El Mechacorta — $200.000 COP</li>
+        </ul>
+      </div>
+      <div class="reg-section">
+        <h3>¿Cómo participo?</h3>
+        <div class="paso"><div class="paso-num">1</div><div><h4>Regístrate y paga</h4><p>Completa el formulario con tus datos y realiza el pago único de <strong>$60.000 COP</strong> por Nequi o Bancolombia.</p></div></div>
+        <div class="paso"><div class="paso-num">2</div><div><h4>Accede a tu cuenta</h4><p>Una vez activado tu acceso, ingresa con tu correo y contraseña. Desde el <strong>Dashboard</strong> verás el ranking en tiempo real.</p></div></div>
+        <div class="paso"><div class="paso-num">3</div><div><h4>Haz tus picks antes del primer partido</h4><p>Selecciona <strong>15 jugadores</strong> para El Killer, <strong>10 equipos</strong> para cada una de las 5 categorías, y predice los <strong>48 partidos de grupos</strong>.</p></div></div>
+        <div class="paso"><div class="paso-num">4</div><div><h4>Predice las siguientes fases</h4><p>Una vez termine cada fase se habilita la siguiente. Las fases van: <strong>Grupos → 16avos → 8vos → Cuartos → Semis → Final</strong>.</p></div></div>
+        <div class="paso"><div class="paso-num">5</div><div><h4>Sigue el torneo y gana</h4><p>El ranking se actualiza automáticamente con cada partido. ¡El jugador con más puntos gana el <strong>iPhone 17 Pro Max</strong>!</p></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL QUIEN SOY -->
+<div class="modal-overlay" id="modalQuien">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>¿Quién está detrás?</h2>
+      <p>El organizador del proyecto</p>
+      <button class="modal-close" onclick="closeModal('modalQuien')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="samir-card">
+        <img id="samirPhotoLogin" alt="Samir Florez" class="samir-photo">
+        <div class="samir-info">
+          <h3>Samir Florez Calao</h3>
+          <span class="samir-badge">Organizador</span>
+          <p class="samir-desc">30 años · Ingeniero Industrial · Montería, Colombia. Apasionado por vivir el fútbol con amigos.</p>
+        </div>
+      </div>
+      <div class="reg-highlight">
+        "Este proyecto nació del amor por el fútbol y las ganas de compartir la emoción del Mundial con nuestra comunidad de una forma organizada, transparente y divertida."
+      </div>
+      <div class="reg-section">
+        <h3>¿Quién es Sportmonks y por qué los usamos?</h3>
+        <div class="sportmonks-box">
+          <strong>Sportmonks</strong> es una empresa holandesa de datos deportivos fundada en 2016. Sus datos son usados por clubes profesionales, federaciones y medios en más de 100 países.
+        </div>
+        <p>Todos los resultados, goles, tarjetas y corners que determinan los ganadores de Rosca Mundial provienen exclusivamente de Sportmonks. Esta fuente es neutral, automática y no puede ser manipulada por el organizador.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PASO A PASO + REGLAMENTO -->
+<div class="modal-overlay" id="modalReglas">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>Paso a paso y Reglamento</h2>
+      <p>Lee con atención antes de inscribirte</p>
+      <button class="modal-close" onclick="closeModal('modalReglas')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="reg-section">
+        <h3>Paso a paso</h3>
+        <div class="paso"><div class="paso-num">1</div><div><h4>Regístrate</h4><p>Completa el formulario con tu nombre, correo, celular, documento y contraseña.</p></div></div>
+        <div class="paso"><div class="paso-num">2</div><div><h4>Paga tu inscripción</h4><p>Realiza el pago de <strong>$60.000 COP</strong> vía Wompi (PSE, Nequi o tarjeta). Tu cuenta se activa al confirmarse el pago.</p></div></div>
+        <div class="paso"><div class="paso-num">3</div><div><h4>Haz tus picks de equipos</h4><p><strong>El Killer:</strong> 15 jugadores (máx. 3 del mismo equipo). Las otras 5 categorías: 10 equipos cada una. Todo antes del primer partido.</p></div></div>
+        <div class="paso"><div class="paso-num">4</div><div><h4>Predice los partidos</h4><p>Para cada partido escoge: <strong>L</strong>, <strong>E</strong> o <strong>V</strong>. Cada acierto = 1 punto. Las predicciones se habilitan fase a fase.</p></div></div>
+        <div class="paso"><div class="paso-num">5</div><div><h4>Sigue las 7 tablas</h4><p>Las tablas se actualizan automáticamente con datos oficiales de Sportmonks.</p></div></div>
+        <h3>Reglamento resumido</h3>
+        <ul>
+          <li>Máximo 400 participantes · Inscripción: <strong>$60.000 COP</strong>, pago único.</li>
+          <li>Todos los picks deben completarse antes del primer partido. Selecciones incompletas no son válidas.</li>
+          <li>No se permiten cambios una vez cerrada cada fase.</li>
+          <li>Partidos cancelados no cuentan para ninguna estadística.</li>
+          <li>Desempate: mayor puntaje L/E/V → mayor puntaje El Killer → fecha de registro.</li>
+          <li>Fuente oficial de datos: <strong>Sportmonks</strong>. Única fuente válida para resolver disputas.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL OLVIDÉ CONTRASEÑA -->
 <div class="modal-overlay" id="modalOlvide">
   <div class="modal-box">
@@ -664,6 +828,84 @@
     </div>
   </div>
 </div>
+
+<script>
+  // ── Modales de info ──────────────────────────────────────────────────────────
+  function openModal(id) {
+    var el = document.getElementById(id);
+    if (el) { el.style.display = 'flex'; requestAnimationFrame(function(){ el.classList.add('show'); }); }
+  }
+  function closeModal(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('show');
+    setTimeout(function(){ el.style.display = 'none'; }, 200);
+  }
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal-overlay')) closeModal(e.target.id);
+  });
+
+  // ── Poster backgrounds ───────────────────────────────────────────────────────
+  (function() {
+    var POSTERS = [
+      'https://images.unsplash.com/photo-1705593973313-75de7bf95b56?q=80&w=1920&auto=format&fit=crop',
+      'https://cdn.pixabay.com/photo/2013/12/12/21/48/football-stadium-227561_1280.jpg',
+      'https://cdn.pixabay.com/photo/2018/06/30/23/53/stadium-3508631_1280.jpg',
+      'https://cdn.pixabay.com/photo/2015/05/22/04/01/brazil-778269_1280.jpg',
+      'https://cdn.pixabay.com/photo/2016/08/24/23/08/cristiano-ronaldo-1618341_1280.jpg',
+      'https://images.unsplash.com/photo-1671395781342-fd36baf0eda3?q=80&w=1920&auto=format&fit=crop',
+      'https://images.pexels.com/photos/27271701/pexels-photo-27271701.jpeg?auto=compress&cs=tinysrgb&w=1920',
+      'https://images.pexels.com/photos/19875958/pexels-photo-19875958.jpeg?auto=compress&cs=tinysrgb&w=1920',
+      'https://images.pexels.com/photos/27132896/pexels-photo-27132896.jpeg?auto=compress&cs=tinysrgb&w=1920',
+      'https://images.pexels.com/photos/27007399/pexels-photo-27007399.jpeg?auto=compress&cs=tinysrgb&w=1920'
+    ];
+    var leftEl;
+    var leftIdx = Math.floor(Math.random() * POSTERS.length);
+
+    function setPoster(el, url) {
+      el.classList.remove('visible');
+      setTimeout(function() {
+        el.style.backgroundImage = 'url(' + url + ')';
+        el.classList.add('visible');
+      }, 1200);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      leftEl = document.getElementById('posterLeft');
+      if (!leftEl) return;
+      leftEl.style.backgroundImage = 'url(' + POSTERS[leftIdx] + ')';
+      setTimeout(function() { leftEl.classList.add('visible'); }, 300);
+      setInterval(function() {
+        leftIdx = (leftIdx + 1) % POSTERS.length;
+        setPoster(leftEl, POSTERS[leftIdx]);
+      }, 8000);
+    });
+  })();
+
+  // ── Contador de inscritos desde Supabase ─────────────────────────────────────
+  (function() {
+    var SUPA_URL = 'https://hwhlmuixnxevzbabkqcy.supabase.co';
+    var ANON_KEY = 'sb_publishable_Sub3P-1VhdcnNfhNzeet1A_yhQt_wJS';
+    fetch(SUPA_URL + '/rest/v1/usuarios?activo=eq.true&es_admin=eq.false&select=id', {
+      headers: {
+        'apikey': ANON_KEY,
+        'Authorization': 'Bearer ' + ANON_KEY,
+        'Prefer': 'count=exact',
+        'Range': '0-0'
+      }
+    }).then(function(r) {
+      var total = parseInt((r.headers.get('content-range') || '').split('/')[1] || '0', 10);
+      if (!total || isNaN(total)) return;
+      var pct = Math.min(Math.round((total / 400) * 100), 100);
+      var ic = document.querySelector('.inscritos-count');
+      if (ic) ic.textContent = total + ' / 400';
+      var pf = document.querySelector('.progress-bar-fill');
+      if (pf) { pf.style.animation = 'none'; pf.style.width = pct + '%'; }
+      var pp = document.querySelector('.progress-pct');
+      if (pp) pp.textContent = pct + '% completado';
+    }).catch(function(){});
+  })();
+</script>
 
 <script type="module">
   // Si ya hay sesión activa, redirigir al dashboard
