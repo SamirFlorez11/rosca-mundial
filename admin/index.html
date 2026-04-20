@@ -529,6 +529,22 @@ input:checked+.slider::before{transform:translateX(18px);}
       <!-- ══════ PAGE: PICKS ══════ -->
       <div class="page" id="page-picks">
         <div class="section-title">Picks de usuarios <span>Ver y gestionar predicciones</span></div>
+
+        <!-- INFO BOX: arquitectura picks -->
+        <div style="background:rgba(30,58,138,0.15);border:1px solid rgba(30,58,138,0.35);border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:12px;line-height:1.7;color:rgba(255,255,255,0.75);">
+          <strong style="color:var(--gold);font-size:13px;">📦 Arquitectura de picks (JSONB → Supabase)</strong><br>
+          Los picks de usuarios registrados se guardan en <code style="background:rgba(255,255,255,0.07);padding:1px 5px;border-radius:4px;">usuarios.picks_data</code> (columna JSONB en Supabase) — <strong>inmediatamente al guardar</strong>, sin esperar a las prelistas.<br>
+          El <strong>11 mayo 2026</strong> se ejecuta la migración a tablas relacionales (<code style="background:rgba(255,255,255,0.07);padding:1px 5px;border-radius:4px;">predicciones · picks_equipos · picks_killer</code>). <strong>Los usuarios NO repickean.</strong>
+        </div>
+
+        <!-- TOOLBAR PICKS -->
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
+          <button class="btn btn-gold" onclick="exportarPicksJSON()">⬇ Exportar todos los picks (JSON)</button>
+          <button class="btn btn-blue" onclick="exportarPicksCSV()">📊 Exportar resumen (CSV)</button>
+          <button class="btn" style="background:rgba(139,92,246,0.2);border:1px solid rgba(139,92,246,0.4);color:#a78bfa;" onclick="migrarPicksASupabase()">🔄 Migrar picks JSON → tablas (11 mayo)</button>
+          <button class="btn btn-navy" onclick="cargarPicksPage()">🔄 Actualizar</button>
+        </div>
+
         <div class="search-bar">
           <input class="search-input" placeholder="🔍 Buscar usuario..." oninput="filtrarPicksUser(this.value)" id="picks-search">
           <select class="filter-sel" onchange="filtrarPicksCat(this.value)">
@@ -553,7 +569,7 @@ input:checked+.slider::before{transform:translateX(18px);}
           <div class="panel-body">
             <div class="tbl-wrap">
               <table>
-                <thead><tr><th>#</th><th>Nombre / Alias</th><th>Grupos</th><th>Elim.</th><th>Killer</th><th>Especiales</th><th>Estado</th><th>Ver</th></tr></thead>
+                <thead><tr><th>#</th><th>Nombre / Alias</th><th>Estado picks</th><th>Ver</th></tr></thead>
                 <tbody id="tb-picks"></tbody>
               </table>
             </div>
@@ -1141,6 +1157,116 @@ async function cargarPicksPage() {
 function filtrarPicksUser(q) {}
 function filtrarPicksCat(v)  {}
 function filtrarPicksEstado(v) {}
+
+async function exportarPicksJSON() {
+  showToast('⏳ Descargando picks de todos los usuarios...', 'success');
+  try {
+    const { data, error } = await supabase
+      .from('usuarios')
+      .select('id, nombre_completo, nombre_usuario, picks_data')
+      .eq('activo', true);
+    if (error) throw error;
+    const exportData = {
+      exportado: new Date().toISOString(),
+      total_usuarios: data.length,
+      picks: data.map(u => ({
+        id: u.id,
+        nombre: u.nombre_completo,
+        alias: u.nombre_usuario,
+        picks_data: u.picks_data
+      }))
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `rosca-mundial-picks-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast(`✅ Exportados ${data.length} usuarios con picks`, 'success');
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+async function exportarPicksCSV() {
+  showToast('⏳ Generando CSV...', 'success');
+  try {
+    const { data, error } = await supabase
+      .from('usuarios')
+      .select('id, nombre_completo, nombre_usuario, picks_data')
+      .eq('activo', true);
+    if (error) throw error;
+    const rows = [['ID','Nombre','Alias','Lev (partidos)','Killer (jugadores)','Carnicero','Banderin','Virgen','Pied','Mecha','Estado']];
+    data.forEach(u => {
+      const p = u.picks_data || {};
+      const levCount = Object.keys(p.lev || {}).length;
+      const killerCount = (p.killer || []).length;
+      const carniceroCount = (p.carnicero || []).length;
+      const banderinCount = (p.banderin || []).length;
+      const virgenCount = (p.virgen || []).length;
+      const piedCount = (p.pied || []).length;
+      const mechaCount = (p.mecha || []).length;
+      const completo = levCount >= 72 && killerCount >= 15 && carniceroCount >= 10;
+      rows.push([u.id, u.nombre_completo, u.nombre_usuario || '—', levCount, killerCount, carniceroCount, banderinCount, virgenCount, piedCount, mechaCount, completo ? 'COMPLETO' : 'INCOMPLETO']);
+    });
+    const csv = rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `rosca-mundial-picks-resumen-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast(`✅ CSV generado — ${data.length} usuarios`, 'success');
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+async function migrarPicksASupabase() {
+  const hoy = new Date();
+  const mayo11 = new Date('2026-05-11');
+  if (hoy < mayo11) {
+    const diff = Math.ceil((mayo11 - hoy) / (1000 * 60 * 60 * 24));
+    if (!confirm(`⚠️ Esta migración está programada para el 11 mayo 2026 (faltan ${diff} días).\n\nSolo ejecutar cuando las prelistas de jugadores estén cargadas en Supabase.\n\n¿Deseas continuar de todas formas?`)) return;
+  }
+  if (!confirm('🔄 Esto leerá picks_data JSONB de cada usuario y los migrará a las tablas relacionales (predicciones, picks_equipos, picks_killer).\n\n¿Confirmas la migración?')) return;
+  showToast('⏳ Iniciando migración de picks...', 'success');
+  try {
+    const { data: usuarios, error } = await supabase
+      .from('usuarios')
+      .select('id, nombre_completo, picks_data')
+      .eq('activo', true)
+      .not('picks_data', 'is', null);
+    if (error) throw error;
+    let migrados = 0, errores = 0;
+    for (const u of usuarios) {
+      if (!u.picks_data) continue;
+      try {
+        const p = u.picks_data;
+        // Migrar LEV (predicciones de partidos)
+        if (p.lev && Object.keys(p.lev).length > 0) {
+          const predRows = Object.entries(p.lev).map(([partidoId, pred]) => ({
+            usuario_id: u.id, partido_id: partidoId, prediccion: pred
+          }));
+          await supabase.from('predicciones').upsert(predRows, { onConflict: 'usuario_id,partido_id' });
+        }
+        // Migrar Killer
+        if (p.killer && p.killer.length > 0) {
+          const killerRows = p.killer.map(jId => ({ usuario_id: u.id, jugador_id: jId }));
+          await supabase.from('picks_killer').upsert(killerRows, { onConflict: 'usuario_id,jugador_id' });
+        }
+        // Migrar categorías de equipos
+        const cats = ['carnicero','banderin','virgen','pied','mecha'];
+        for (const cat of cats) {
+          if (p[cat] && p[cat].length > 0) {
+            const eqRows = p[cat].map(eqId => ({ usuario_id: u.id, categoria: cat, equipo_id: eqId }));
+            await supabase.from('picks_equipos').upsert(eqRows, { onConflict: 'usuario_id,categoria,equipo_id' });
+          }
+        }
+        migrados++;
+      } catch(err) { errores++; console.error('Error migrando usuario', u.id, err); }
+    }
+    showToast(`✅ Migración completa: ${migrados} usuarios migrados, ${errores} errores`, errores > 0 ? 'error' : 'success');
+  } catch(e) { showToast('Error en migración: ' + e.message, 'error'); }
+}
 
 async function verPicks(id,nombre) {
   document.getElementById("modal-picks-title").textContent="Picks de "+nombre;
