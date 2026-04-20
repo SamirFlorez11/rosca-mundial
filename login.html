@@ -309,6 +309,8 @@
   .form-container {
     width: 100%;
     max-width: 400px;
+    position: relative;
+    z-index: 1;
     animation: slideUp 0.6s ease forwards;
   }
 
@@ -653,6 +655,7 @@
 
 <!-- PANEL DERECHO -->
 <div class="form-panel">
+  <div class="poster-bg" id="posterRight"></div>
   <div class="form-container">
     <div class="form-eyebrow">Bienvenido de nuevo</div>
     <div class="form-title">Inicia<br>sesión</div>
@@ -859,10 +862,12 @@
       'https://images.pexels.com/photos/27132896/pexels-photo-27132896.jpeg?auto=compress&cs=tinysrgb&w=1920',
       'https://images.pexels.com/photos/27007399/pexels-photo-27007399.jpeg?auto=compress&cs=tinysrgb&w=1920'
     ];
-    var leftEl;
+    var leftEl, rightEl;
     var leftIdx = Math.floor(Math.random() * POSTERS.length);
+    var rightIdx = (leftIdx + 5) % POSTERS.length;
 
     function setPoster(el, url) {
+      if (!el) return;
       el.classList.remove('visible');
       setTimeout(function() {
         el.style.backgroundImage = 'url(' + url + ')';
@@ -870,14 +875,26 @@
       }, 1200);
     }
 
+    function preload(url) { var img = new Image(); img.src = url; }
+
     document.addEventListener('DOMContentLoaded', function() {
-      leftEl = document.getElementById('posterLeft');
-      if (!leftEl) return;
-      leftEl.style.backgroundImage = 'url(' + POSTERS[leftIdx] + ')';
-      setTimeout(function() { leftEl.classList.add('visible'); }, 300);
+      leftEl  = document.getElementById('posterLeft');
+      rightEl = document.getElementById('posterRight');
+      if (leftEl) {
+        leftEl.style.backgroundImage  = 'url(' + POSTERS[leftIdx]  + ')';
+        setTimeout(function() { leftEl.classList.add('visible'); }, 300);
+      }
+      if (rightEl) {
+        rightEl.style.backgroundImage = 'url(' + POSTERS[rightIdx] + ')';
+        setTimeout(function() { rightEl.classList.add('visible'); }, 500);
+      }
       setInterval(function() {
-        leftIdx = (leftIdx + 1) % POSTERS.length;
-        setPoster(leftEl, POSTERS[leftIdx]);
+        leftIdx  = (leftIdx + 1)  % POSTERS.length;
+        rightIdx = (leftIdx + 5)  % POSTERS.length;
+        setPoster(leftEl,  POSTERS[leftIdx]);
+        setPoster(rightEl, POSTERS[rightIdx]);
+        preload(POSTERS[(leftIdx + 1) % POSTERS.length]);
+        preload(POSTERS[(rightIdx + 1) % POSTERS.length]);
       }, 8000);
     });
   })();
