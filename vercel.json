@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron-actualizar-datos",
-      "schedule": "*/2 * * * *"
+      "schedule": "0 12 * * *"
     }
   ],
   "headers": [
