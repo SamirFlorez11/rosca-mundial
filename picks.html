@@ -347,7 +347,8 @@
   .lev-btn.sel-E { background: rgba(239,159,39,0.15); border-color: #EF9F27; color: #FAC775; }
   .lev-btn.sel-V { background: rgba(216,90,48,0.15); border-color: #D85A30; color: #F0997B; }
   .lev-btn:hover:not(.sel-L):not(.sel-E):not(.sel-V) { border-color: var(--amarillo); color: var(--text); }
-  .lev-btn:focus, .lev-btn:focus-visible { outline: none; box-shadow: none; }
+  .lev-btn:focus, .lev-btn:focus-visible { outline: none !important; box-shadow: none !important; }
+  .lev-btn { outline: none; }
 
   /* Grupo tabs (para LEV) */
   .grupo-tabs { display: flex; gap: 4px; flex-wrap: wrap; padding: 10px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -1382,6 +1383,7 @@ function pickLEV(id, val) {
   document.querySelectorAll(`.lev-btn[data-pid="${id}"]`).forEach(btn => {
     const v = btn.dataset.val;
     btn.className = 'lev-btn' + (newSel === v ? ' sel-' + v : '');
+    btn.blur(); // quitar foco para evitar el recuadro del navegador
   });
   renderPicksLEV();
   renderTabsCategoria('lev');
@@ -1420,6 +1422,7 @@ function quitarLEV(id) {
   // Resetear los botones del partido sin re-renderizar toda la lista
   document.querySelectorAll(`.lev-btn[data-pid="${id}"]`).forEach(btn => {
     btn.className = 'lev-btn';
+    btn.blur();
   });
   renderPicksLEV();
   renderTabsCategoria('lev');
