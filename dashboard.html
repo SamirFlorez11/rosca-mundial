@@ -948,6 +948,15 @@
     .btn-picks-label { display: none; }
     /* Tema toggle */
     .btn-tema { width: 32px; height: 32px; font-size: 15px; margin-left: 6px !important; }
+    /* ── Ranking principal: ocultar columnas Aciertos/Partidos/% en móvil ── */
+    .col-aciertos, .col-partidos, .col-pct { display: none; }
+    /* Ajustar padding de celdas */
+    #ranking-principal-table td,
+    #ranking-principal-table th { padding-left: 10px !important; padding-right: 10px !important; }
+    /* Avatar y nombre más compactos */
+    .rank-avatar { width: 30px !important; height: 30px !important; font-size: 14px !important; }
+    .rank-user { gap: 7px; }
+    .rank-name { font-size: 13px; }
   }
   @media (max-width: 1100px) {
     .grid-main { grid-template-columns: 1fr; }
@@ -1099,22 +1108,22 @@
       </div>
     </div>
     <!-- tabla con columnas fijas usando table layout -->
-    <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
+    <table id="ranking-principal-table" style="width:100%;border-collapse:collapse;table-layout:fixed;">
       <colgroup>
         <col style="width:52px">
         <col>
-        <col style="width:110px">
-        <col style="width:110px">
-        <col style="width:110px">
+        <col class="col-aciertos" style="width:110px">
+        <col class="col-partidos" style="width:110px">
+        <col class="col-pct" style="width:110px">
         <col style="width:100px">
       </colgroup>
       <thead>
         <tr style="background:var(--card2);border-bottom:1px solid var(--border);">
           <th style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:8px 0 8px 20px;font-weight:600;text-align:center">#</th>
           <th style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:8px 0;font-weight:600;text-align:left">Jugador</th>
-          <th style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:8px 0;font-weight:600;text-align:center">Aciertos</th>
-          <th style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:8px 0;font-weight:600;text-align:center">Partidos</th>
-          <th style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:8px 0;font-weight:600;text-align:center">% Acierto</th>
+          <th class="col-aciertos" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:8px 0;font-weight:600;text-align:center">Aciertos</th>
+          <th class="col-partidos" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:8px 0;font-weight:600;text-align:center">Partidos</th>
+          <th class="col-pct" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:8px 0;font-weight:600;text-align:center">% Acierto</th>
           <th style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:8px 20px 8px 0;font-weight:600;text-align:center">Puntos</th>
         </tr>
       </thead>
@@ -1887,9 +1896,9 @@
             <div class="rank-user"><div class="rank-avatar" style="width:38px;height:38px;font-size:18px">${EMOJIS_ALPHA[i]}</div>
             <div><div class="rank-name ${!esInvitado&&u.id===userId?'you':''}">${nombreVisible(u,i)}</div></div></div>
           </td>
-          <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center"><span style="font-size:16px;font-weight:700;color:var(--text)">0</span></td>
-          <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center"><span style="color:var(--muted)">0</span></td>
-          <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center"><span style="color:var(--muted)">—</span></td>
+          <td class="col-aciertos" style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center"><span style="font-size:16px;font-weight:700;color:var(--text)">0</span></td>
+          <td class="col-partidos" style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center"><span style="color:var(--muted)">0</span></td>
+          <td class="col-pct" style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center"><span style="color:var(--muted)">—</span></td>
           <td style="padding:13px 20px;border-bottom:1px solid rgba(30,45,69,0.6);vertical-align:middle;text-align:center"><span class="rank-stat pts">0</span></td>
         </tr>`).join('');
 
@@ -1899,9 +1908,9 @@
         <tr style="background:rgba(252,209,22,0.05)">
           <td style="padding:13px 0 13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><div class="rank-pos other" style="color:var(--amarillo)">${miIdx+1}</div></td>
           <td style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);vertical-align:middle"><div class="rank-user"><div class="rank-avatar" style="width:38px;height:38px;font-size:18px;border-color:var(--amarillo)">⚽</div><div><div class="rank-name you">${me.nombre}</div><div style="font-size:11px;color:var(--amarillo);font-family:'Barlow',sans-serif;opacity:0.8">← Tu posición actual</div></div></div></td>
-          <td style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><span style="font-size:16px;font-weight:700;color:var(--text)">0</span></td>
-          <td style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><span style="color:var(--muted)">0</span></td>
-          <td style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><span style="color:var(--muted)">—</span></td>
+          <td class="col-aciertos" style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><span style="font-size:16px;font-weight:700;color:var(--text)">0</span></td>
+          <td class="col-partidos" style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><span style="color:var(--muted)">0</span></td>
+          <td class="col-pct" style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><span style="color:var(--muted)">—</span></td>
           <td style="padding:13px 20px 13px 0;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><span class="rank-stat pts">0</span></td>
         </tr>`;
       }
