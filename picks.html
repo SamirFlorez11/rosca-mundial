@@ -347,6 +347,7 @@
   .lev-btn.sel-E { background: rgba(239,159,39,0.15); border-color: #EF9F27; color: #FAC775; }
   .lev-btn.sel-V { background: rgba(216,90,48,0.15); border-color: #D85A30; color: #F0997B; }
   .lev-btn:hover:not(.sel-L):not(.sel-E):not(.sel-V) { border-color: var(--amarillo); color: var(--text); }
+  .lev-btn:focus, .lev-btn:focus-visible { outline: none; box-shadow: none; }
 
   /* Grupo tabs (para LEV) */
   .grupo-tabs { display: flex; gap: 4px; flex-wrap: wrap; padding: 10px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -403,6 +404,31 @@
   @media (max-width: 768px) {
     .picks-selected-list { max-height: 200px; }
   }
+
+  /* ── Navbar móvil ───────────────────────────── */
+  @media (max-width: 600px) {
+    .navbar { padding: 0 8px; gap: 2px; }
+    /* Logo más pequeño */
+    .nav-left img { width: 30px !important; height: 30px !important; }
+    .nav-left { gap: 6px; min-width: 0; }
+    /* Ocultar subtítulo y reducir brand */
+    .nav-brand span { display: none; }
+    .nav-brand { font-size: 14px; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* ← Volver: solo flecha en pantallas muy pequeñas */
+    .btn-volver-label { display: none; }
+    #btnVolver { padding: 0 10px; font-size: 14px; margin-left: 4px; }
+    /* Ocultar texto de botones derechos — solo emojis */
+    .btn-label { display: none; }
+    /* Ocultar PDF (siempre deshabilitado hasta junio) */
+    .btn-pdf { display: none !important; }
+    /* Achicar botones de acción */
+    #btnVerPicks, .btn-nav.btn-confirm { padding: 0 9px; font-size: 14px; min-width: 0; }
+    .btn-tema { width: 32px; height: 32px; font-size: 15px; }
+    /* Gap derecho */
+    .navbar > div:last-child { gap: 4px; }
+    /* Modificar centrado */
+    #btnModificar { font-size: 11px; padding: 0 8px; }
+  }
 </style>
 </head>
 <body>
@@ -417,25 +443,25 @@
 
 <!-- NAVBAR -->
 <nav class="navbar" style="justify-content:space-between;">
-  <div class="nav-left">
-     <img src="/logo.png" style="width:44px;height:44px;object-fit:contain;border-radius:8px;">
+  <!-- IZQUIERDA: logo + brand + volver -->
+  <div class="nav-left" style="min-width:0;overflow:hidden;">
+    <img src="/logo.png" style="width:44px;height:44px;object-fit:contain;border-radius:8px;flex-shrink:0;">
     <div class="nav-brand">
       ROSCA MUNDIAL
       <span>MUNDIAL USA · MÉXICO · CANADÁ 2026</span>
     </div>
   </div>
-  <!-- Botón izquierdo: Atrás (aparece en vista picks) -->
-  <button class="btn-tema" id="btnTema" onclick="toggleTema()" title="Cambiar modo día/noche" style="margin-left:20px">🌙</button>
-  <button class="btn-nav btn-back" onclick="volverAlMenu()" id="btnVolver" style="display:none;margin-left:24px">← Seleccionar categoría</button>
-  <!-- Centro expandible para empujar el modificar al centro -->
-  <div style="flex:1;display:flex;justify-content:center;">
-    <button class="btn-nav btn-modify" id="btnModificar" onclick="toggleModoEdicion()" style="display:none">✏️ Modificar picks</button>
+  <!-- VOLVER + MODIFICAR (se muestran contextualmente) -->
+  <button class="btn-nav btn-back" onclick="volverAlMenu()" id="btnVolver" style="display:none;flex-shrink:0;margin-left:8px">← <span class="btn-volver-label">Seleccionar categoría</span></button>
+  <div style="flex:1;display:flex;justify-content:center;min-width:0;">
+    <button class="btn-nav btn-modify" id="btnModificar" onclick="toggleModoEdicion()" style="display:none">✏️ <span class="btn-label">Modificar picks</span></button>
   </div>
-  <!-- Botones derechos -->
-  <div style="display:flex;align-items:center;gap:8px">
-<button class="btn-nav btn-modify" id="btnVerPicks" onclick="abrirResumenPicks()" style="display:none">👁 Ver todos mis picks</button>
-    <button id="btnGenerarPDF2" onclick="solicitarPDF()" title="Disponible 30 min antes del partido inicial" style="opacity:0.5;cursor:not-allowed;" disabled class="btn-nav" style="background:none;border:1px solid var(--border);color:var(--muted)">📄 PDF Picks</button>
-    <button class="btn-nav btn-confirm" onclick="window.location.href='dashboard.html'">🏠 Dashboard</button>
+  <!-- DERECHA: acciones + modo día/noche -->
+  <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+    <button class="btn-nav btn-modify" id="btnVerPicks" onclick="abrirResumenPicks()" style="display:none">👁 <span class="btn-label">Ver picks</span></button>
+    <button id="btnGenerarPDF2" onclick="solicitarPDF()" title="Disponible 30 min antes del partido inicial" style="opacity:0.5;cursor:not-allowed;" disabled class="btn-nav btn-pdf">📄 <span class="btn-label">PDF</span></button>
+    <button class="btn-nav btn-confirm" onclick="window.location.href='dashboard.html'">🏠 <span class="btn-label">Dashboard</span></button>
+    <button class="btn-tema" id="btnTema" onclick="toggleTema()" title="Cambiar modo día/noche">🌙</button>
   </div>
 </nav>
 
@@ -539,7 +565,7 @@
         <div class="cat-emoji">🕊️</div>
         <div class="cat-info">
           <div class="cat-name">El Virgen</div>
-          <div class="cat-desc">10 equipos con menos goles recibidos + anotados en todo el torneo.</div>
+          <div class="cat-desc">10 equipos que menos goles anoten en todo el torneo.</div>
         </div>
         <div class="cat-status">
           <div class="cat-prize">$400.000 COP</div>
@@ -1188,7 +1214,7 @@ function abrirCategoria(cat) {
       killer:    'Elige 15 jugadores que creas tendrán más Goles + Asistencias. Máximo 3 del mismo equipo.',
       carnicero: 'Elige 10 selecciones que creas acumularán más tarjetas. Amarilla=1pt, Roja=2pts.',
       banderin:  'Elige 10 selecciones que creas ejecutarán más corners en el torneo.',
-      virgen:    'Elige 10 selecciones que creas recibirán y anotarán menos goles en total.',
+      virgen:    'Elige 10 equipos que creas anotarán (marcarán) menos goles en todo el torneo.',
       pied:      'Elige 10 selecciones que creas acumularán menos tarjetas. Amarilla=1pt, Roja=2pts.',
       mecha:     'Elige 10 selecciones que creas ejecutarán menos corners en el torneo.',
     };
