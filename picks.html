@@ -339,6 +339,9 @@
     font-weight: 700; font-size: 12px; cursor: pointer;
     border: 1px solid var(--border); background: var(--card); color: var(--muted);
     transition: all 0.12s;
+    touch-action: manipulation; /* evita doble-tap zoom en móvil */
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
   }
   .lev-btn.sel-L { background: rgba(56,130,221,0.15); border-color: #378ADD; color: #85B7EB; }
   .lev-btn.sel-E { background: rgba(239,159,39,0.15); border-color: #EF9F27; color: #FAC775; }
@@ -1323,9 +1326,9 @@ function renderPartidosTodos() {
         <div class="partido-teams">${p.local.flag} ${p.local.nombre}<span class="partido-vs"> vs </span>${p.visit.flag} ${p.visit.nombre}</div>
         <div class="partido-date">${p.fecha}</div>
         <div class="lev-btns">
-          <button class="lev-btn ${sel==='L'?'sel-L':''}" onclick="pickLEV('${p.id}','L')">L</button>
-          <button class="lev-btn ${sel==='E'?'sel-E':''}" onclick="pickLEV('${p.id}','E')">E</button>
-          <button class="lev-btn ${sel==='V'?'sel-V':''}" onclick="pickLEV('${p.id}','V')">V</button>
+          <button class="lev-btn ${sel==='L'?'sel-L':''}" data-pid="${p.id}" data-val="L" onclick="pickLEV('${p.id}','L')">L</button>
+          <button class="lev-btn ${sel==='E'?'sel-E':''}" data-pid="${p.id}" data-val="E" onclick="pickLEV('${p.id}','E')">E</button>
+          <button class="lev-btn ${sel==='V'?'sel-V':''}" data-pid="${p.id}" data-val="V" onclick="pickLEV('${p.id}','V')">V</button>
         </div>
       </div>`;
     });
@@ -1348,7 +1351,12 @@ function setupScrollReveal() {
 
 function pickLEV(id, val) {
   if (STATE.lev[id] === val) delete STATE.lev[id]; else STATE.lev[id] = val;
-  renderPartidosTodos();
+  // Actualizar solo los 3 botones del partido tocado (sin re-renderizar toda la lista)
+  const newSel = STATE.lev[id] || null;
+  document.querySelectorAll(`.lev-btn[data-pid="${id}"]`).forEach(btn => {
+    const v = btn.dataset.val;
+    btn.className = 'lev-btn' + (newSel === v ? ' sel-' + v : '');
+  });
   renderPicksLEV();
   renderTabsCategoria('lev');
   actualizarContador();
@@ -1383,7 +1391,10 @@ function renderPicksLEV() {
 
 function quitarLEV(id) {
   delete STATE.lev[id];
-  renderPartidosTodos();
+  // Resetear los botones del partido sin re-renderizar toda la lista
+  document.querySelectorAll(`.lev-btn[data-pid="${id}"]`).forEach(btn => {
+    btn.className = 'lev-btn';
+  });
   renderPicksLEV();
   renderTabsCategoria('lev');
   actualizarContador();
