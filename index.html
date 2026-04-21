@@ -4,31 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rosca Mundial — Registro</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root{--gold:#E8A020;--gold-dark:#C07A18;--navy:#0D1B3E;--navy-light:#1A2F5E;--red:#CE1126;--cream:#FDF6E8;--white:#ffffff;--gray:#6B7280;--border:#E5E7EB;}
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:"Nunito",sans-serif;background:var(--navy);min-height:100vh;display:flex;align-items:stretch;overflow-x:hidden;}
+  body{font-family:'Poppins',sans-serif;background:var(--navy);min-height:100vh;display:flex;align-items:stretch;overflow-x:hidden;}
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center;padding:20px;}
   .modal-overlay.show{display:flex;animation:fadeIn 0.2s ease;}
   .modal-box{background:var(--white);border-radius:20px;max-width:580px;width:100%;max-height:88vh;overflow-y:auto;position:relative;}
   .modal-header{background:var(--navy);padding:22px 28px 18px;border-radius:20px 20px 0 0;position:sticky;top:0;z-index:1;}
-  .modal-header h2{font-family:"Bebas Neue",sans-serif;font-size:26px;letter-spacing:2px;color:var(--gold);margin-bottom:2px;}
+  .modal-header h2{font-family:'Poppins',sans-serif;font-size:26px;letter-spacing:2px;color:var(--gold);margin-bottom:2px;}
   .modal-header p{font-size:11px;color:rgba(255,255,255,0.4);font-weight:600;letter-spacing:1px;}
   .modal-close{position:absolute;top:14px;right:18px;background:rgba(255,255,255,0.1);border:none;color:white;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
   .modal-close:hover{background:rgba(255,255,255,0.2);}
   .modal-body{padding:24px 28px;}
   .samir-card{display:flex;gap:18px;align-items:flex-start;margin-bottom:18px;}
   .samir-photo{width:90px;height:90px;border-radius:50%;object-fit:cover;object-position:center top;border:3px solid var(--gold);flex-shrink:0;}
-  .samir-info h3{font-family:"Bebas Neue",sans-serif;font-size:21px;letter-spacing:1px;color:var(--navy);margin-bottom:4px;}
+  .samir-info h3{font-family:'Poppins',sans-serif;font-size:21px;letter-spacing:1px;color:var(--navy);margin-bottom:4px;}
   .samir-badge{display:inline-block;background:var(--navy);color:var(--gold);font-size:10px;font-weight:800;letter-spacing:2px;padding:3px 10px;border-radius:20px;text-transform:uppercase;margin-bottom:8px;}
   .samir-desc{font-size:13px;color:var(--gray);line-height:1.6;font-weight:600;}
   .paso{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
-  .paso-num{width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--gold);font-family:"Bebas Neue",sans-serif;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+  .paso-num{width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--gold);font-family:'Poppins',sans-serif;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
   .paso h4{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:3px;}
   .paso p{font-size:13px;color:var(--gray);line-height:1.5;font-weight:600;}
   .reg-section{margin-bottom:16px;}
-  .reg-section h3{font-family:"Bebas Neue",sans-serif;font-size:17px;letter-spacing:1px;color:var(--navy);border-bottom:2px solid var(--gold);padding-bottom:5px;margin-bottom:10px;margin-top:16px;}
+  .reg-section h3{font-family:'Poppins',sans-serif;font-size:17px;letter-spacing:1px;color:var(--navy);border-bottom:2px solid var(--gold);padding-bottom:5px;margin-bottom:10px;margin-top:16px;}
   .reg-section h3:first-child{margin-top:0;}
   .reg-section p,.reg-section li{font-size:13px;color:#444;line-height:1.7;font-weight:600;margin-bottom:5px;}
   .reg-section ul,.reg-section ol{padding-left:18px;}
@@ -43,40 +43,40 @@
   .stripe-red{flex:1;background:#CE1126;}
   .brand-content{position:relative;z-index:1;text-align:center;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px 32px;}
   .nav-buttons{display:flex;flex-direction:row;gap:6px;margin-bottom:20px;width:100%;justify-content:center;flex-wrap:wrap;}
-  .nav-btn{background:#1A2F5E;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.85);padding:7px 12px;border-radius:8px;font-family:"Nunito",sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:5px;}
+  .nav-btn{background:#1A2F5E;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.85);padding:7px 12px;border-radius:8px;font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:5px;}
   .nav-btn:hover{background:#243d6e;border-color:rgba(232,160,32,0.5);color:var(--gold);}
   .nav-btn-icon{font-size:13px;}
   .nav-buttons-secondary{display:flex;flex-direction:row;gap:6px;margin-top:12px;margin-bottom:12px;width:100%;justify-content:center;flex-wrap:wrap;}
-  .nav-btn-sec{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);padding:5px 10px;border-radius:7px;font-family:"Nunito",sans-serif;font-size:10px;font-weight:600;cursor:pointer;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:4px;}
+  .nav-btn-sec{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);padding:5px 10px;border-radius:7px;font-family:'Poppins',sans-serif;font-size:10px;font-weight:600;cursor:pointer;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:4px;}
   .nav-btn-sec:hover{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);}
   body.dia .nav-btn-sec{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.1);color:rgba(0,0,0,0.4);}
   body.dia .nav-btn-sec:hover{background:rgba(0,0,0,0.09);color:rgba(0,0,0,0.65);}
   .logo-img{width:220px;height:220px;object-fit:contain;margin-bottom:10px;animation:floatLogo 4s ease-in-out infinite;}
   @keyframes floatLogo{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-  .brand-title{font-family:"Bebas Neue",sans-serif;font-size:50px;letter-spacing:4px;color:var(--white);line-height:1;margin-bottom:4px;}
+  .brand-title{font-family:'Poppins',sans-serif;font-size:50px;letter-spacing:4px;color:var(--white);line-height:1;margin-bottom:4px;}
   .brand-title span{color:var(--gold);}
   .brand-year{font-size:12px;font-weight:700;letter-spacing:8px;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:20px;}
   .progress-card{background:#0D1B3E;border:1px solid rgba(255,255,255,0.18);border-radius:14px;padding:16px 20px;width:100%;max-width:280px;}
   .progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
   .progress-label{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);}
-  .progress-count{font-family:"Bebas Neue",sans-serif;font-size:20px;color:var(--gold);letter-spacing:2px;}
+  .progress-count{font-family:'Poppins',sans-serif;font-size:20px;color:var(--gold);letter-spacing:2px;}
   .progress-bar-bg{background:rgba(255,255,255,0.1);border-radius:999px;height:7px;overflow:hidden;margin-bottom:6px;}
   .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-dark),var(--gold));border-radius:999px;width:0;animation:fillBar 1.5s ease-out forwards;}
   @keyframes fillBar{to{width:0%;}}
   .progress-pct{font-size:11px;color:rgba(255,255,255,0.3);text-align:right;}
-  .btn-invitado{display:block;width:100%;max-width:280px;margin-top:12px;padding:13px 16px;background:rgba(255,255,255,0.07);border:2px dashed rgba(255,255,255,0.3);border-radius:12px;color:rgba(255,255,255,0.75);font-family:"Bebas Neue",sans-serif;font-size:17px;letter-spacing:3px;text-decoration:none;text-align:center;transition:all 0.25s;cursor:pointer;}
+  .btn-invitado{display:block;width:100%;max-width:280px;margin-top:12px;padding:13px 16px;background:rgba(255,255,255,0.07);border:2px dashed rgba(255,255,255,0.3);border-radius:12px;color:rgba(255,255,255,0.75);font-family:'Poppins',sans-serif;font-size:17px;letter-spacing:3px;text-decoration:none;text-align:center;transition:all 0.25s;cursor:pointer;}
   .btn-invitado:hover{background:rgba(255,255,255,0.14);border-color:var(--gold);color:var(--gold);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.3);}
   .form-panel{flex:1;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;overflow-y:auto;}
   .form-container{width:100%;max-width:440px;position:relative;z-index:1;}
   .form-eyebrow{font-size:11px;font-weight:800;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:6px;}
-  .form-title{font-family:"Bebas Neue",sans-serif;font-size:36px;color:var(--navy);letter-spacing:2px;line-height:1.1;margin-bottom:6px;}
+  .form-title{font-family:'Poppins',sans-serif;font-size:36px;color:var(--navy);letter-spacing:2px;line-height:1.1;margin-bottom:6px;}
   .form-subtitle{font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:6px;font-weight:600;}
   .form-note{background:#EEF4FF;border-left:3px solid #185FA5;padding:9px 13px;border-radius:0 8px 8px 0;font-size:12px;color:#0C447C;font-weight:700;margin-bottom:20px;line-height:1.5;}
   .form-group{margin-bottom:0px;}
   .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:0px;}
   .field-wrap{margin-bottom:16px;}
   label{display:block;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--navy);margin-bottom:5px;}
-  input{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-family:"Nunito",sans-serif;font-size:14px;font-weight:600;color:var(--navy);background:var(--white);transition:border-color 0.2s,box-shadow 0.2s;outline:none;}
+  input{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:var(--navy);background:var(--white);transition:border-color 0.2s,box-shadow 0.2s;outline:none;}
   input::placeholder{color:#C0C7D0;font-weight:500;}
   input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(232,160,32,0.12);}
   input.error{border-color:var(--red);}
@@ -93,7 +93,7 @@
   .pago-metodo.active .pago-metodo-label{color:var(--gold);}
   .pago-total{display:flex;justify-content:space-between;align-items:center;padding-top:11px;border-top:1px solid rgba(255,255,255,0.08);}
   .pago-total-label{font-size:12px;color:rgba(255,255,255,0.4);font-weight:600;}
-  .pago-total-value{font-family:"Bebas Neue",sans-serif;font-size:25px;color:var(--gold);letter-spacing:2px;}
+  .pago-total-value{font-family:'Poppins',sans-serif;font-size:25px;color:var(--gold);letter-spacing:2px;}
   .terminos-box{background:#FFF8E8;border:2px solid var(--gold);border-radius:11px;padding:13px 15px;margin-bottom:14px;}
   .terminos{display:flex;align-items:flex-start;gap:10px;}
   .terminos input[type="checkbox"]{width:17px;height:17px;flex-shrink:0;margin-top:2px;accent-color:var(--navy);cursor:pointer;}
@@ -101,7 +101,7 @@
   .terminos label a{color:var(--navy);text-decoration:underline;cursor:pointer;}
   .terminos-warning{font-size:11px;color:var(--red);font-weight:700;margin-top:6px;display:none;}
   .terminos-warning.show{display:block;}
-  .btn-submit{width:100%;padding:14px;background:var(--navy);color:var(--white);border:none;border-radius:12px;font-family:"Bebas Neue",sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;}
+  .btn-submit{width:100%;padding:14px;background:var(--navy);color:var(--white);border:none;border-radius:12px;font-family:'Poppins',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;}
   .btn-submit:hover{background:var(--navy-light);transform:translateY(-1px);}
   .btn-wompi-badge{background:rgba(255,255,255,0.12);border-radius:5px;padding:2px 7px;font-size:10px;letter-spacing:1px;color:rgba(255,255,255,0.6);}
   .login-link{text-align:center;margin-top:14px;font-size:13px;color:var(--gray);font-weight:600;}
@@ -111,7 +111,7 @@
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   .success-icon{font-size:60px;animation:bounce 0.5s ease;}
   @keyframes bounce{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
-  .success-title{font-family:"Bebas Neue",sans-serif;font-size:42px;color:var(--gold);letter-spacing:4px;}
+  .success-title{font-family:'Poppins',sans-serif;font-size:42px;color:var(--gold);letter-spacing:4px;}
   .success-msg{font-size:15px;color:rgba(255,255,255,0.7);max-width:380px;line-height:1.7;font-weight:600;}
   .success-email{color:var(--gold);font-weight:800;}
   @media(max-width:768px){body{flex-direction:column;}.brand-panel{width:100%;}.logo-img{width:140px;height:140px;}.brand-title{font-size:38px;}.form-panel{padding:28px 20px;}.form-row{grid-template-columns:1fr;gap:0;}}
@@ -128,7 +128,7 @@
   .premio-img{max-height:64px;max-width:84px;object-fit:contain;}
   .premio-img-fallback{font-size:32px;line-height:1;}
   .premio-nombre{font-size:9px;font-weight:800;color:rgba(255,255,255,0.8);letter-spacing:0.5px;line-height:1.3;margin-bottom:3px;}
-  .premio-monto{font-family:"Bebas Neue",sans-serif;font-size:13px;color:var(--gold);letter-spacing:1px;}
+  .premio-monto{font-family:'Poppins',sans-serif;font-size:13px;color:var(--gold);letter-spacing:1px;}
   .premio-rank{font-size:8px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:2px;}
   .billete-wrap{position:relative;display:inline-block;}
   .billete-img{max-height:48px;max-width:84px;object-fit:contain;border-radius:4px;}
@@ -373,27 +373,27 @@
         <div class="timer-label">⏱ Primer partido: Jueves 11 Jun 2026 · 6:00 PM (Col)</div>
         <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
           <div style="text-align:center;">
-            <div id="t-mes" style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--gold);letter-spacing:2px;line-height:1;">00</div>
+            <div id="t-mes" style="font-family:'Poppins',sans-serif;font-size:30px;color:var(--gold);letter-spacing:2px;line-height:1;">00</div>
             <div style="font-size:8px;color:rgba(255,255,255,0.3);font-weight:800;letter-spacing:1px;margin-top:2px;">MESES</div>
           </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:rgba(232,160,32,0.4);padding-bottom:14px;">:</div>
+          <div style="font-family:'Poppins',sans-serif;font-size:26px;color:rgba(232,160,32,0.4);padding-bottom:14px;">:</div>
           <div style="text-align:center;">
-            <div id="t-dia" style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--gold);letter-spacing:2px;line-height:1;">00</div>
+            <div id="t-dia" style="font-family:'Poppins',sans-serif;font-size:30px;color:var(--gold);letter-spacing:2px;line-height:1;">00</div>
             <div style="font-size:8px;color:rgba(255,255,255,0.3);font-weight:800;letter-spacing:1px;margin-top:2px;">DÍAS</div>
           </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:rgba(232,160,32,0.4);padding-bottom:14px;">:</div>
+          <div style="font-family:'Poppins',sans-serif;font-size:26px;color:rgba(232,160,32,0.4);padding-bottom:14px;">:</div>
           <div style="text-align:center;">
-            <div id="t-hor" style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--gold);letter-spacing:2px;line-height:1;">00</div>
+            <div id="t-hor" style="font-family:'Poppins',sans-serif;font-size:30px;color:var(--gold);letter-spacing:2px;line-height:1;">00</div>
             <div style="font-size:8px;color:rgba(255,255,255,0.3);font-weight:800;letter-spacing:1px;margin-top:2px;">HORAS</div>
           </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:rgba(232,160,32,0.4);padding-bottom:14px;">:</div>
+          <div style="font-family:'Poppins',sans-serif;font-size:26px;color:rgba(232,160,32,0.4);padding-bottom:14px;">:</div>
           <div style="text-align:center;">
-            <div id="t-min" style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--gold);letter-spacing:2px;line-height:1;">00</div>
+            <div id="t-min" style="font-family:'Poppins',sans-serif;font-size:30px;color:var(--gold);letter-spacing:2px;line-height:1;">00</div>
             <div style="font-size:8px;color:rgba(255,255,255,0.3);font-weight:800;letter-spacing:1px;margin-top:2px;">MINUTOS</div>
           </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:rgba(232,160,32,0.4);padding-bottom:14px;">:</div>
+          <div style="font-family:'Poppins',sans-serif;font-size:26px;color:rgba(232,160,32,0.4);padding-bottom:14px;">:</div>
           <div style="text-align:center;">
-            <div id="t-seg" style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--gold);letter-spacing:2px;line-height:1;">00</div>
+            <div id="t-seg" style="font-family:'Poppins',sans-serif;font-size:30px;color:var(--gold);letter-spacing:2px;line-height:1;">00</div>
             <div style="font-size:8px;color:rgba(255,255,255,0.3);font-weight:800;letter-spacing:1px;margin-top:2px;">SEGUNDOS</div>
           </div>
         </div>
