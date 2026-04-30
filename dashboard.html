@@ -179,6 +179,32 @@
 
   .picks-alert-text strong { font-size: 13px; display: inline; margin-right: 4px; }
 
+  /* BTN RESULTADOS — misma estética que PICKS */
+  .btn-resultados {
+    background: linear-gradient(135deg, var(--amarillo), #e5a800);
+    color: #000;
+    font-family:'Poppins',sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    padding: 9px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-resultados:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(252,209,22,0.4);
+    color: #000;
+  }
+  /* btn-resultados en día hereda el mismo gradiente que btn-picks — sin override necesario */
+
   /* BTN IR A PICKS (siempre visible en navbar) */
   .btn-picks {
     background: linear-gradient(135deg, var(--amarillo), #e5a800);
@@ -837,6 +863,53 @@
 
   .modal-close:hover { border-color: var(--rojo); color: var(--rojo); }
 
+  /* ── CUPO SELECTOR BAR ────────────────────────────────────── */
+  .cupo-bar {
+    display: none; /* shown via JS when user has cupos */
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    flex-wrap: wrap;
+  }
+  body.dia .cupo-bar { background: rgba(0,0,0,0.04); border-bottom-color: rgba(0,0,0,0.08); }
+  .cupo-bar-label {
+    font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+    color: rgba(255,255,255,0.3); margin-right: 4px; white-space: nowrap;
+  }
+  body.dia .cupo-bar-label { color: rgba(0,0,0,0.35); }
+  .cupo-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 12px; border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    cursor: pointer; transition: all 0.18s;
+    font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.6);
+  }
+  .cupo-pill:hover { border-color: var(--amarillo); color: var(--amarillo); background: rgba(252,209,22,0.08); }
+  .cupo-pill.active {
+    border-color: var(--amarillo); background: rgba(252,209,22,0.12);
+    color: #000; background: var(--amarillo);
+  }
+  body.dia .cupo-pill { border-color: rgba(0,0,0,0.15); color: rgba(0,0,0,0.5); background: rgba(0,0,0,0.04); }
+  body.dia .cupo-pill.active { background: var(--amarillo); color: #000; border-color: var(--amarillo); }
+  .cupo-num-badge {
+    font-size: 9px; font-weight: 900; padding: 1px 5px; border-radius: 8px;
+    background: rgba(0,0,0,0.2); letter-spacing: 0.5px;
+  }
+  .cupo-pill.active .cupo-num-badge { background: rgba(0,0,0,0.25); }
+  .btn-add-cupo {
+    display: flex; align-items: center; gap: 5px;
+    padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: all 0.18s;
+    font-size: 11px; font-weight: 800; letter-spacing: 0.5px;
+    border: 1px dashed rgba(255,255,255,0.2); background: transparent;
+    color: rgba(255,255,255,0.4);
+  }
+  .btn-add-cupo:hover { border-color: #4ADE80; color: #4ADE80; background: rgba(74,222,128,0.07); }
+  body.dia .btn-add-cupo { border-color: rgba(0,0,0,0.2); color: rgba(0,0,0,0.4); }
+  body.dia .btn-add-cupo:hover { border-color: #16a34a; color: #16a34a; }
+
   /* DROPDOWN USUARIO */
   .user-dropdown {
     position: fixed;
@@ -943,11 +1016,14 @@
     /* Ocultar la alerta roja en móvil — el botón PICKS ya cumple esa función */
     .picks-alert { display: none !important; }
     /* Compactar nav-right */
-    .nav-right { gap: 8px; }
-    .btn-picks { font-size: 12px; padding: 7px 12px; }
+    .nav-right { gap: 6px; }
+    .btn-picks { font-size: 11px; padding: 7px 10px; }
     .btn-picks-label { display: none; }
-    /* Tema toggle */
-    .btn-tema { width: 32px; height: 32px; font-size: 15px; margin-left: 6px !important; }
+    /* Ocultar texto "RESULTADOS" en móvil — solo mostrar 📊 para liberar espacio */
+    .btn-resultados { font-size: 13px; padding: 7px 10px; letter-spacing: 0; }
+    .btn-resultados-label { display: none; }
+    /* Tema toggle — tamaño compacto, sin padding que descentre el emoji */
+    .btn-tema { width: 32px; height: 32px; font-size: 15px; }
     /* ── Ranking principal y modal: ocultar columnas extra en móvil ── */
     .col-aciertos, .col-partidos, .col-pct, .rm-col-extra { display: none; }
     /* Ajustar padding de celdas */
@@ -1029,10 +1105,20 @@
       <div class="picks-alert-icon">⚠️</div>
       <div class="picks-alert-text"><strong>¡Picks incompletos!</strong> Realiza antes del cierre.</div>
     </div>
+    <a href="resultados.html" class="btn-resultados">📊 <span class="btn-resultados-label">RESULTADOS</span></a>
     <button class="btn-picks" onclick="goToPicks()">⚡ <span class="btn-picks-label">IR A </span>PICKS</button>
     <div class="user-avatar" onclick="toggleDropdown()">⚽</div>
   </div>
 </nav>
+
+<!-- CUPO SELECTOR BAR (visible solo si el usuario tiene más de 1 cupo) -->
+<div class="cupo-bar" id="cupoBar">
+  <span class="cupo-bar-label">🎟️ Mis cupos</span>
+  <div id="cupoPills" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+  <button class="btn-add-cupo" onclick="abrirModalAgregarCupo()" title="Agregar cupo adicional ($60.000 COP)">
+    + Agregar cupo
+  </button>
+</div>
 
 <!-- DROPDOWN USUARIO -->
 <div class="user-dropdown" id="userDropdown">
@@ -1311,23 +1397,23 @@
       <div class="mi-pos-card">
         <div class="mi-pos-title">📍 Mi posición actual</div>
         <div class="mi-pos-main">
-          <div class="mi-pos-num">47</div>
+          <div class="mi-pos-num" id="mi-pos-num">—</div>
           <div class="mi-pos-info">
-            <div class="mi-pos-name">SamirF2026</div>
-            <div class="mi-pos-pts"><strong>16 aciertos</strong> de 20 partidos jugados</div>
+            <div class="mi-pos-name" id="mi-pos-name">—</div>
+            <div class="mi-pos-pts" id="mi-pos-pts">—</div>
           </div>
         </div>
         <div class="mi-pos-stats">
           <div class="mi-mini-stat">
-            <div class="mini-val">2°</div>
+            <div class="mini-val" id="mini-killer-pos">—</div>
             <div class="mini-lbl">El Killer</div>
           </div>
           <div class="mini-mini-stat" style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;text-align:center">
-            <div class="mini-val">89°</div>
+            <div class="mini-val" id="mini-virgen-pos">—</div>
             <div class="mini-lbl">El Virgen</div>
           </div>
           <div class="mini-mini-stat" style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;text-align:center">
-            <div class="mini-val">34°</div>
+            <div class="mini-val" id="mini-carnicero-pos">—</div>
             <div class="mini-lbl">Carnicero</div>
           </div>
         </div>
@@ -1776,13 +1862,15 @@
       const dropdown = document.getElementById('userDropdown');
       if (dropdown) dropdown.style.display = 'none';
       // Reemplazar Mi Posición con mensaje para invitado
-      const posNum  = document.querySelector('.mi-pos-num');
-      const posName = document.querySelector('.mi-pos-name');
-      const posPts  = document.querySelector('.mi-pos-pts');
+      const posNum  = document.getElementById('mi-pos-num');
+      const posName = document.getElementById('mi-pos-name');
+      const posPts  = document.getElementById('mi-pos-pts');
       if (posNum)  posNum.textContent  = '--';
       if (posName) posName.textContent = 'Invitado';
       if (posPts)  posPts.innerHTML    = 'Inicia sesión para ver tu posición';
-      document.querySelectorAll('.mini-val').forEach(el => { el.textContent = '--'; });
+      ['mini-killer-pos','mini-virgen-pos','mini-carnicero-pos'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.textContent = '--';
+      });
     }, 100);
   }
 
@@ -1809,6 +1897,68 @@
     });
 
     window.totalInscritos = count;
+  }
+
+  // ── Mi posición actual (datos reales) ─────────────────────────────────────
+  async function actualizarMiPosicion() {
+    if (esInvitado) return;
+    const { data: { session } } = await supabase.auth.getSession();
+    const userId = session?.user?.id;
+    if (!userId) return;
+
+    // Obtener alias del usuario
+    const { data: perfil } = await supabase
+      .from('usuarios')
+      .select('nombre_usuario, nombre_completo')
+      .eq('id', userId)
+      .single();
+
+    const alias = perfil?.nombre_usuario || perfil?.nombre_completo || '—';
+    const nameEl = document.getElementById('mi-pos-name');
+    if (nameEl) nameEl.textContent = alias;
+
+    // Consultar los 4 rankings en paralelo
+    const [rankRes, killerRes, virgenRes, carniceroRes] = await Promise.all([
+      supabase.from('ranking').select('usuario_id, puntos_total').order('puntos_total', { ascending: false }),
+      supabase.from('ranking_killer').select('usuario_id, puntos_total').order('puntos_total', { ascending: false }),
+      supabase.from('ranking_virgen').select('usuario_id, puntos_total').order('puntos_total', { ascending: false }),
+      supabase.from('ranking_carnicero').select('usuario_id, puntos_total').order('puntos_total', { ascending: false }),
+    ]);
+
+    const rankRows = rankRes.data || [];
+    const torneoIniciado = rankRows.some(r => (r.puntos_total || 0) > 0);
+
+    const numEl  = document.getElementById('mi-pos-num');
+    const ptsEl  = document.getElementById('mi-pos-pts');
+
+    if (!torneoIniciado) {
+      // Pre-torneo: dejar todo en '—'
+      if (numEl) numEl.textContent = '—';
+      if (ptsEl) ptsEl.textContent = '—';
+      return;
+    }
+
+    // Posición principal
+    const miIdx = rankRows.findIndex(r => r.usuario_id === userId);
+    if (miIdx >= 0) {
+      const puntos = rankRows[miIdx].puntos_total || 0;
+      if (numEl) numEl.textContent = (miIdx + 1) + 'º';
+      if (ptsEl) ptsEl.innerHTML = `<strong>${puntos} aciertos</strong> de ${rankRows.length} participantes`;
+    }
+
+    // Posiciones en categorías especiales
+    const getPos = (rows) => {
+      if (!rows?.length) return '—';
+      const idx = rows.findIndex(r => r.usuario_id === userId);
+      return idx >= 0 ? (idx + 1) + 'º' : '—';
+    };
+
+    const killerEl    = document.getElementById('mini-killer-pos');
+    const virgenEl    = document.getElementById('mini-virgen-pos');
+    const carniceroEl = document.getElementById('mini-carnicero-pos');
+    if (killerEl)    killerEl.textContent    = getPos(killerRes.data);
+    if (virgenEl)    virgenEl.textContent    = getPos(virgenRes.data);
+    if (carniceroEl) carniceroEl.textContent = getPos(carniceroRes.data);
   }
 
   // ── Rankings desde Supabase ────────────────────────────────────────────────
@@ -1993,20 +2143,90 @@
 
   cargarInscritos();
   cargarUsuariosEnRankings();
+  actualizarMiPosicion();
 
   // ── Realtime: recarga rankings cuando el cron actualiza la BD ──────────────
   supabase
     .channel('ranking-live')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'ranking' }, () => {
-      cargarUsuariosEnRankings();
+      cargarUsuariosEnRankings(); actualizarMiPosicion();
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'ranking_killer' }, () => {
-      cargarUsuariosEnRankings();
+      cargarUsuariosEnRankings(); actualizarMiPosicion();
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'partidos' }, () => {
-      cargarUsuariosEnRankings();
+      cargarUsuariosEnRankings(); actualizarMiPosicion();
     })
     .subscribe();
+
+  // ═══════════════════════════════════════════════════════════
+  //  MULTI-CUPO — selector de cupos del usuario
+  // ═══════════════════════════════════════════════════════════
+  let _cuposUsuario = [];
+  const CUPO_KEY = 'rm_cupo_activo';
+
+  function getCupoActivo() {
+    return localStorage.getItem(CUPO_KEY) || null;
+  }
+
+  function setCupoActivo(cupo_id) {
+    localStorage.setItem(CUPO_KEY, cupo_id);
+    renderCupoPills();
+    // Disparar evento para que picks.html pueda escuchar si está en el mismo contexto
+    window.dispatchEvent(new CustomEvent('cupo-changed', { detail: { cupo_id } }));
+  }
+
+  async function cargarCuposUsuario() {
+    if (esInvitado) return;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const { data: cupos } = await supabase
+        .from('cupos')
+        .select('id, numero, alias, activo, picks_completos')
+        .eq('usuario_id', session.user.id)
+        .order('numero', { ascending: true });
+
+      _cuposUsuario = (cupos || []).filter(c => c.activo);
+      if (_cuposUsuario.length === 0) return; // sin cupos activos, no mostrar barra
+
+      // Si no hay cupo activo guardado, activar el primero
+      if (!getCupoActivo() && _cuposUsuario.length > 0) {
+        localStorage.setItem(CUPO_KEY, _cuposUsuario[0].id);
+      }
+
+      // Mostrar barra solo si hay 2+ cupos activos (o siempre si hay al menos 1)
+      const bar = document.getElementById('cupoBar');
+      if (bar) bar.style.display = 'flex';
+
+      renderCupoPills();
+    } catch(e) {
+      console.warn('Error cargando cupos:', e.message);
+    }
+  }
+
+  function renderCupoPills() {
+    const container = document.getElementById('cupoPills');
+    if (!container) return;
+    const activo = getCupoActivo();
+    container.innerHTML = _cuposUsuario.map(c => `
+      <div class="cupo-pill ${c.id === activo ? 'active' : ''}" onclick="setCupoActivo('${c.id}')">
+        ${c.id === activo ? '✅' : '🎟️'}
+        ${c.alias}
+        <span class="cupo-num-badge">#${c.numero}</span>
+        ${c.picks_completos ? '' : '<span style="font-size:9px;opacity:0.7;" title="Picks incompletos">⚠️</span>'}
+      </div>`).join('');
+  }
+
+  function abrirModalAgregarCupo() {
+    // Mostrar un modal informativo + link a index con param ?agregar_cupo=1
+    if (confirm('¿Quieres agregar un cupo adicional?\n\nCada cupo cuesta $60.000 COP y tiene sus propias predicciones y posición en el ranking.\n\nSe abrirá la pantalla de pago.')) {
+      window.location.href = '/index.html?agregar_cupo=1';
+    }
+  }
+
+  // Cargar cupos al iniciar
+  cargarCuposUsuario();
 </script>
 <div id="toast"></div>
 </body>

@@ -84,10 +84,12 @@ export default async function handler(req, res) {
 
     const userId = authData.user.id;
 
+    const alias = nombre_usuario || nombre_completo.trim().split(" ")[0];
+
     const { error: dbError } = await supabase.from("usuarios").insert({
       id: userId,
       nombre_completo: nombre_completo.trim(),
-      nombre_usuario: nombre_usuario || nombre_completo.trim().split(" ")[0],
+      nombre_usuario: alias,
       correo: correo.toLowerCase(),
       celular: celular.trim(),
       documento: documento.trim(),
@@ -102,6 +104,17 @@ export default async function handler(req, res) {
       await supabase.auth.admin.deleteUser(userId);
       return res.status(500).json({ error: "Error al guardar los datos" });
     }
+
+    // Crear cupo #1 vinculado al usuario
+    const { error: cupoError } = await supabase.from("cupos").insert({
+      usuario_id: userId,
+      numero: 1,
+      alias: alias,
+      activo: false,
+      picks_data: {},
+      picks_completos: false
+    });
+    if (cupoError) console.error("Error creando cupo 1:", cupoError.message);
 
     await supabase.from("logs").insert({
       usuario_id: userId,

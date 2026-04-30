@@ -395,6 +395,87 @@ export default async function handler(req, res) {
   }
 
   // ══════════════════════════════════════════════════════
+  //  PICKS EXPORT (JSON + CSV) — evita exponer service key en frontend
+  // ══════════════════════════════════════════════════════
+  if (action === "picks-export-json") {
+    const r = await sb("usuarios", { params: { activo: "eq.true", select: "id,nombre_completo,nombre_usuario,picks_data", order: "nombre_completo.asc", limit: "500" } });
+    const picks = (r.data || []).map(u => ({ id: u.id, nombre: u.nombre_completo, alias: u.nombre_usuario, picks_data: u.picks_data }));
+    return ok(res, { exportado: new Date().toISOString(), total_usuarios: picks.length, picks });
+  }
+
+  if (action === "picks-export-csv") {
+    const r = await sb("usuarios", { params: { activo: "eq.true", select: "id,nombre_completo,nombre_usuario,picks_data", order: "nombre_completo.asc", limit: "500" } });
+    const rows = [["ID","Nombre","Alias","LEV (partidos)","Killer","Carnicero","Banderin","Virgen","Pied","Mecha","Estado"]];
+    (r.data || []).forEach(u => {
+      const p = u.picks_data || {};
+      rows.push([u.id, u.nombre_completo, u.nombre_usuario || "—",
+        Object.keys(p.lev || {}).length, (p.killer||[]).length, (p.carnicero||[]).length,
+        (p.banderin||[]).length, (p.virgen||[]).length, (p.pied||[]).length, (p.mecha||[]).length,
+        Object.keys(p.lev || {}).length >= 72 && (p.killer||[]).length >= 15 && (p.carnicero||[]).length >= 10 ? "COMPLETO" : "INCOMPLETO"]);
+    });
+    const csv = "﻿" + rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+    res.setHeader("Content-Type", "text/csv;charset=utf-8");
+    res.setHeader("Content-Disposition", `attachment;filename=rosca-picks-${new Date().toISOString().slice(0,10)}.csv`);
+    return res.status(200).send(csv);
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  CUPOS — gestión de cupos por usuario
+  // ══════════════════════════════════════════════════════
+  if (action === "cupos") {
+    if (req.method === "GET") {
+      const { usuario_id } = req.query;
+      const params = { select: "id,usuario_id,numero,alias,activo,picks_completos,created_at", order: "usuario_id.asc,numero.asc", limit: "1000" };
+      if (usuario_id) params.usuario_id = `eq.${usuario_id}`;
+      const r = await sb("cupos", { params });
+      // Agrupar por usuario_id para stats generales
+      if (!usuario_id) {
+        const byUser = {};
+        (r.data || []).forEach(c => {
+          if (!byUser[c.usuario_id]) byUser[c.usuario_id] = { total: 0, activos: 0 };
+          byUser[c.usuario_id].total++;
+          if (c.activo) byUser[c.usuario_id].activos++;
+        });
+        const totalCupos  = (r.data || []).length;
+        const totalActivos = (r.data || []).filter(c => c.activo).length;
+        const usuariosMulti = Object.values(byUser).filter(u => u.total > 1).length;
+        return ok(res, { cupos: r.data || [], stats: { totalCupos, totalActivos, usuariosMulti } });
+      }
+      return ok(res, { cupos: r.data || [] });
+    }
+    if (req.method === "POST") {
+      const { usuario_id, alias } = req.body || {};
+      if (!usuario_id) return err(res, "Falta usuario_id");
+      // Verificar cupos actuales
+      const rCount = await sb("cupos", { params: { usuario_id: `eq.${usuario_id}`, select: "count", head: "true" } });
+      const count = parseInt(rCount.data?.count ?? 0);
+      if (count >= 5) return err(res, "Máximo 5 cupos por usuario");
+      const numero = count + 1;
+      // Obtener alias base del usuario si no se provee
+      let alias_final = alias;
+      if (!alias_final) {
+        const rU = await sb("usuarios", { params: { id: `eq.${usuario_id}`, select: "nombre_usuario" } });
+        const nombre_usuario = rU.data?.[0]?.nombre_usuario || "Cupo";
+        alias_final = `${nombre_usuario} - Cupo ${numero}`;
+      }
+      const rInsert = await sb("cupos", { method: "POST", body: { usuario_id, numero, alias: alias_final, activo: true, picks_data: {}, picks_completos: false } });
+      if (!rInsert.ok) return err(res, "Error creando cupo");
+      await log("cupo_creado_admin", { usuario_id, numero, alias: alias_final });
+      return ok(res, { mensaje: `Cupo #${numero} creado`, cupo: rInsert.data?.[0] }, 201);
+    }
+    if (req.method === "PATCH") {
+      const { cupo_id, alias, activo } = req.body || {};
+      if (!cupo_id) return err(res, "Falta cupo_id");
+      const updates = {};
+      if (alias !== undefined) updates.alias = alias.trim();
+      if (activo !== undefined) updates.activo = activo;
+      await sb(`cupos?id=eq.${cupo_id}`, { method: "PATCH", body: updates });
+      await log("cupo_actualizado_admin", { cupo_id, ...updates });
+      return ok(res, { mensaje: "Cupo actualizado" });
+    }
+  }
+
+  // ══════════════════════════════════════════════════════
   //  BACKUP — guarda en logs con accion="backup"
   // ══════════════════════════════════════════════════════
   if (action === "backup") {

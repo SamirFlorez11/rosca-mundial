@@ -524,7 +524,7 @@
           <div class="cat-desc">15 jugadores con más Goles + Asistencias. Máximo 3 del mismo equipo.</div>
         </div>
         <div class="cat-status">
-          <div class="cat-prize">$800.000 COP</div>
+          <div class="cat-prize">$1.000.000 COP</div>
           <div class="cat-progress"><span id="killer-prog">0</span>/15 jugadores</div>
           <div class="cat-badge vacio" id="killer-badge">Sin picks</div>
         </div>
@@ -539,7 +539,7 @@
           <div class="cat-desc">10 equipos con más tarjetas. Amarilla = 1 pt, Roja = 2 pts.</div>
         </div>
         <div class="cat-status">
-          <div class="cat-prize">$600.000 COP</div>
+          <div class="cat-prize">$800.000 COP</div>
           <div class="cat-progress"><span id="carnicero-prog">0</span>/10 equipos</div>
           <div class="cat-badge vacio" id="carnicero-badge">Sin picks</div>
         </div>
@@ -599,7 +599,7 @@
           <div class="cat-desc">10 equipos con menos corners a lo largo del torneo.</div>
         </div>
         <div class="cat-status">
-          <div class="cat-prize">$200.000 COP</div>
+          <div class="cat-prize">$300.000 COP</div>
           <div class="cat-progress"><span id="mecha-prog">0</span>/10 equipos</div>
           <div class="cat-badge vacio" id="mecha-badge">Sin picks</div>
         </div>
@@ -731,323 +731,10 @@
   </div>
 </div>
 
+<script src="/datos.js"></script>
 <script>
-// =====================
-// DATOS: 48 EQUIPOS
-// =====================
-const EQUIPOS = [
-  // GRUPO A
-  {id:'mex',nombre:'México',flag:'🇲🇽',grupo:'A'},
-  {id:'rsa',nombre:'Sudáfrica',flag:'🇿🇦',grupo:'A'},
-  {id:'kor',nombre:'Corea del Sur',flag:'🇰🇷',grupo:'A'},
-  {id:'cze',nombre:'Rep. Checa',flag:'🇨🇿',grupo:'A'},
-  // GRUPO B
-  {id:'can',nombre:'Canadá',flag:'🇨🇦',grupo:'B'},
-  {id:'bih',nombre:'Bosnia-Herz.',flag:'🇧🇦',grupo:'B'},
-  {id:'qat',nombre:'Catar',flag:'🇶🇦',grupo:'B'},
-  {id:'sui',nombre:'Suiza',flag:'🇨🇭',grupo:'B'},
-  // GRUPO C
-  {id:'bra',nombre:'Brasil',flag:'🇧🇷',grupo:'C'},
-  {id:'mar',nombre:'Marruecos',flag:'🇲🇦',grupo:'C'},
-  {id:'hai',nombre:'Haití',flag:'🇭🇹',grupo:'C'},
-  {id:'sco',nombre:'Escocia',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',grupo:'C'},
-  // GRUPO D
-  {id:'usa',nombre:'Estados Unidos',flag:'🇺🇸',grupo:'D'},
-  {id:'par',nombre:'Paraguay',flag:'🇵🇾',grupo:'D'},
-  {id:'aus',nombre:'Australia',flag:'🇦🇺',grupo:'D'},
-  {id:'tur',nombre:'Turquía',flag:'🇹🇷',grupo:'D'},
-  // GRUPO E
-  {id:'ger',nombre:'Alemania',flag:'🇩🇪',grupo:'E'},
-  {id:'cur',nombre:'Curazao',flag:'🇨🇼',grupo:'E'},
-  {id:'civ',nombre:'Costa de Marfil',flag:'🇨🇮',grupo:'E'},
-  {id:'ecu',nombre:'Ecuador',flag:'🇪🇨',grupo:'E'},
-  // GRUPO F
-  {id:'ned',nombre:'Países Bajos',flag:'🇳🇱',grupo:'F'},
-  {id:'jpn',nombre:'Japón',flag:'🇯🇵',grupo:'F'},
-  {id:'swe',nombre:'Suecia',flag:'🇸🇪',grupo:'F'},
-  {id:'tun',nombre:'Túnez',flag:'🇹🇳',grupo:'F'},
-  // GRUPO G
-  {id:'bel',nombre:'Bélgica',flag:'🇧🇪',grupo:'G'},
-  {id:'egy',nombre:'Egipto',flag:'🇪🇬',grupo:'G'},
-  {id:'irn',nombre:'Irán',flag:'🇮🇷',grupo:'G'},
-  {id:'nzl',nombre:'Nueva Zelanda',flag:'🇳🇿',grupo:'G'},
-  // GRUPO H
-  {id:'esp',nombre:'España',flag:'🇪🇸',grupo:'H'},
-  {id:'cpv',nombre:'Cabo Verde',flag:'🇨🇻',grupo:'H'},
-  {id:'ksa',nombre:'Arabia Saudita',flag:'🇸🇦',grupo:'H'},
-  {id:'uru',nombre:'Uruguay',flag:'🇺🇾',grupo:'H'},
-  // GRUPO I
-  {id:'fra',nombre:'Francia',flag:'🇫🇷',grupo:'I'},
-  {id:'sen',nombre:'Senegal',flag:'🇸🇳',grupo:'I'},
-  {id:'irq',nombre:'Irak',flag:'🇮🇶',grupo:'I'},
-  {id:'nor',nombre:'Noruega',flag:'🇳🇴',grupo:'I'},
-  // GRUPO J
-  {id:'arg',nombre:'Argentina',flag:'🇦🇷',grupo:'J'},
-  {id:'alg',nombre:'Argelia',flag:'🇩🇿',grupo:'J'},
-  {id:'aut',nombre:'Austria',flag:'🇦🇹',grupo:'J'},
-  {id:'jor',nombre:'Jordania',flag:'🇯🇴',grupo:'J'},
-  // GRUPO K
-  {id:'por',nombre:'Portugal',flag:'🇵🇹',grupo:'K'},
-  {id:'cod',nombre:'RD Congo',flag:'🇨🇩',grupo:'K'},
-  {id:'uzb',nombre:'Uzbekistán',flag:'🇺🇿',grupo:'K'},
-  {id:'col',nombre:'Colombia',flag:'🇨🇴',grupo:'K'},
-  // GRUPO L
-  {id:'eng',nombre:'Inglaterra',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',grupo:'L'},
-  {id:'cro',nombre:'Croacia',flag:'🇭🇷',grupo:'L'},
-  {id:'gha',nombre:'Ghana',flag:'🇬🇭',grupo:'L'},
-  {id:'pan',nombre:'Panamá',flag:'🇵🇦',grupo:'L'},
-];
+// EQUIPOS y JUGADORES_PRELISTA provienen de /datos.js — no editar aqui
 
-const JUGADORES_PRELISTA = [
-  // ARGENTINA
-  {id:'arg-1',nombre:'Lionel Messi',equipo:'arg',pos:'DEL',flag:'🇦🇷'},
-  {id:'arg-2',nombre:'Julián Álvarez',equipo:'arg',pos:'DEL',flag:'🇦🇷'},
-  {id:'arg-3',nombre:'Enzo Fernández',equipo:'arg',pos:'MED',flag:'🇦🇷'},
-  {id:'arg-4',nombre:'Rodrigo De Paul',equipo:'arg',pos:'MED',flag:'🇦🇷'},
-  {id:'arg-5',nombre:'Alexis Mac Allister',equipo:'arg',pos:'MED',flag:'🇦🇷'},
-  {id:'arg-6',nombre:'Lautaro Martínez',equipo:'arg',pos:'DEL',flag:'🇦🇷'},
-  {id:'arg-7',nombre:'Nahuel Molina',equipo:'arg',pos:'DEF',flag:'🇦🇷'},
-  {id:'arg-8',nombre:'Cristian Romero',equipo:'arg',pos:'DEF',flag:'🇦🇷'},
-  {id:'arg-9',nombre:'Paulo Dybala',equipo:'arg',pos:'DEL',flag:'🇦🇷'},
-  {id:'arg-10',nombre:'Emiliano Martínez',equipo:'arg',pos:'POR',flag:'🇦🇷'},
-  // BRASIL
-  {id:'bra-1',nombre:'Vinicius Jr.',equipo:'bra',pos:'DEL',flag:'🇧🇷'},
-  {id:'bra-2',nombre:'Rodrygo',equipo:'bra',pos:'DEL',flag:'🇧🇷'},
-  {id:'bra-3',nombre:'Raphinha',equipo:'bra',pos:'DEL',flag:'🇧🇷'},
-  {id:'bra-4',nombre:'Bruno Guimarães',equipo:'bra',pos:'MED',flag:'🇧🇷'},
-  {id:'bra-5',nombre:'Endrick',equipo:'bra',pos:'DEL',flag:'🇧🇷'},
-  {id:'bra-6',nombre:'Marquinhos',equipo:'bra',pos:'DEF',flag:'🇧🇷'},
-  {id:'bra-7',nombre:'Éder Militão',equipo:'bra',pos:'DEF',flag:'🇧🇷'},
-  {id:'bra-8',nombre:'Alisson Becker',equipo:'bra',pos:'POR',flag:'🇧🇷'},
-  // COLOMBIA
-  {id:'col-1',nombre:'Luis Díaz',equipo:'col',pos:'DEL',flag:'🇨🇴'},
-  {id:'col-2',nombre:'James Rodríguez',equipo:'col',pos:'MED',flag:'🇨🇴'},
-  {id:'col-3',nombre:'Richard Ríos',equipo:'col',pos:'MED',flag:'🇨🇴'},
-  {id:'col-4',nombre:'Jhon Jáder Durán',equipo:'col',pos:'DEL',flag:'🇨🇴'},
-  {id:'col-5',nombre:'Davinson Sánchez',equipo:'col',pos:'DEF',flag:'🇨🇴'},
-  {id:'col-6',nombre:'Cucho Hernández',equipo:'col',pos:'DEL',flag:'🇨🇴'},
-  // ECUADOR
-  {id:'ecu-1',nombre:'Moisés Caicedo',equipo:'ecu',pos:'MED',flag:'🇪🇨'},
-  {id:'ecu-2',nombre:'Kendry Páez',equipo:'ecu',pos:'MED',flag:'🇪🇨'},
-  {id:'ecu-3',nombre:'Enner Valencia',equipo:'ecu',pos:'DEL',flag:'🇪🇨'},
-  {id:'ecu-4',nombre:'Gonzalo Plata',equipo:'ecu',pos:'DEL',flag:'🇪🇨'},
-  {id:'ecu-5',nombre:'Piero Hincapié',equipo:'ecu',pos:'DEF',flag:'🇪🇨'},
-  // ESTADOS UNIDOS
-  {id:'usa-1',nombre:'Christian Pulisic',equipo:'usa',pos:'DEL',flag:'🇺🇸'},
-  {id:'usa-2',nombre:'Weston McKennie',equipo:'usa',pos:'MED',flag:'🇺🇸'},
-  {id:'usa-3',nombre:'Tyler Adams',equipo:'usa',pos:'MED',flag:'🇺🇸'},
-  {id:'usa-4',nombre:'Ricardo Pepi',equipo:'usa',pos:'DEL',flag:'🇺🇸'},
-  {id:'usa-5',nombre:'Antonee Robinson',equipo:'usa',pos:'DEF',flag:'🇺🇸'},
-  // MÉXICO
-  {id:'mex-1',nombre:'Santiago Giménez',equipo:'mex',pos:'DEL',flag:'🇲🇽'},
-  {id:'mex-2',nombre:'Hirving Lozano',equipo:'mex',pos:'DEL',flag:'🇲🇽'},
-  {id:'mex-3',nombre:'Édson Álvarez',equipo:'mex',pos:'MED',flag:'🇲🇽'},
-  {id:'mex-4',nombre:'Raúl Jiménez',equipo:'mex',pos:'DEL',flag:'🇲🇽'},
-  {id:'mex-5',nombre:'César Montes',equipo:'mex',pos:'DEF',flag:'🇲🇽'},
-  // CANADÁ
-  {id:'can-1',nombre:'Alphonso Davies',equipo:'can',pos:'DEF',flag:'🇨🇦'},
-  {id:'can-2',nombre:'Jonathan David',equipo:'can',pos:'DEL',flag:'🇨🇦'},
-  {id:'can-3',nombre:'Tajon Buchanan',equipo:'can',pos:'DEL',flag:'🇨🇦'},
-  {id:'can-4',nombre:'Stephen Eustáquio',equipo:'can',pos:'MED',flag:'🇨🇦'},
-  {id:'can-5',nombre:'Ismaël Koné',equipo:'can',pos:'MED',flag:'🇨🇦'},
-  // URUGUAY
-  {id:'uru-1',nombre:'Federico Valverde',equipo:'uru',pos:'MED',flag:'🇺🇾'},
-  {id:'uru-2',nombre:'Darwin Núñez',equipo:'uru',pos:'DEL',flag:'🇺🇾'},
-  {id:'uru-3',nombre:'Rodrigo Bentancur',equipo:'uru',pos:'MED',flag:'🇺🇾'},
-  {id:'uru-4',nombre:'Facundo Torres',equipo:'uru',pos:'DEL',flag:'🇺🇾'},
-  {id:'uru-5',nombre:'José María Giménez',equipo:'uru',pos:'DEF',flag:'🇺🇾'},
-  // FRANCIA
-  {id:'fra-1',nombre:'Kylian Mbappé',equipo:'fra',pos:'DEL',flag:'🇫🇷'},
-  {id:'fra-2',nombre:'Antoine Griezmann',equipo:'fra',pos:'DEL',flag:'🇫🇷'},
-  {id:'fra-3',nombre:'Aurélien Tchouaméni',equipo:'fra',pos:'MED',flag:'🇫🇷'},
-  {id:'fra-4',nombre:'Ousmane Dembélé',equipo:'fra',pos:'DEL',flag:'🇫🇷'},
-  {id:'fra-5',nombre:'Marcus Thuram',equipo:'fra',pos:'DEL',flag:'🇫🇷'},
-  {id:'fra-6',nombre:'William Saliba',equipo:'fra',pos:'DEF',flag:'🇫🇷'},
-  {id:'fra-7',nombre:'Mike Maignan',equipo:'fra',pos:'POR',flag:'🇫🇷'},
-  // ESPAÑA
-  {id:'esp-1',nombre:'Pedri',equipo:'esp',pos:'MED',flag:'🇪🇸'},
-  {id:'esp-2',nombre:'Lamine Yamal',equipo:'esp',pos:'DEL',flag:'🇪🇸'},
-  {id:'esp-3',nombre:'Nico Williams',equipo:'esp',pos:'DEL',flag:'🇪🇸'},
-  {id:'esp-4',nombre:'Álvaro Morata',equipo:'esp',pos:'DEL',flag:'🇪🇸'},
-  {id:'esp-5',nombre:'Fabián Ruiz',equipo:'esp',pos:'MED',flag:'🇪🇸'},
-  {id:'esp-6',nombre:'Dani Olmo',equipo:'esp',pos:'MED',flag:'🇪🇸'},
-  {id:'esp-7',nombre:'Aymeric Laporte',equipo:'esp',pos:'DEF',flag:'🇪🇸'},
-  {id:'esp-8',nombre:'Unai Simón',equipo:'esp',pos:'POR',flag:'🇪🇸'},
-  // PORTUGAL
-  {id:'por-1',nombre:'Cristiano Ronaldo',equipo:'por',pos:'DEL',flag:'🇵🇹'},
-  {id:'por-2',nombre:'Bruno Fernandes',equipo:'por',pos:'MED',flag:'🇵🇹'},
-  {id:'por-3',nombre:'Rafael Leão',equipo:'por',pos:'DEL',flag:'🇵🇹'},
-  {id:'por-4',nombre:'Bernardo Silva',equipo:'por',pos:'MED',flag:'🇵🇹'},
-  {id:'por-5',nombre:'Rúben Dias',equipo:'por',pos:'DEF',flag:'🇵🇹'},
-  {id:'por-6',nombre:'Diogo Costa',equipo:'por',pos:'POR',flag:'🇵🇹'},
-  // MARRUECOS
-  {id:'mar-1',nombre:'Hakim Ziyech',equipo:'mar',pos:'DEL',flag:'🇲🇦'},
-  {id:'mar-2',nombre:'Achraf Hakimi',equipo:'mar',pos:'DEF',flag:'🇲🇦'},
-  {id:'mar-3',nombre:'Youssef En-Nesyri',equipo:'mar',pos:'DEL',flag:'🇲🇦'},
-  {id:'mar-4',nombre:'Sofyan Amrabat',equipo:'mar',pos:'MED',flag:'🇲🇦'},
-  {id:'mar-5',nombre:'Bono (Y. Bounou)',equipo:'mar',pos:'POR',flag:'🇲🇦'},
-  // ALEMANIA
-  {id:'ger-1',nombre:'Florian Wirtz',equipo:'ger',pos:'MED',flag:'🇩🇪'},
-  {id:'ger-2',nombre:'Jamal Musiala',equipo:'ger',pos:'MED',flag:'🇩🇪'},
-  {id:'ger-3',nombre:'Kai Havertz',equipo:'ger',pos:'DEL',flag:'🇩🇪'},
-  {id:'ger-4',nombre:'Leroy Sané',equipo:'ger',pos:'DEL',flag:'🇩🇪'},
-  {id:'ger-5',nombre:'Joshua Kimmich',equipo:'ger',pos:'MED',flag:'🇩🇪'},
-  {id:'ger-6',nombre:'Antonio Rüdiger',equipo:'ger',pos:'DEF',flag:'🇩🇪'},
-  {id:'ger-7',nombre:'Manuel Neuer',equipo:'ger',pos:'POR',flag:'🇩🇪'},
-  // INGLATERRA
-  {id:'eng-1',nombre:'Jude Bellingham',equipo:'eng',pos:'MED',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},
-  {id:'eng-2',nombre:'Harry Kane',equipo:'eng',pos:'DEL',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},
-  {id:'eng-3',nombre:'Bukayo Saka',equipo:'eng',pos:'DEL',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},
-  {id:'eng-4',nombre:'Phil Foden',equipo:'eng',pos:'MED',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},
-  {id:'eng-5',nombre:'Cole Palmer',equipo:'eng',pos:'MED',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},
-  {id:'eng-6',nombre:'Declan Rice',equipo:'eng',pos:'MED',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},
-  {id:'eng-7',nombre:'Jordan Pickford',equipo:'eng',pos:'POR',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},
-  // PAÍSES BAJOS
-  {id:'ned-1',nombre:'Virgil van Dijk',equipo:'ned',pos:'DEF',flag:'🇳🇱'},
-  {id:'ned-2',nombre:'Cody Gakpo',equipo:'ned',pos:'DEL',flag:'🇳🇱'},
-  {id:'ned-3',nombre:'Xavi Simons',equipo:'ned',pos:'MED',flag:'🇳🇱'},
-  {id:'ned-4',nombre:'Tijjani Reijnders',equipo:'ned',pos:'MED',flag:'🇳🇱'},
-  {id:'ned-5',nombre:'Frenkie de Jong',equipo:'ned',pos:'MED',flag:'🇳🇱'},
-  // BÉLGICA
-  {id:'bel-1',nombre:'Kevin De Bruyne',equipo:'bel',pos:'MED',flag:'🇧🇪'},
-  {id:'bel-2',nombre:'Romelu Lukaku',equipo:'bel',pos:'DEL',flag:'🇧🇪'},
-  {id:'bel-3',nombre:'Lois Openda',equipo:'bel',pos:'DEL',flag:'🇧🇪'},
-  {id:'bel-4',nombre:'Charles De Ketelaere',equipo:'bel',pos:'DEL',flag:'🇧🇪'},
-  {id:'bel-5',nombre:'Thibaut Courtois',equipo:'bel',pos:'POR',flag:'🇧🇪'},
-  // JAPÓN
-  {id:'jpn-1',nombre:'Takumi Minamino',equipo:'jpn',pos:'DEL',flag:'🇯🇵'},
-  {id:'jpn-2',nombre:'Kaoru Mitoma',equipo:'jpn',pos:'DEL',flag:'🇯🇵'},
-  {id:'jpn-3',nombre:'Ritsu Doan',equipo:'jpn',pos:'DEL',flag:'🇯🇵'},
-  {id:'jpn-4',nombre:'Takefusa Kubo',equipo:'jpn',pos:'DEL',flag:'🇯🇵'},
-  {id:'jpn-5',nombre:'Wataru Endo',equipo:'jpn',pos:'MED',flag:'🇯🇵'},
-  // COREA DEL SUR
-  {id:'kor-1',nombre:'Son Heung-min',equipo:'kor',pos:'DEL',flag:'🇰🇷'},
-  {id:'kor-2',nombre:'Lee Kang-in',equipo:'kor',pos:'MED',flag:'🇰🇷'},
-  {id:'kor-3',nombre:'Hwang Hee-chan',equipo:'kor',pos:'DEL',flag:'🇰🇷'},
-  {id:'kor-4',nombre:'Kim Min-jae',equipo:'kor',pos:'DEF',flag:'🇰🇷'},
-  // AUSTRALIA
-  {id:'aus-1',nombre:'Mathew Leckie',equipo:'aus',pos:'DEL',flag:'🇦🇺'},
-  {id:'aus-2',nombre:'Martin Boyle',equipo:'aus',pos:'DEL',flag:'🇦🇺'},
-  {id:'aus-3',nombre:'Mat Ryan',equipo:'aus',pos:'POR',flag:'🇦🇺'},
-  // IRÁN
-  {id:'irn-1',nombre:'Mehdi Taremi',equipo:'irn',pos:'DEL',flag:'🇮🇷'},
-  {id:'irn-2',nombre:'Sardar Azmoun',equipo:'irn',pos:'DEL',flag:'🇮🇷'},
-  {id:'irn-3',nombre:'Alireza Jahanbakhsh',equipo:'irn',pos:'DEL',flag:'🇮🇷'},
-  // SENEGAL
-  {id:'sen-1',nombre:'Sadio Mané',equipo:'sen',pos:'DEL',flag:'🇸🇳'},
-  {id:'sen-2',nombre:'Ismaila Sarr',equipo:'sen',pos:'DEL',flag:'🇸🇳'},
-  {id:'sen-3',nombre:'Nicolas Jackson',equipo:'sen',pos:'DEL',flag:'🇸🇳'},
-  {id:'sen-4',nombre:'Kalidou Koulibaly',equipo:'sen',pos:'DEF',flag:'🇸🇳'},
-  // EGIPTO
-  {id:'egy-1',nombre:'Mohamed Salah',equipo:'egy',pos:'DEL',flag:'🇪🇬'},
-  {id:'egy-2',nombre:'Mostafa Mohamed',equipo:'egy',pos:'DEL',flag:'🇪🇬'},
-  {id:'egy-3',nombre:'Mohamed Elneny',equipo:'egy',pos:'MED',flag:'🇪🇬'},
-  // COSTA DE MARFIL
-  {id:'civ-1',nombre:'Sébastien Haller',equipo:'civ',pos:'DEL',flag:'🇨🇮'},
-  {id:'civ-2',nombre:'Wilfried Zaha',equipo:'civ',pos:'DEL',flag:'🇨🇮'},
-  {id:'civ-3',nombre:'Franck Kessié',equipo:'civ',pos:'MED',flag:'🇨🇮'},
-  // GHANA
-  {id:'gha-1',nombre:'Mohammed Kudus',equipo:'gha',pos:'DEL',flag:'🇬🇭'},
-  {id:'gha-2',nombre:'Inaki Williams',equipo:'gha',pos:'DEL',flag:'🇬🇭'},
-  {id:'gha-3',nombre:'Thomas Partey',equipo:'gha',pos:'MED',flag:'🇬🇭'},
-  // ARABIA SAUDITA
-  {id:'ksa-1',nombre:'Salem Al-Dawsari',equipo:'ksa',pos:'DEL',flag:'🇸🇦'},
-  {id:'ksa-2',nombre:'Firas Al-Buraikan',equipo:'ksa',pos:'DEL',flag:'🇸🇦'},
-  {id:'ksa-3',nombre:'Mohammed Al-Owais',equipo:'ksa',pos:'POR',flag:'🇸🇦'},
-  // CROACIA
-  {id:'cro-1',nombre:'Luka Modrić',equipo:'cro',pos:'MED',flag:'🇭🇷'},
-  {id:'cro-2',nombre:'Andrej Kramarić',equipo:'cro',pos:'DEL',flag:'🇭🇷'},
-  {id:'cro-3',nombre:'Marcelo Brozović',equipo:'cro',pos:'MED',flag:'🇭🇷'},
-  {id:'cro-4',nombre:'Dominik Livaković',equipo:'cro',pos:'POR',flag:'🇭🇷'},
-  // SUIZA
-  {id:'sui-1',nombre:'Granit Xhaka',equipo:'sui',pos:'MED',flag:'🇨🇭'},
-  {id:'sui-2',nombre:'Breel Embolo',equipo:'sui',pos:'DEL',flag:'🇨🇭'},
-  {id:'sui-3',nombre:'Xherdan Shaqiri',equipo:'sui',pos:'DEL',flag:'🇨🇭'},
-  {id:'sui-4',nombre:'Yann Sommer',equipo:'sui',pos:'POR',flag:'🇨🇭'},
-  // AUSTRIA
-  {id:'aut-1',nombre:'Marcel Sabitzer',equipo:'aut',pos:'MED',flag:'🇦🇹'},
-  {id:'aut-2',nombre:'Marko Arnautović',equipo:'aut',pos:'DEL',flag:'🇦🇹'},
-  {id:'aut-3',nombre:'Christoph Baumgartner',equipo:'aut',pos:'MED',flag:'🇦🇹'},
-  // TURQUÍA
-  {id:'tur-1',nombre:'Hakan Çalhanoğlu',equipo:'tur',pos:'MED',flag:'🇹🇷'},
-  {id:'tur-2',nombre:'Arda Güler',equipo:'tur',pos:'MED',flag:'🇹🇷'},
-  {id:'tur-3',nombre:'Burak Yılmaz',equipo:'tur',pos:'DEL',flag:'🇹🇷'},
-  // ESCOCIA
-  {id:'sco-1',nombre:'Andy Robertson',equipo:'sco',pos:'DEF',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
-  {id:'sco-2',nombre:'John McGinn',equipo:'sco',pos:'MED',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
-  {id:'sco-3',nombre:'Che Adams',equipo:'sco',pos:'DEL',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
-  // PANAMÁ
-  {id:'pan-1',nombre:'Ismael Díaz',equipo:'pan',pos:'DEL',flag:'🇵🇦'},
-  {id:'pan-2',nombre:'Adalberto Carrasquilla',equipo:'pan',pos:'MED',flag:'🇵🇦'},
-  // NUEVA ZELANDA
-  {id:'nzl-1',nombre:'Chris Wood',equipo:'nzl',pos:'DEL',flag:'🇳🇿'},
-  {id:'nzl-2',nombre:'Elijah Just',equipo:'nzl',pos:'MED',flag:'🇳🇿'},
-  {id:'nzl-3',nombre:'Tim Payne',equipo:'nzl',pos:'POR',flag:'🇳🇿'},
-  // PARAGUAY
-  {id:'par-1',nombre:'Miguel Almirón',equipo:'par',pos:'MED',flag:'🇵🇾'},
-  {id:'par-2',nombre:'Julio Enciso',equipo:'par',pos:'DEL',flag:'🇵🇾'},
-  {id:'par-3',nombre:'Antonio Sanabria',equipo:'par',pos:'DEL',flag:'🇵🇾'},
-  // SUDÁFRICA
-  {id:'rsa-1',nombre:'Percy Tau',equipo:'rsa',pos:'DEL',flag:'🇿🇦'},
-  {id:'rsa-2',nombre:'Themba Zwane',equipo:'rsa',pos:'DEL',flag:'🇿🇦'},
-  {id:'rsa-3',nombre:'Ronwen Williams',equipo:'rsa',pos:'POR',flag:'🇿🇦'},
-  // REPÚBLICA CHECA
-  {id:'cze-1',nombre:'Tomáš Souček',equipo:'cze',pos:'MED',flag:'🇨🇿'},
-  {id:'cze-2',nombre:'Patrik Schick',equipo:'cze',pos:'DEL',flag:'🇨🇿'},
-  {id:'cze-3',nombre:'Vladimír Coufal',equipo:'cze',pos:'DEF',flag:'🇨🇿'},
-  // BOSNIA Y HERZEGOVINA
-  {id:'bih-1',nombre:'Edin Džeko',equipo:'bih',pos:'DEL',flag:'🇧🇦'},
-  {id:'bih-2',nombre:'Miralem Pjanić',equipo:'bih',pos:'MED',flag:'🇧🇦'},
-  {id:'bih-3',nombre:'Sven Botman',equipo:'bih',pos:'DEF',flag:'🇧🇦'},
-  // CATAR
-  {id:'qat-1',nombre:'Akram Afif',equipo:'qat',pos:'DEL',flag:'🇶🇦'},
-  {id:'qat-2',nombre:'Almoez Ali',equipo:'qat',pos:'DEL',flag:'🇶🇦'},
-  {id:'qat-3',nombre:'Meshaal Barsham',equipo:'qat',pos:'POR',flag:'🇶🇦'},
-  // HAITÍ
-  {id:'hai-1',nombre:'Duckens Nazon',equipo:'hai',pos:'DEL',flag:'🇭🇹'},
-  {id:'hai-2',nombre:'Frantzdy Pierrot',equipo:'hai',pos:'DEL',flag:'🇭🇹'},
-  {id:'hai-3',nombre:'Steeven Saba',equipo:'hai',pos:'MED',flag:'🇭🇹'},
-  // CURAZAO
-  {id:'cur-1',nombre:'Leandro Bacuna',equipo:'cur',pos:'MED',flag:'🇨🇼'},
-  {id:'cur-2',nombre:'Cuco Martina',equipo:'cur',pos:'DEF',flag:'🇨🇼'},
-  {id:'cur-3',nombre:'Genero Zeefuik',equipo:'cur',pos:'DEL',flag:'🇨🇼'},
-  // SUECIA
-  {id:'swe-1',nombre:'Viktor Gyökeres',equipo:'swe',pos:'DEL',flag:'🇸🇪'},
-  {id:'swe-2',nombre:'Dejan Kulusevski',equipo:'swe',pos:'MED',flag:'🇸🇪'},
-  {id:'swe-3',nombre:'Alexander Isak',equipo:'swe',pos:'DEL',flag:'🇸🇪'},
-  // TÚNEZ
-  {id:'tun-1',nombre:'Wahbi Khazri',equipo:'tun',pos:'DEL',flag:'🇹🇳'},
-  {id:'tun-2',nombre:'Youssef Msakni',equipo:'tun',pos:'DEL',flag:'🇹🇳'},
-  {id:'tun-3',nombre:'Ellyes Skhiri',equipo:'tun',pos:'MED',flag:'🇹🇳'},
-  // CABO VERDE
-  {id:'cpv-1',nombre:'Ryan Mendes',equipo:'cpv',pos:'DEL',flag:'🇨🇻'},
-  {id:'cpv-2',nombre:'Garry Rodrigues',equipo:'cpv',pos:'DEL',flag:'🇨🇻'},
-  {id:'cpv-3',nombre:'Jovane Cabral',equipo:'cpv',pos:'DEL',flag:'🇨🇻'},
-  // IRAK
-  {id:'irq-1',nombre:'Amjad Attwan',equipo:'irq',pos:'DEL',flag:'🇮🇶'},
-  {id:'irq-2',nombre:'Humam Tariq',equipo:'irq',pos:'MED',flag:'🇮🇶'},
-  {id:'irq-3',nombre:'Jalal Hassan',equipo:'irq',pos:'POR',flag:'🇮🇶'},
-  // NORUEGA
-  {id:'nor-1',nombre:'Erling Haaland',equipo:'nor',pos:'DEL',flag:'🇳🇴'},
-  {id:'nor-2',nombre:'Martin Ødegaard',equipo:'nor',pos:'MED',flag:'🇳🇴'},
-  {id:'nor-3',nombre:'Alexander Sörloth',equipo:'nor',pos:'DEL',flag:'🇳🇴'},
-  // ARGELIA
-  {id:'alg-1',nombre:'Riyad Mahrez',equipo:'alg',pos:'DEL',flag:'🇩🇿'},
-  {id:'alg-2',nombre:'Islam Slimani',equipo:'alg',pos:'DEL',flag:'🇩🇿'},
-  {id:'alg-3',nombre:'Youcef Atal',equipo:'alg',pos:'DEF',flag:'🇩🇿'},
-  // JORDANIA
-  {id:'jor-1',nombre:'Musa Al-Taamari',equipo:'jor',pos:'DEL',flag:'🇯🇴'},
-  {id:'jor-2',nombre:'Yazan Al-Naimat',equipo:'jor',pos:'DEL',flag:'🇯🇴'},
-  {id:'jor-3',nombre:'Amer Shafi',equipo:'jor',pos:'POR',flag:'🇯🇴'},
-  // RD CONGO
-  {id:'cod-1',nombre:'Cédric Bakambu',equipo:'cod',pos:'DEL',flag:'🇨🇩'},
-  {id:'cod-2',nombre:'Chancel Mbemba',equipo:'cod',pos:'DEF',flag:'🇨🇩'},
-  {id:'cod-3',nombre:'Arthur Masuaku',equipo:'cod',pos:'DEF',flag:'🇨🇩'},
-  // UZBEKISTÁN
-  {id:'uzb-1',nombre:'Eldor Shomurodov',equipo:'uzb',pos:'DEL',flag:'🇺🇿'},
-  {id:'uzb-2',nombre:'Otabek Shukurov',equipo:'uzb',pos:'MED',flag:'🇺🇿'},
-  {id:'uzb-3',nombre:'Jasur Yakhshiboev',equipo:'uzb',pos:'DEL',flag:'🇺🇿'},
-]
 
 // GRUPOS Y PARTIDOS LEV
 const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
@@ -1930,6 +1617,953 @@ window.guardarPicksSupabase = async function(cat) {
   const perfil = await verificarAuth();
   if (!perfil) return;
   cargarPicksEnState(perfil.picks_data);
+})();
+</script>
+</body>
+</html>
+<script src="/datos.js"></script>
+<script>
+// EQUIPOS y JUGADORES_PRELISTA provienen de /datos.js
+
+
+// GRUPOS Y PARTIDOS LEV
+const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+const EQ = {};
+EQUIPOS.forEach(e => EQ[e.id] = e);
+
+const PARTIDOS_LEV = [
+  // JORNADA 1
+  {id:'p0',  grupo:'A', local:EQ.mex, visit:EQ.rsa, fecha:'Jun 11 14:00'},
+  {id:'p1',  grupo:'A', local:EQ.kor, visit:EQ.cze, fecha:'Jun 11 21:00'},
+  {id:'p2',  grupo:'B', local:EQ.can, visit:EQ.bih, fecha:'Jun 12 14:00'},
+  {id:'p3',  grupo:'D', local:EQ.usa, visit:EQ.par, fecha:'Jun 12 20:00'},
+  {id:'p4',  grupo:'B', local:EQ.qat, visit:EQ.sui, fecha:'Jun 13 14:00'},
+  {id:'p5',  grupo:'C', local:EQ.bra, visit:EQ.mar, fecha:'Jun 13 17:00'},
+  {id:'p6',  grupo:'C', local:EQ.hai, visit:EQ.sco, fecha:'Jun 13 20:00'},
+  {id:'p7',  grupo:'D', local:EQ.aus, visit:EQ.tur, fecha:'Jun 13 23:00'},
+  {id:'p8',  grupo:'E', local:EQ.ger, visit:EQ.cur, fecha:'Jun 14 12:00'},
+  {id:'p9',  grupo:'F', local:EQ.ned, visit:EQ.jpn, fecha:'Jun 14 15:00'},
+  {id:'p10', grupo:'E', local:EQ.civ, visit:EQ.ecu, fecha:'Jun 14 18:00'},
+  {id:'p11', grupo:'F', local:EQ.swe, visit:EQ.tun, fecha:'Jun 14 21:00'},
+  {id:'p12', grupo:'H', local:EQ.esp, visit:EQ.cpv, fecha:'Jun 15 11:00'},
+  {id:'p13', grupo:'G', local:EQ.bel, visit:EQ.egy, fecha:'Jun 15 14:00'},
+  {id:'p14', grupo:'H', local:EQ.ksa, visit:EQ.uru, fecha:'Jun 15 17:00'},
+  {id:'p15', grupo:'G', local:EQ.irn, visit:EQ.nzl, fecha:'Jun 15 20:00'},
+  {id:'p16', grupo:'I', local:EQ.fra, visit:EQ.sen, fecha:'Jun 16 14:00'},
+  {id:'p17', grupo:'I', local:EQ.irq, visit:EQ.nor, fecha:'Jun 16 17:00'},
+  {id:'p18', grupo:'J', local:EQ.arg, visit:EQ.alg, fecha:'Jun 16 20:00'},
+  {id:'p19', grupo:'J', local:EQ.aut, visit:EQ.jor, fecha:'Jun 16 23:00'},
+  {id:'p20', grupo:'K', local:EQ.por, visit:EQ.cod, fecha:'Jun 17 12:00'},
+  {id:'p21', grupo:'L', local:EQ.eng, visit:EQ.cro, fecha:'Jun 17 15:00'},
+  {id:'p22', grupo:'L', local:EQ.gha, visit:EQ.pan, fecha:'Jun 17 18:00'},
+  {id:'p23', grupo:'K', local:EQ.uzb, visit:EQ.col, fecha:'Jun 17 21:00'},
+  // JORNADA 2
+  {id:'p24', grupo:'A', local:EQ.cze, visit:EQ.rsa, fecha:'Jun 18 11:00'},
+  {id:'p25', grupo:'B', local:EQ.sui, visit:EQ.bih, fecha:'Jun 18 14:00'},
+  {id:'p26', grupo:'B', local:EQ.can, visit:EQ.qat, fecha:'Jun 18 17:00'},
+  {id:'p27', grupo:'A', local:EQ.mex, visit:EQ.kor, fecha:'Jun 18 20:00'},
+  {id:'p28', grupo:'D', local:EQ.usa, visit:EQ.aus, fecha:'Jun 19 14:00'},
+  {id:'p29', grupo:'C', local:EQ.sco, visit:EQ.mar, fecha:'Jun 19 17:00'},
+  {id:'p30', grupo:'C', local:EQ.bra, visit:EQ.hai, fecha:'Jun 19 19:30'},
+  {id:'p31', grupo:'D', local:EQ.tur, visit:EQ.par, fecha:'Jun 19 22:00'},
+  {id:'p32', grupo:'F', local:EQ.ned, visit:EQ.swe, fecha:'Jun 20 12:00'},
+  {id:'p33', grupo:'E', local:EQ.ger, visit:EQ.civ, fecha:'Jun 20 15:00'},
+  {id:'p34', grupo:'E', local:EQ.ecu, visit:EQ.cur, fecha:'Jun 20 19:00'},
+  {id:'p35', grupo:'F', local:EQ.tun, visit:EQ.jpn, fecha:'Jun 20 23:00'},
+  {id:'p36', grupo:'H', local:EQ.esp, visit:EQ.ksa, fecha:'Jun 21 11:00'},
+  {id:'p37', grupo:'G', local:EQ.bel, visit:EQ.irn, fecha:'Jun 21 14:00'},
+  {id:'p38', grupo:'H', local:EQ.uru, visit:EQ.cpv, fecha:'Jun 21 17:00'},
+  {id:'p39', grupo:'G', local:EQ.nzl, visit:EQ.egy, fecha:'Jun 21 20:00'},
+  {id:'p40', grupo:'I', local:EQ.fra, visit:EQ.irq, fecha:'Jun 22 14:00'},
+  {id:'p41', grupo:'I', local:EQ.nor, visit:EQ.sen, fecha:'Jun 22 17:00'},
+  {id:'p42', grupo:'J', local:EQ.arg, visit:EQ.aut, fecha:'Jun 22 20:00'},
+  {id:'p43', grupo:'J', local:EQ.jor, visit:EQ.alg, fecha:'Jun 22 23:00'},
+  {id:'p44', grupo:'K', local:EQ.por, visit:EQ.uzb, fecha:'Jun 23 12:00'},
+  {id:'p45', grupo:'L', local:EQ.eng, visit:EQ.gha, fecha:'Jun 23 15:00'},
+  {id:'p46', grupo:'L', local:EQ.pan, visit:EQ.cro, fecha:'Jun 23 18:00'},
+  {id:'p47', grupo:'K', local:EQ.col, visit:EQ.cod, fecha:'Jun 23 21:00'},
+  // JORNADA 3 (simultáneos)
+  {id:'p48', grupo:'B', local:EQ.bih, visit:EQ.qat, fecha:'Jun 24 14:00'},
+  {id:'p49', grupo:'B', local:EQ.sui, visit:EQ.can, fecha:'Jun 24 14:00'},
+  {id:'p50', grupo:'C', local:EQ.sco, visit:EQ.bra, fecha:'Jun 24 17:00'},
+  {id:'p51', grupo:'C', local:EQ.mar, visit:EQ.hai, fecha:'Jun 24 17:00'},
+  {id:'p52', grupo:'A', local:EQ.rsa, visit:EQ.kor, fecha:'Jun 24 20:00'},
+  {id:'p53', grupo:'A', local:EQ.cze, visit:EQ.mex, fecha:'Jun 24 20:00'},
+  {id:'p54', grupo:'E', local:EQ.ecu, visit:EQ.ger, fecha:'Jun 25 15:00'},
+  {id:'p55', grupo:'E', local:EQ.cur, visit:EQ.civ, fecha:'Jun 25 15:00'},
+  {id:'p56', grupo:'F', local:EQ.jpn, visit:EQ.swe, fecha:'Jun 25 18:00'},
+  {id:'p57', grupo:'F', local:EQ.tun, visit:EQ.ned, fecha:'Jun 25 18:00'},
+  {id:'p58', grupo:'D', local:EQ.tur, visit:EQ.usa, fecha:'Jun 25 21:00'},
+  {id:'p59', grupo:'D', local:EQ.par, visit:EQ.aus, fecha:'Jun 25 21:00'},
+  {id:'p60', grupo:'I', local:EQ.sen, visit:EQ.irq, fecha:'Jun 26 14:00'},
+  {id:'p61', grupo:'I', local:EQ.nor, visit:EQ.fra, fecha:'Jun 26 14:00'},
+  {id:'p62', grupo:'H', local:EQ.uru, visit:EQ.esp, fecha:'Jun 26 19:00'},
+  {id:'p63', grupo:'H', local:EQ.cpv, visit:EQ.ksa, fecha:'Jun 26 19:00'},
+  {id:'p64', grupo:'G', local:EQ.nzl, visit:EQ.bel, fecha:'Jun 26 22:00'},
+  {id:'p65', grupo:'G', local:EQ.egy, visit:EQ.irn, fecha:'Jun 26 22:00'},
+  {id:'p66', grupo:'L', local:EQ.cro, visit:EQ.gha, fecha:'Jun 27 16:00'},
+  {id:'p67', grupo:'L', local:EQ.pan, visit:EQ.eng, fecha:'Jun 27 16:00'},
+  {id:'p68', grupo:'K', local:EQ.col, visit:EQ.por, fecha:'Jun 27 18:30'},
+  {id:'p69', grupo:'K', local:EQ.cod, visit:EQ.uzb, fecha:'Jun 27 18:30'},
+  {id:'p70', grupo:'J', local:EQ.jor, visit:EQ.arg, fecha:'Jun 27 21:00'},
+  {id:'p71', grupo:'J', local:EQ.alg, visit:EQ.aut, fecha:'Jun 27 21:00'},
+];
+// Fases eliminatorias (32 partidos placeholder)
+for (let i=0; i<32; i++) {
+  PARTIDOS_LEV.push({id:'e'+i, grupo:'ELIM', local:{nombre:'Por definir',flag:'🔷',id:'pd'+i*2}, visit:{nombre:'Por definir',flag:'🔶',id:'pd'+(i*2+1)}, fecha:'Por definir', bloqueado: true});
+}
+
+// =====================
+// ESTADO
+// =====================
+const STATE = {
+  lev: {},         // {partidoId: 'L'|'E'|'V'}
+  killer: [],      // [jugadorId, ...]
+  carnicero: [],
+  banderin: [],
+  virgen: [],
+  pied: [],
+  mecha: [],
+};
+
+const CAT_CONFIG = {
+  killer:    { max: 15, tipo: 'jugadores', label: 'jugadores', color: '#f97316' },
+  carnicero: { max: 10, tipo: 'equipos',   label: 'equipos',   color: '#ef4444' },
+  banderin:  { max: 10, tipo: 'equipos',   label: 'equipos',   color: '#3b82f6' },
+  virgen:    { max: 10, tipo: 'equipos',   label: 'equipos',   color: '#22c55e' },
+  pied:      { max: 10, tipo: 'equipos',   label: 'equipos',   color: '#ec4899' },
+  mecha:     { max: 10, tipo: 'equipos',   label: 'equipos',   color: '#8b5cf6' },
+};
+
+let catActiva = null;
+let grupoActivo = 'A';
+let filtroEquipo = null;
+let modoEdicion = true;
+
+// =====================
+// NAVEGACIÓN
+// =====================
+function irAlDashboard() { window.location.href = 'dashboard.html'; }
+
+function volverAlMenu() {
+  document.getElementById('vista-picks').style.display = 'none';
+  document.getElementById('vista-menu').style.display = 'block';
+  document.getElementById('btnVolver').style.display = 'none';
+  document.getElementById('btnModificar').style.display = 'none';
+  document.getElementById('btnVerPicks').style.display = 'none';
+  catActiva = null;
+  actualizarMenuBadges();
+}
+
+function abrirCategoria(cat) {
+  catActiva = cat;
+  modoEdicion = true;
+  document.getElementById('vista-menu').style.display = 'none';
+  document.getElementById('vista-picks').style.display = 'block';
+  document.getElementById('btnVolver').style.display = 'inline-block';
+  document.getElementById('btnModificar').style.display = cat !== 'lev' ? 'inline-block' : 'none';
+  document.getElementById('btnVerPicks').style.display = 'inline-block';
+
+  // Siempre ocultar filterTabs (ahora se usan los grupoTabsWrap para todo)
+  document.getElementById('filterTabs').style.display = 'none';
+  filtroEquipo = null;
+
+  if (cat === 'lev') {
+    document.getElementById('panelTitulo').textContent = '⚽ Predicciones L/E/V';
+    document.getElementById('panelSub').textContent = 'Selecciona Local (L), Empate (E) o Visitante (V) para cada partido. Gana 1 punto por acierto.';
+    document.getElementById('searchTitle').textContent = 'Buscar equipo...';
+    document.getElementById('filterTabs').style.display = 'none';
+    document.getElementById('smNote').style.display = 'none';
+    document.getElementById('searchInput').placeholder = 'Buscar equipo en grupos...';
+    renderTabsCategoria('lev');
+    renderPartidosTodos();
+    renderPicksLEV();
+  } else {
+    const cfg = CAT_CONFIG[cat];
+    const titulos = {
+      killer:    '⚔️ El Killer — 15 Jugadores',
+      carnicero: '🔪 El Carnicero — 10 Equipos',
+      banderin:  '🚩 El Banderín — 10 Equipos',
+      virgen:    '🕊️ El Virgen — 10 Equipos',
+      pied:      '🎀 El Pie de Niña — 10 Equipos',
+      mecha:     '✂️ El Mechacorta — 10 Equipos',
+    };
+    const subs = {
+      killer:    'Elige 15 jugadores que creas tendrán más Goles + Asistencias. Máximo 3 del mismo equipo.',
+      carnicero: 'Elige 10 selecciones que creas acumularán más tarjetas. Amarilla=1pt, Roja=2pts.',
+      banderin:  'Elige 10 selecciones que creas ejecutarán más corners en el torneo.',
+      virgen:    'Elige 10 equipos que creas anotarán (marcarán) menos goles en todo el torneo.',
+      pied:      'Elige 10 selecciones que creas acumularán menos tarjetas. Amarilla=1pt, Roja=2pts.',
+      mecha:     'Elige 10 selecciones que creas ejecutarán menos corners en el torneo.',
+    };
+    document.getElementById('panelTitulo').textContent = titulos[cat];
+    document.getElementById('panelSub').textContent = subs[cat];
+    document.getElementById('searchTitle').textContent = cfg.tipo === 'jugadores' ? 'Buscar jugadores' : 'Buscar equipos';
+    document.getElementById('searchInput').placeholder = cfg.tipo === 'jugadores' ? 'Nombre del jugador o selección...' : 'Nombre de la selección...';
+    document.getElementById('smNote').style.display = cat === 'killer' ? 'block' : 'none';
+    renderTabsCategoria(cat);
+    document.getElementById('searchInput').value = '';
+    renderPicksCategoria(cat);
+    renderOpcionesCategoria(cat, '');
+  }
+  actualizarContador();
+}
+
+// =====================
+// MODO EDICION
+// =====================
+function toggleModoEdicion() {
+  modoEdicion = !modoEdicion;
+  const btn = document.getElementById('btnModificar');
+  btn.textContent = modoEdicion ? '✏️ Modificar picks' : '🔒 Bloquear edición';
+  renderPicksCategoria(catActiva);
+  renderOpcionesCategoria(catActiva, document.getElementById('searchInput').value);
+}
+
+// =====================
+// ACTUALIZAR PROGRESO GLOBAL
+// =====================
+function totalHecho() {
+  const levHecho = Object.keys(STATE.lev).length;
+  const catHecho = ['killer','carnicero','banderin','virgen','pied','mecha'].reduce((s,c) => s + STATE[c].length, 0);
+  return levHecho + catHecho;
+}
+
+function actualizarProgreso() {
+  const hecho = totalHecho();
+  const total = 169;
+  const pct = Math.round(hecho / total * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progHecho').textContent = hecho;
+  document.getElementById('progTotal').textContent = total;
+}
+
+function actualizarContador() {
+  if (!catActiva) return;
+  if (catActiva === 'lev') {
+    const n = PARTIDOS_LEV.filter(p => !p.bloqueado && STATE.lev[p.id]).length;
+    const tot = PARTIDOS_LEV.filter(p => !p.bloqueado).length;
+    document.getElementById('cntHecho').textContent = n;
+    document.getElementById('cntTotal').textContent = '/ ' + tot + ' partidos con pick';
+    const completo = n >= tot;
+    const btn = document.getElementById('btnConfirmarCat');
+    if (btn) { btn.disabled = !completo; btn.style.opacity = completo ? '1' : '0.4'; }
+  } else {
+    const n = STATE[catActiva].length;
+    const max = CAT_CONFIG[catActiva].max;
+    document.getElementById('cntHecho').textContent = n;
+    document.getElementById('cntTotal').textContent = '/ ' + max + ' ' + CAT_CONFIG[catActiva].label;
+    const completo = n >= max;
+    const btn = document.getElementById('btnConfirmarCat');
+    if (btn) { btn.disabled = !completo; btn.style.opacity = completo ? '1' : '0.4'; }
+  }
+  actualizarProgreso();
+}
+
+function actualizarMenuBadges() {
+  // LEV
+  const levN = PARTIDOS_LEV.filter(p => !p.bloqueado && STATE.lev[p.id]).length;
+  const levTot = PARTIDOS_LEV.filter(p => !p.bloqueado).length;
+  document.getElementById('lev-prog').textContent = levN;
+  setBadge('lev-badge', levN, levTot);
+
+  // Categorías
+  ['killer','carnicero','banderin','virgen','pied','mecha'].forEach(cat => {
+    const n = STATE[cat].length;
+    const max = CAT_CONFIG[cat].max;
+    document.getElementById(cat+'-prog').textContent = n;
+    setBadge(cat+'-badge', n, max);
+  });
+}
+
+function setBadge(id, n, max) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (n === 0) { el.className = 'cat-badge vacio'; el.textContent = 'Sin picks'; }
+  else if (n < max) { el.className = 'cat-badge incompleto'; el.textContent = n + '/' + max; }
+  else { el.className = 'cat-badge completo'; el.textContent = '✓ Completo'; }
+}
+
+// =====================
+// RENDER LEV
+// =====================
+// Tabs de grupo/equipo para TODAS las categorías
+function renderTabsCategoria(cat) {
+  const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  const wrap = document.getElementById('grupoTabsWrap');
+  wrap.style.display = 'flex';
+  if (cat === 'lev') {
+    const done = {};
+    GRUPOS.forEach(g => {
+      const ps = PARTIDOS_LEV.filter(p => p.grupo === g);
+      done[g] = ps.length > 0 && ps.every(p => STATE.lev[p.id]);
+    });
+    wrap.innerHTML = GRUPOS.map(g =>
+      `<button class="gtab ${done[g] ? 'done' : ''}" onclick="scrollToGrupoLEV('${g}')">${g}</button>`
+    ).join('') + `<button class="gtab" style="opacity:0.5;cursor:not-allowed" title="Se desbloquea al terminar la fase de grupos">🔒 Elim.</button>`;
+  } else {
+    wrap.innerHTML = `<button class="gtab ${!filtroEquipo?'active':''}" onclick="setFiltroEquipo(null)">Todos</button>` +
+      GRUPOS.map(g => `<button class="gtab ${filtroEquipo===g?'active':''}" onclick="setFiltroEquipo('${g}')">Gpo ${g}</button>`).join('');
+  }
+}
+
+function scrollToGrupoLEV(g) {
+  const el = document.getElementById('grupo-sec-' + g);
+  if (!el) return;
+  const offset = 150;
+  const top = el.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
+// Renderiza TODOS los grupos de LEV en el optionsList
+function renderPartidosTodos() {
+  const GRUPOS_LEV = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  const lista = document.getElementById('optionsList');
+  let html = '';
+  GRUPOS_LEV.forEach((g, idx) => {
+    const ps = PARTIDOS_LEV.filter(p => p.grupo === g);
+    if (!ps.length) return;
+    html += `<div class="grupo-header opt-reveal" id="grupo-sec-${g}" style="scroll-margin-top:150px;${idx>0?'margin-top:12px':''}">GRUPO ${g}</div>`;
+    ps.forEach(p => {
+      const sel = STATE.lev[p.id];
+      html += `<div class="partido-row opt-reveal">
+        <div class="partido-teams">${p.local.flag} ${p.local.nombre}<span class="partido-vs"> vs </span>${p.visit.flag} ${p.visit.nombre}</div>
+        <div class="partido-date">${p.fecha}</div>
+        <div class="lev-btns">
+          <button class="lev-btn ${sel==='L'?'sel-L':''}" data-pid="${p.id}" data-val="L" onclick="pickLEV('${p.id}','L')">L</button>
+          <button class="lev-btn ${sel==='E'?'sel-E':''}" data-pid="${p.id}" data-val="E" onclick="pickLEV('${p.id}','E')">E</button>
+          <button class="lev-btn ${sel==='V'?'sel-V':''}" data-pid="${p.id}" data-val="V" onclick="pickLEV('${p.id}','V')">V</button>
+        </div>
+      </div>`;
+    });
+  });
+  lista.innerHTML = html;
+  setupScrollReveal();
+}
+
+function setupScrollReveal() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.01, rootMargin: '0px 0px 80px 0px' });
+  document.querySelectorAll('.opt-reveal:not(.visible)').forEach(el => obs.observe(el));
+}
+
+function pickLEV(id, val) {
+  if (STATE.lev[id] === val) delete STATE.lev[id]; else STATE.lev[id] = val;
+  // Actualizar solo los 3 botones del partido tocado (sin re-renderizar toda la lista)
+  const newSel = STATE.lev[id] || null;
+  document.querySelectorAll(`.lev-btn[data-pid="${id}"]`).forEach(btn => {
+    const v = btn.dataset.val;
+    btn.className = 'lev-btn' + (newSel === v ? ' sel-' + v : '');
+    btn.blur(); // quitar foco para evitar el recuadro del navegador
+  });
+  renderPicksLEV();
+  renderTabsCategoria('lev');
+  actualizarContador();
+}
+
+function renderPicksLEV() {
+  const GRUPOS_LEV = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  const lista = document.getElementById('picksSelectedList');
+  const allPicks = PARTIDOS_LEV.filter(p => STATE.lev[p.id]);
+  if (!allPicks.length) {
+    lista.innerHTML = '<div class="empty-panel"><div class="empty-icon">⚽</div><div class="empty-text">Aún no has elegido resultados.<br>Usa los botones L / E / V →</div></div>';
+    return;
+  }
+  let html = '';
+  GRUPOS_LEV.forEach(g => {
+    const ps = allPicks.filter(p => p.grupo === g);
+    if (!ps.length) return;
+    html += `<div style="padding:4px 8px 2px;font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:1.5px;color:var(--muted)">GRUPO ${g}</div>`;
+    ps.forEach(p => {
+      const s = STATE.lev[p.id];
+      const col = s==='L'?'#85B7EB':s==='E'?'#FAC775':'#F0997B';
+      html += `<div class="pick-item filled">
+        <div style="font-family:'Poppins',sans-serif;font-size:16px;color:${col};width:28px;text-align:center;flex-shrink:0">${s}</div>
+        <div style="font-size:13px;flex-shrink:0">${p.local.flag}${p.visit.flag}</div>
+        <div style="flex:1"><div class="pick-name" style="font-size:12px">${p.local.nombre} vs ${p.visit.nombre}</div></div>
+        <button class="btn-remove" onclick="quitarLEV('${p.id}')">✕</button>
+      </div>`;
+    });
+  });
+  lista.innerHTML = html;
+}
+
+function quitarLEV(id) {
+  delete STATE.lev[id];
+  // Resetear los botones del partido sin re-renderizar toda la lista
+  document.querySelectorAll(`.lev-btn[data-pid="${id}"]`).forEach(btn => {
+    btn.className = 'lev-btn';
+    btn.blur();
+  });
+  renderPicksLEV();
+  renderTabsCategoria('lev');
+  actualizarContador();
+}
+
+// =====================
+// RENDER CATEGORÍAS EQUIPOS/JUGADORES
+// =====================
+function setFiltroEquipo(g) {
+  filtroEquipo = g;
+  renderTabsCategoria(catActiva);
+  renderOpcionesCategoria(catActiva, document.getElementById('searchInput').value);
+}
+
+function filtrarOpciones(q) {
+  if (catActiva === 'lev') {
+    const busqueda = q.toLowerCase();
+    if (busqueda) {
+      const eqs = EQUIPOS.filter(e => e.nombre.toLowerCase().includes(busqueda));
+      const grupos = [...new Set(eqs.map(e => e.grupo))];
+      if (grupos.length) scrollToGrupoLEV(grupos[0]);
+    }
+  } else {
+    renderOpcionesCategoria(catActiva, q);
+  }
+}
+
+function renderPicksCategoria(cat) {
+  const cfg = CAT_CONFIG[cat];
+  const lista = document.getElementById('picksSelectedList');
+  const selIds = STATE[cat];
+  const slots = Array.from({length: cfg.max}, (_, i) => {
+    const id = selIds[i];
+    if (!id) return `<div class="pick-item empty"><div class="pick-num">${i+1}</div><div class="pick-name" style="color:var(--muted);font-size:12px">Pick ${i+1} — vacío</div></div>`;
+    const item = cfg.tipo === 'jugadores'
+      ? JUGADORES_PRELISTA.find(j => j.id === id)
+      : EQUIPOS.find(e => e.id === id);
+    if (!item) return '';
+    const detail = cfg.tipo === 'jugadores'
+      ? `${item.pos} · ${EQUIPOS.find(e=>e.id===item.equipo)?.nombre||''}`
+      : `Grupo ${item.grupo}`;
+    return `<div class="pick-item filled">
+      <div class="pick-num">${i+1}</div>
+      <div class="pick-flag">${item.flag}</div>
+      <div style="flex:1">
+        <div class="pick-name">${item.nombre}</div>
+        <div class="pick-detail">${detail}</div>
+      </div>
+      ${modoEdicion ? `<button class="btn-remove" onclick="quitarPick('${cat}','${id}')">✕</button>` : ''}
+    </div>`;
+  });
+  lista.innerHTML = slots.join('');
+}
+
+function renderOpcionesCategoria(cat, q) {
+  const cfg = CAT_CONFIG[cat];
+  const lista = document.getElementById('optionsList');
+  const busq = (q||'').toLowerCase();
+  let items;
+
+  if (cfg.tipo === 'jugadores') {
+    items = JUGADORES_PRELISTA.filter(j => {
+      const equipo = EQUIPOS.find(e => e.id === j.equipo);
+      const matchQ = !busq || j.nombre.toLowerCase().includes(busq) || (equipo && equipo.nombre.toLowerCase().includes(busq));
+      const matchGrupo = !filtroEquipo || (equipo && equipo.grupo === filtroEquipo);
+      return matchQ && matchGrupo;
+    });
+    // Agrupar por equipo
+    const porEquipo = {};
+    items.forEach(j => { if (!porEquipo[j.equipo]) porEquipo[j.equipo] = []; porEquipo[j.equipo].push(j); });
+
+    // Contar por equipo en STATE
+    const contPorEquipo = {};
+    STATE[cat].forEach(id => {
+      const j = JUGADORES_PRELISTA.find(x => x.id === id);
+      if (j) contPorEquipo[j.equipo] = (contPorEquipo[j.equipo]||0) + 1;
+    });
+
+    let html = '';
+    Object.entries(porEquipo).forEach(([eqId, jugs]) => {
+      const eq = EQUIPOS.find(e => e.id === eqId);
+      const cantEq = contPorEquipo[eqId]||0;
+      html += `<div style="padding:6px 4px 2px;font-family:'Poppins',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">${eq?.flag||''} ${eq?.nombre||eqId} <span style="color:${cantEq>=3?'#ef4444':'var(--amarillo)'};">(${cantEq}/3)</span></div>`;
+      jugs.forEach(j => {
+        const sel = STATE[cat].includes(j.id);
+        const lleno = STATE[cat].length >= 15 && !sel;
+        const maxEq = (contPorEquipo[eqId]||0) >= 3 && !sel;
+        const dis = (lleno || maxEq) && !sel;
+        html += `<div class="option-item opt-reveal ${sel?'selected':''} ${dis?'disabled':''}" onclick="${!dis&&!sel?`agregarPick('${cat}','${j.id}')`:sel?`quitarPick('${cat}','${j.id}')`:''}"  >
+          <div class="opt-flag">${j.flag}</div>
+          <div style="flex:1"><div class="opt-name">${j.nombre}</div><div class="opt-detail">${j.pos}</div></div>
+          ${sel ? '<span class="opt-check">✓</span>' : !dis ? '<span class="opt-add">+</span>' : ''}
+        </div>`;
+      });
+    });
+    lista.innerHTML = html || '<div class="empty-panel"><div class="empty-icon">🔍</div><div class="empty-text">Sin resultados para "'+busq+'"</div></div>';
+    setupScrollReveal();
+
+  } else {
+    // Equipos
+    items = EQUIPOS.filter(e => {
+      const matchQ = !busq || e.nombre.toLowerCase().includes(busq);
+      const matchGrupo = !filtroEquipo || e.grupo === filtroEquipo;
+      return matchQ && matchGrupo;
+    });
+    // Agrupar por grupo
+    const porGrupo = {};
+    items.forEach(e => { if (!porGrupo[e.grupo]) porGrupo[e.grupo] = []; porGrupo[e.grupo].push(e); });
+    let html = '';
+    Object.entries(porGrupo).sort().forEach(([gn, eqs]) => {
+      html += `<div style="padding:6px 4px 2px;font-family:'Poppins',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Grupo ${gn}</div>`;
+      eqs.forEach(e => {
+        const sel = STATE[cat].includes(e.id);
+        const lleno = STATE[cat].length >= cfg.max && !sel;
+        const dis = lleno && !sel;
+        html += `<div class="option-item opt-reveal ${sel?'selected':''} ${dis?'disabled':''}" onclick="${!dis?`toggleEquipo('${cat}','${e.id}')`:''}"  >
+          <div class="opt-flag">${e.flag}</div>
+          <div style="flex:1"><div class="opt-name">${e.nombre}</div><div class="opt-detail">Grupo ${e.grupo}</div></div>
+          ${sel ? '<span class="opt-check">✓</span>' : !dis ? '<span class="opt-add">+</span>' : ''}
+        </div>`;
+      });
+    });
+    lista.innerHTML = html || '<div class="empty-panel"><div class="empty-icon">🔍</div><div class="empty-text">Sin resultados</div></div>';
+    setupScrollReveal();
+  }
+}
+
+function agregarPick(cat, id) {
+  const cfg = CAT_CONFIG[cat];
+  if (STATE[cat].length >= cfg.max) return;
+  // Validar máx 3 por equipo (killer)
+  if (cat === 'killer') {
+    const j = JUGADORES_PRELISTA.find(x => x.id === id);
+    if (j) {
+      const cnt = STATE[cat].filter(sid => { const sj = JUGADORES_PRELISTA.find(x=>x.id===sid); return sj && sj.equipo === j.equipo; }).length;
+      if (cnt >= 3) { alert('⚠️ Ya tienes 3 jugadores de ' + EQUIPOS.find(e=>e.id===j.equipo)?.nombre + '. Máximo 3 por equipo.'); return; }
+    }
+  }
+  if (!STATE[cat].includes(id)) STATE[cat].push(id);
+  renderPicksCategoria(cat);
+  renderOpcionesCategoria(cat, document.getElementById('searchInput').value);
+  actualizarContador();
+}
+
+function quitarPick(cat, id) {
+  STATE[cat] = STATE[cat].filter(x => x !== id);
+  renderPicksCategoria(cat);
+  renderOpcionesCategoria(cat, document.getElementById('searchInput').value);
+  actualizarContador();
+}
+
+function toggleEquipo(cat, id) {
+  if (STATE[cat].includes(id)) quitarPick(cat, id);
+  else agregarPick(cat, id);
+}
+
+function limpiarPicks() {
+  if (!catActiva) { console.warn('limpiarPicks: catActiva es null'); return; }
+  // Usar modal interno en vez de confirm() para no bloquear
+  abrirModalLimpiar();
+}
+
+function abrirModalLimpiar() {
+  document.getElementById('modalLimpiar').classList.add('open');
+}
+
+function cerrarModalLimpiar() {
+  document.getElementById('modalLimpiar').classList.remove('open');
+}
+
+function ejecutarLimpiar() {
+  cerrarModalLimpiar();
+  if (catActiva === 'lev') {
+    PARTIDOS_LEV.forEach(p => delete STATE.lev[p.id]);
+    renderPartidosTodos();
+    renderPicksLEV();
+    renderTabsCategoria('lev');
+  } else {
+    STATE[catActiva] = [];
+    renderPicksCategoria(catActiva);
+    renderOpcionesCategoria(catActiva, document.getElementById('searchInput').value);
+  }
+  actualizarContador();
+}
+
+// =====================
+// MODAL CONFIRMAR
+// =====================
+function abrirModalConfirmar() {
+  const nombreCat = {
+    lev: 'Predicciones L/E/V',
+    killer: 'El Killer',
+    carnicero: 'El Carnicero',
+    banderin: 'El Banderín',
+    virgen: 'El Virgen',
+    pied: 'El Pie de Niña',
+    mecha: 'El Mechacorta',
+  };
+  const cat = catActiva;
+  const nombre = cat ? nombreCat[cat] : 'todos los picks';
+  const esCatCompleta = cat ? esCategoriaCompleta(cat) : totalHecho() >= 169;
+  if (!esCatCompleta) {
+    mostrarAlertaError(cat ? 'Completa todos los picks de ' + nombre + ' antes de confirmar.' : 'Debes completar los 169 picks.');
+    return;
+  }
+  document.getElementById('modalConfirmarCuerpo').innerHTML = `Estás por confirmar tus picks de <strong style="color:var(--amarillo)">${nombre}</strong>.<br><br>
+    Puedes <strong style="color:var(--amarillo)">modificar cuando quieras</strong> antes del cierre (11 jun, 5:30 PM).`;
+  document.getElementById('modalConfirmar').classList.add('open');
+}
+
+function esCategoriaCompleta(cat) {
+  if (cat === 'lev') return PARTIDOS_LEV.filter(p => !p.bloqueado && !STATE.lev[p.id]).length === 0;
+  return STATE[cat].length >= CAT_CONFIG[cat].max;
+}
+
+// ── PDF de picks ──────────────────────────────────────────────────────────
+const DEADLINE_PICKS = new Date('2026-06-11T17:30:00-05:00'); // 5:30 PM Colombia (UTC-5)
+function solicitarPDF() {
+  if (new Date() < DEADLINE_PICKS) return; // botón deshabilitado, no hace nada
+  mostrarAlertaError('Función de PDF en construcción. Estará disponible próximamente.');
+}
+// Activar el botón después del deadline
+(function() {
+  function verificarDeadlinePDF() {
+    const btn = document.getElementById('btnGenerarPDF');
+    if (!btn) return;
+    if (new Date() >= DEADLINE_PICKS) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+      btn.style.background = 'linear-gradient(135deg, var(--azul), #1a4fa8)';
+      btn.style.color = '#fff';
+      btn.style.borderColor = 'transparent';
+      btn.removeAttribute('title');
+      btn.title = 'Genera y descarga el PDF con todos tus picks';
+      clearInterval(pdfTimer);
+    }
+  }
+  const pdfTimer = setInterval(verificarDeadlinePDF, 30000);
+  verificarDeadlinePDF();
+})();
+
+function cerrarSmNote() {
+  document.getElementById('smNote').style.display = 'none';
+}
+
+function mostrarAlertaError(msg) {
+  const toast = document.createElement('div');
+  toast.textContent = '⚠️ ' + msg;
+  toast.style.cssText = `
+    position: fixed; top: 90px; left: 50%; transform: translateX(-50%);
+    background: var(--rojo); color: #fff; border-radius: 10px; padding: 14px 24px;
+    z-index: 9999; font-family:'Poppins',sans-serif; font-weight: 700; font-size: 15px;
+    box-shadow: 0 4px 20px rgba(206,17,38,0.5); animation: toastIn 0.3s ease forwards;
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
+function cerrarModalConfirmar() { document.getElementById('modalConfirmar').classList.remove('open'); }
+function ejecutarConfirmar() {
+  cerrarModalConfirmar();
+  const esCatActiva = catActiva !== null;
+  const nombreCat = {
+    lev: 'Predicciones L/E/V',
+    killer: 'El Killer',
+    carnicero: 'El Carnicero',
+    banderin: 'El Banderín',
+    virgen: 'El Virgen',
+    pied: 'El Pie de Niña',
+    mecha: 'El Mechacorta',
+  };
+  const cat = catActiva || '__todos__';
+  const nombre = nombreCat[cat] || 'todos';
+  // Guardar en Supabase
+  if (window.guardarPicksSupabase) {
+    window.guardarPicksSupabase(cat).then(ok => {
+      if (!ok) console.error('Error guardando picks en Supabase');
+    });
+  }
+  mostrarAlertaConfirmacion(nombre);
+  setTimeout(() => volverAlMenu(), 2200);
+}
+
+function mostrarAlertaConfirmacion(nombreCat) {
+  // Crear notificación toast llamativa
+  const toast = document.createElement('div');
+  toast.innerHTML = `
+    <div style="font-family:'Poppins',sans-serif;font-size:22px;letter-spacing:2px;color:#000;margin-bottom:4px">✅ PICKS CONFIRMADOS</div>
+    <div style="font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;color:#003087">Categoría: ${nombreCat}</div>
+    <div style="font-family:'Poppins',sans-serif;font-size:13px;color:#333;margin-top:6px">Puedes modificarlos antes del 11 jun, 5:30 PM</div>
+  `;
+  toast.style.cssText = `
+    position: fixed; top: 90px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    background: linear-gradient(135deg, #FCD116, #e5a800);
+    border-radius: 14px; padding: 18px 28px; z-index: 9999;
+    box-shadow: 0 8px 32px rgba(252,209,22,0.5), 0 0 0 3px rgba(0,48,135,0.3);
+    text-align: center; min-width: 320px;
+    animation: toastIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  `;
+  // Agregar keyframes
+  if (!document.getElementById('toastStyle')) {
+    const style = document.createElement('style');
+    style.id = 'toastStyle';
+    style.textContent = `
+      @keyframes toastIn { from { opacity:0; transform: translateX(-50%) translateY(-30px) scale(0.85); } to { opacity:1; transform: translateX(-50%) translateY(0) scale(1); } }
+      @keyframes toastOut { from { opacity:1; transform: translateX(-50%) translateY(0) scale(1); } to { opacity:0; transform: translateX(-50%) translateY(-20px) scale(0.9); } }
+    `;
+    document.head.appendChild(style);
+  }
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = 'toastOut 0.35s ease forwards';
+    setTimeout(() => toast.remove(), 400);
+  }, 2000);
+}
+
+// =====================
+// RESUMEN DE TODOS MIS PICKS
+// =====================
+function abrirResumenPicks() {
+  const modal = document.getElementById('modalResumen');
+  renderResumenPicks();
+  modal.classList.add('open');
+}
+
+function cerrarResumenPicks() {
+  document.getElementById('modalResumen').classList.remove('open');
+}
+
+function renderResumenPicks() {
+  const nombres = {
+    lev:'Predicciones L/E/V', killer:'El Killer',
+    carnicero:'El Carnicero', banderin:'El Banderín',
+    virgen:'El Virgen', pied:'El Pie de Niña', mecha:'El Mechacorta'
+  };
+  const colores = {
+    lev:'#4a90d9', killer:'#f97316', carnicero:'#ef4444',
+    banderin:'#3b82f6', virgen:'#22c55e', pied:'#ec4899', mecha:'#8b5cf6'
+  };
+  const iconos = { lev:'⚽', killer:'⚔️', carnicero:'🔪', banderin:'🚩', virgen:'🕊️', pied:'🎀', mecha:'✂️' };
+  const maximos = { lev: PARTIDOS_LEV.filter(p=>!p.bloqueado).length, killer:15, carnicero:10, banderin:10, virgen:10, pied:10, mecha:10 };
+
+  let html = '';
+
+  // LEV summary
+  const levHecho = Object.keys(STATE.lev).length;
+  const levMax = maximos.lev;
+  html += seccionResumen('lev', iconos.lev, nombres.lev, levHecho, levMax, colores.lev, () => {
+    const grupos = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+    return grupos.map(g => {
+      const ps = PARTIDOS_LEV.filter(p => p.grupo === g && STATE.lev[p.id]);
+      if (!ps.length) return `<div style="color:var(--muted);font-size:11px;font-style:italic;padding:2px 0">Grupo ${g}: sin picks</div>`;
+      return `<div style="font-size:11px;margin-bottom:2px"><strong style="color:var(--muted)">Grupo ${g}:</strong> ` +
+        ps.map(p => `${p.local.flag}${STATE.lev[p.id]}${p.visit.flag}`).join(' · ') + '</div>';
+    }).join('');
+  });
+
+  // Categorías de equipos/jugadores
+  ['killer','carnicero','banderin','virgen','pied','mecha'].forEach(cat => {
+    const sel = STATE[cat];
+    const max = maximos[cat];
+    const cfg = CAT_CONFIG[cat];
+    html += seccionResumen(cat, iconos[cat], nombres[cat], sel.length, max, colores[cat], () => {
+      if (!sel.length) return '<div style="color:var(--muted);font-size:11px;font-style:italic">Sin picks todavía</div>';
+      return sel.map((id, i) => {
+        const item = cfg.tipo === 'jugadores'
+          ? JUGADORES_PRELISTA.find(j=>j.id===id)
+          : EQUIPOS.find(e=>e.id===id);
+        if (!item) return '';
+        return `<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid rgba(30,45,69,0.3)">
+          <span style="font-size:11px;color:var(--muted);width:18px">${i+1}.</span>
+          <span style="font-size:14px">${item.flag}</span>
+          <span style="font-family:'Poppins',sans-serif;font-size:13px;font-weight:600">${item.nombre}</span>
+          ${cfg.tipo==='jugadores' ? `<span style="font-size:10px;color:var(--muted);margin-left:auto">${item.pos}</span>` : ''}
+        </div>`;
+      }).join('');
+    });
+  });
+
+  document.getElementById('resumenCuerpo').innerHTML = html;
+}
+
+function seccionResumen(cat, icono, nombre, hecho, max, color, renderDetalle) {
+  const completo = hecho >= max;
+  const pct = Math.round(hecho/max*100);
+  return `<div style="margin-bottom:14px;background:var(--card2);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+    <div style="padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);cursor:pointer" onclick="toggleSeccionResumen('res-${cat}')">
+      <span style="font-size:18px">${icono}</span>
+      <span style="font-family:'Poppins',sans-serif;font-size:16px;letter-spacing:1px;color:var(--amarillo);flex:1">${nombre}</span>
+      <span style="font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;${completo?'color:#22c55e':'color:var(--amarillo)'}">${hecho}/${max}</span>
+      <span style="font-size:14px;color:var(--muted)" id="arr-${cat}">▾</span>
+    </div>
+    <div id="res-${cat}" style="padding:10px 14px;display:none">
+      ${renderDetalle()}
+    </div>
+  </div>`;
+}
+
+function toggleSeccionResumen(id) {
+  const el = document.getElementById(id);
+  const arr = document.getElementById('arr-' + id.replace('res-',''));
+  const visible = el.style.display !== 'none';
+  el.style.display = visible ? 'none' : 'block';
+  if (arr) arr.textContent = visible ? '▾' : '▴';
+}
+
+// =====================
+// INIT
+// =====================
+actualizarProgreso();
+actualizarMenuBadges();
+
+  // ── Modo Día/Noche ──────────────────────────────────────────────────────
+  function toggleTema() {
+    const esDia = document.body.classList.toggle('dia');
+    document.getElementById('btnTema').textContent = esDia ? '☀️' : '🌙';
+    localStorage.setItem('rosca-tema', esDia ? 'dia' : 'noche');
+  }
+  (function() {
+    const t = localStorage.getItem('rosca-tema');
+    if (t === 'dia') {
+      document.body.classList.add('dia');
+      const btn = document.getElementById('btnTema');
+      if (btn) btn.textContent = '☀️';
+    }
+  })();
+</script>
+
+<script type="module">
+import { supabase } from '/js/supabase.js';
+
+const LS_KEY = 'rosca_picks_invitado';
+
+// ── Auth: permitir invitados ───────────────────────────────────────────────
+async function verificarAuth() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    // Modo invitado: mostrar banner, usar localStorage
+    mostrarBannerInvitado();
+    const savedRaw = localStorage.getItem(LS_KEY);
+    const picks_data = savedRaw ? JSON.parse(savedRaw) : null;
+    return { id: null, nombre: 'Invitado', activo: true, picks_data, esInvitado: true };
+  }
+  const { data: perfil } = await supabase.from('usuarios').select('id, nombre, activo, picks_data').eq('id', session.user.id).single();
+  return perfil || { id: session.user.id, nombre: '', activo: true, picks_data: null };
+}
+
+function mostrarBannerInvitado() {
+  const banner = document.getElementById('banner-registrar');
+  if (banner) banner.style.display = 'flex';
+}
+
+// ── Cargar picks guardados en STATE ───────────────────────────────────────
+function cargarPicksEnState(picks_data) {
+  if (!picks_data) return;
+  if (picks_data.lev)       Object.assign(STATE.lev, picks_data.lev);
+  if (picks_data.killer)    STATE.killer    = picks_data.killer;
+  if (picks_data.carnicero) STATE.carnicero = picks_data.carnicero;
+  if (picks_data.banderin)  STATE.banderin  = picks_data.banderin;
+  if (picks_data.virgen)    STATE.virgen    = picks_data.virgen;
+  if (picks_data.pied)      STATE.pied      = picks_data.pied;
+  if (picks_data.mecha)     STATE.mecha     = picks_data.mecha;
+  actualizarProgreso();
+  actualizarMenuBadges();
+}
+
+// ── Helpers multi-cupo ────────────────────────────────────────────────────
+const CUPO_KEY = 'rm_cupo_activo';
+
+async function getCupoIdActivo(userId) {
+  const stored = localStorage.getItem(CUPO_KEY);
+  if (stored) return stored;
+  const { data } = await supabase.from('cupos').select('id').eq('usuario_id', userId).eq('numero', 1).maybeSingle();
+  if (data?.id) { localStorage.setItem(CUPO_KEY, data.id); return data.id; }
+  return null;
+}
+
+async function getCupoInfo(userId) {
+  const cupo_id = await getCupoIdActivo(userId);
+  if (!cupo_id) return null;
+  const { data } = await supabase.from('cupos').select('id,numero,alias,picks_data,picks_completos').eq('id', cupo_id).maybeSingle();
+  return data || null;
+}
+
+function mostrarCupoIndicador(cupo) {
+  if (!cupo || cupo.numero === 1) return;
+  let ind = document.getElementById('cupo-indicator');
+  if (!ind) {
+    ind = document.createElement('div');
+    ind.id = 'cupo-indicator';
+    ind.style.cssText = 'background:rgba(252,209,22,0.12);border-bottom:1px solid rgba(252,209,22,0.25);padding:7px 20px;text-align:center;font-size:12px;font-weight:700;color:#FCD116;position:sticky;top:62px;z-index:90;';
+    const nav = document.querySelector('nav');
+    if (nav && nav.nextSibling) nav.parentNode.insertBefore(ind, nav.nextSibling);
+    else document.body.prepend(ind);
+  }
+  ind.textContent = 'Editando: ' + cupo.alias + ' (Cupo #' + cupo.numero + ') — Vuelve al Dashboard para cambiar de cupo';
+}
+
+// ── Guardar picks (Supabase para usuarios, localStorage para invitados) ────
+window.guardarPicksSupabase = async function(cat) {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session) {
+    const current = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+    if (cat === '__todos__' || cat === 'lev')       current.lev       = STATE.lev;
+    if (cat === '__todos__' || cat === 'killer')     current.killer    = STATE.killer;
+    if (cat === '__todos__' || cat === 'carnicero')  current.carnicero = STATE.carnicero;
+    if (cat === '__todos__' || cat === 'banderin')   current.banderin  = STATE.banderin;
+    if (cat === '__todos__' || cat === 'virgen')     current.virgen    = STATE.virgen;
+    if (cat === '__todos__' || cat === 'pied')       current.pied      = STATE.pied;
+    if (cat === '__todos__' || cat === 'mecha')      current.mecha     = STATE.mecha;
+    localStorage.setItem(LS_KEY, JSON.stringify(current));
+    return true;
+  }
+
+  const user = session.user;
+
+  // Intentar guardar en cupo activo
+  const cupo_id = await getCupoIdActivo(user.id);
+  if (cupo_id) {
+    const { data: cupoActual } = await supabase.from('cupos').select('picks_data,numero').eq('id', cupo_id).single();
+    const base = cupoActual?.picks_data || {};
+    const nuevo = { ...base };
+    if (cat === '__todos__' || cat === 'lev')       nuevo.lev       = STATE.lev;
+    if (cat === '__todos__' || cat === 'killer')     nuevo.killer    = STATE.killer;
+    if (cat === '__todos__' || cat === 'carnicero')  nuevo.carnicero = STATE.carnicero;
+    if (cat === '__todos__' || cat === 'banderin')   nuevo.banderin  = STATE.banderin;
+    if (cat === '__todos__' || cat === 'virgen')     nuevo.virgen    = STATE.virgen;
+    if (cat === '__todos__' || cat === 'pied')       nuevo.pied      = STATE.pied;
+    if (cat === '__todos__' || cat === 'mecha')      nuevo.mecha     = STATE.mecha;
+    const completo = Object.keys(nuevo.lev||{}).length >= 72 && (nuevo.killer||[]).length >= 15 && (nuevo.carnicero||[]).length >= 10;
+    const { error } = await supabase.from('cupos').update({ picks_data: nuevo, picks_completos: completo }).eq('id', cupo_id);
+    if (!error) {
+      if (cupoActual?.numero === 1) await supabase.from('usuarios').update({ picks_data: nuevo, picks_completos: completo }).eq('id', user.id);
+      return true;
+    }
+  }
+
+  // Fallback: guardar en usuarios.picks_data
+  const { data: actual } = await supabase.from('usuarios').select('picks_data').eq('id', user.id).single();
+  const base = actual?.picks_data || {};
+  const nuevo = { ...base };
+  if (cat === '__todos__' || cat === 'lev')       nuevo.lev       = STATE.lev;
+  if (cat === '__todos__' || cat === 'killer')     nuevo.killer    = STATE.killer;
+  if (cat === '__todos__' || cat === 'carnicero')  nuevo.carnicero = STATE.carnicero;
+  if (cat === '__todos__' || cat === 'banderin')   nuevo.banderin  = STATE.banderin;
+  if (cat === '__todos__' || cat === 'virgen')     nuevo.virgen    = STATE.virgen;
+  if (cat === '__todos__' || cat === 'pied')       nuevo.pied      = STATE.pied;
+  if (cat === '__todos__' || cat === 'mecha')      nuevo.mecha     = STATE.mecha;
+  const { error } = await supabase.from('usuarios').update({ picks_data: nuevo }).eq('id', user.id);
+  return !error;
+};
+
+// ── Inicializar ────────────────────────────────────────────────────────────
+(async () => {
+  const perfil = await verificarAuth();
+  if (!perfil) return;
+  if (perfil.id && !perfil.esInvitado) {
+    const cupo = await getCupoInfo(perfil.id);
+    if (cupo) { mostrarCupoIndicador(cupo); cargarPicksEnState(cupo.picks_data); return; }
+  }
+  cargarPicksEnState(perfil.picks_data);
+})();
 })();
 </script>
 </body>

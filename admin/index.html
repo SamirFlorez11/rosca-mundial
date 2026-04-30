@@ -263,6 +263,9 @@ input:checked+.slider::before{transform:translateX(18px);}
       <div class="nav-item" onclick="goTo('usuarios')">
         <span class="ni-icon">👥</span><span class="ni-label">Gestión usuarios</span>
       </div>
+      <div class="nav-item" onclick="goTo('cupos')">
+        <span class="ni-icon">🎟️</span><span class="ni-label">Multi-cupo</span>
+      </div>
       <div class="nav-item" onclick="goTo('alias')">
         <span class="ni-icon">✏️</span><span class="ni-label">Alias / nombres</span>
       </div>
@@ -418,11 +421,11 @@ input:checked+.slider::before{transform:translateX(18px);}
                   <tr><td>🥉 3er lugar</td><td>PlayStation 5</td><td>—</td><td><span class="pill pill-gold">Físico</span></td></tr>
                   <tr><td>🏅 4to lugar</td><td>AirPods Pro</td><td>—</td><td><span class="pill pill-gold">Físico</span></td></tr>
                   <tr><td>⚽ El Killer</td><td>Efectivo</td><td>$1.000.000</td><td><span class="pill pill-green">Efectivo</span></td></tr>
-                  <tr><td>🟨 El Carnicero</td><td>Efectivo</td><td>$750.000</td><td><span class="pill pill-green">Efectivo</span></td></tr>
+                  <tr><td>🔪 El Carnicero</td><td>Efectivo</td><td>$800.000</td><td><span class="pill pill-green">Efectivo</span></td></tr>
                   <tr><td>📐 El Banderín</td><td>Efectivo</td><td>$500.000</td><td><span class="pill pill-green">Efectivo</span></td></tr>
-                  <tr><td>🤍 El Virgen</td><td>Efectivo</td><td>$400.000</td><td><span class="pill pill-green">Efectivo</span></td></tr>
-                  <tr><td>🕊️ El Pie de Niña</td><td>Efectivo</td><td>$300.000</td><td><span class="pill pill-green">Efectivo</span></td></tr>
-                  <tr><td>✂️ El Mechacorta</td><td>Efectivo</td><td>$200.000</td><td><span class="pill pill-green">Efectivo</span></td></tr>
+                  <tr><td>🕊️ El Virgen</td><td>Efectivo</td><td>$400.000</td><td><span class="pill pill-green">Efectivo</span></td></tr>
+                  <tr><td>🎀 El Pie de Niña</td><td>Efectivo</td><td>$300.000</td><td><span class="pill pill-green">Efectivo</span></td></tr>
+                  <tr><td>✂️ El Mechacorta</td><td>Efectivo</td><td>$300.000</td><td><span class="pill pill-green">Efectivo</span></td></tr>
                 </tbody>
               </table>
             </div>
@@ -841,6 +844,66 @@ input:checked+.slider::before{transform:translateX(18px);}
         </div>
       </div>
 
+      <!-- ══════ PAGE: CUPOS ══════ -->
+      <div class="page" id="page-cupos">
+        <div class="section-title">Multi-cupo <span>Usuarios con más de una participación</span></div>
+
+        <div class="stat-grid" id="cupos-stats">
+          <div class="stat-card gold">
+            <div class="stat-value" id="cs-total">—</div>
+            <div class="stat-label">Cupos totales</div>
+            <div class="stat-sub">En todo el sistema</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-value" id="cs-activos">—</div>
+            <div class="stat-label">Cupos activos (pagados)</div>
+            <div class="stat-sub">Con acceso completo</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-value" id="cs-multi">—</div>
+            <div class="stat-label">Usuarios multi-cupo</div>
+            <div class="stat-sub">Con 2+ participaciones</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+          <input class="search-input" placeholder="🔍 Buscar por alias o usuario..." id="cupos-q" oninput="filtrarCuposUI(this.value)" style="max-width:300px;">
+          <select class="filter-sel" onchange="filtrarCuposEstado(this.value)" id="cupos-filter-activo">
+            <option value="">Todos</option>
+            <option value="activo">Solo activos</option>
+            <option value="inactivo">Solo inactivos</option>
+          </select>
+          <button class="btn btn-gold" onclick="openModalAgregarCupo()">🎟️ Agregar cupo manualmente</button>
+          <button class="btn btn-navy" onclick="cargarCupos()">🔄 Actualizar</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title" id="cupos-count">Cargando...</div>
+          </div>
+          <div class="panel-body">
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>#</th><th>Alias del cupo</th><th>Usuario propietario</th><th>Cupo #</th><th>Estado</th><th>Picks</th><th>Fecha</th><th>Acciones</th></tr></thead>
+                <tbody id="tb-cupos"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel SQL instrucciones -->
+        <div class="panel" style="margin-top:0;">
+          <div class="panel-header"><div class="panel-title">🗄️ SQL — Configuración inicial en Supabase</div></div>
+          <div class="panel-body">
+            <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:16px;margin-bottom:12px;">
+              <div style="font-size:11px;font-weight:800;color:var(--gold);letter-spacing:1px;margin-bottom:8px;">EJECUTAR UNA SOLA VEZ en Supabase → SQL Editor</div>
+              <pre id="sql-cupos-code" style="font-size:11px;color:rgba(255,255,255,0.7);white-space:pre-wrap;font-family:monospace;line-height:1.6;overflow-x:auto;"></pre>
+            </div>
+            <button class="btn btn-navy" onclick="copiarSQL()">📋 Copiar SQL</button>
+          </div>
+        </div>
+      </div>
+
     </div><!-- /content -->
   </div><!-- /main -->
 </div><!-- /appLayout -->
@@ -936,6 +999,35 @@ input:checked+.slider::before{transform:translateX(18px);}
   </div>
 </div>
 
+<!-- MODAL: Agregar cupo manualmente -->
+<div class="modal-over" id="modalAgregarCupo">
+  <div class="modal-bx">
+    <div class="modal-hd">
+      <h3>🎟️ Agregar cupo manualmente</h3>
+      <button class="modal-cl" onclick="closeModal('modalAgregarCupo')">✕</button>
+    </div>
+    <div class="modal-bd">
+      <div style="background:rgba(232,160,32,0.08);border:1px solid rgba(232,160,32,0.2);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:12px;font-weight:700;color:rgba(255,255,255,0.6);">
+        💡 Usar cuando el pago del cupo adicional se confirmó por fuera del sistema (transferencia, efectivo, etc.)
+      </div>
+      <div class="form-field">
+        <label>Buscar usuario existente (correo)</label>
+        <input type="email" id="ac-correo" placeholder="correo@ejemplo.com" style="width:100%;padding:10px 13px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:9px;color:white;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;outline:none;" oninput="buscarUsuarioParaCupo(this.value)">
+        <div id="ac-usuario-encontrado" style="margin-top:6px;font-size:12px;color:rgba(255,255,255,0.4);"></div>
+      </div>
+      <div class="form-field">
+        <label>Alias para este cupo</label>
+        <input type="text" id="ac-alias" placeholder="Ej: Carlos - Cupo 2" style="width:100%;padding:10px 13px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:9px;color:white;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;outline:none;">
+        <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:3px;">Si lo dejas vacío, se asigna automáticamente</div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
+        <button class="btn btn-navy" onclick="closeModal('modalAgregarCupo')">Cancelar</button>
+        <button class="btn btn-gold" onclick="crearCupoManual()">🎟️ Crear cupo activo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -1007,7 +1099,7 @@ window.addEventListener("DOMContentLoaded", () => {
 // ═══════════════════════════════════════════════════════════
 const pageTitles = {
   dashboard:"DASHBOARD", financiero:"FINANCIERO", usuarios:"GESTIÓN USUARIOS",
-  alias:"ALIAS / NOMBRES", picks:"PICKS USUARIOS", fases:"FASES DEL TORNEO",
+  cupos:"MULTI-CUPO", alias:"ALIAS / NOMBRES", picks:"PICKS USUARIOS", fases:"FASES DEL TORNEO",
   ranking:"RANKINGS LIVE", datos:"ACTUALIZAR DATOS", notificaciones:"NOTIFICACIONES",
   logs:"LOGS DE ACTIVIDAD", backup:"BACKUP & CONFIG"
 };
@@ -1020,7 +1112,7 @@ function goTo(page) {
     if (n.getAttribute("onclick")?.includes("'" + page + "'")) n.classList.add("active");
   });
   document.getElementById("topbarTitle").textContent = pageTitles[page] || page.toUpperCase();
-  const loaders = { dashboard:initApp, financiero:cargarFinanciero, usuarios:cargarUsuarios, alias:cargarAlias, picks:cargarPicksPage, fases:cargarFases, ranking:cargarRankings, datos:cargarDatos, logs:cargarLogs, backup:cargarBackup, notificaciones:cargarNotificaciones };
+  const loaders = { dashboard:initApp, financiero:cargarFinanciero, usuarios:cargarUsuarios, cupos:cargarCupos, alias:cargarAlias, picks:cargarPicksPage, fases:cargarFases, ranking:cargarRankings, datos:cargarDatos, logs:cargarLogs, backup:cargarBackup, notificaciones:cargarNotificaciones };
   if (loaders[page]) loaders[page]();
 }
 
@@ -1159,64 +1251,30 @@ function filtrarPicksCat(v)  {}
 function filtrarPicksEstado(v) {}
 
 async function exportarPicksJSON() {
-  showToast('⏳ Descargando picks de todos los usuarios...', 'success');
+  showToast('Descargando picks...', 'success');
   try {
-    const { data, error } = await supabase
-      .from('usuarios')
-      .select('id, nombre_completo, nombre_usuario, picks_data')
-      .eq('activo', true);
-    if (error) throw error;
-    const exportData = {
-      exportado: new Date().toISOString(),
-      total_usuarios: data.length,
-      picks: data.map(u => ({
-        id: u.id,
-        nombre: u.nombre_completo,
-        alias: u.nombre_usuario,
-        picks_data: u.picks_data
-      }))
-    };
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const d = await api("picks-export-json");
+    const blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `rosca-mundial-picks-${new Date().toISOString().slice(0,10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    showToast(`✅ Exportados ${data.length} usuarios con picks`, 'success');
+    showToast(`Exportados ${d.total_usuarios} usuarios`, 'success');
   } catch(e) { showToast('Error: ' + e.message, 'error'); }
 }
 
 async function exportarPicksCSV() {
-  showToast('⏳ Generando CSV...', 'success');
+  showToast('Generando CSV...', 'success');
   try {
-    const { data, error } = await supabase
-      .from('usuarios')
-      .select('id, nombre_completo, nombre_usuario, picks_data')
-      .eq('activo', true);
-    if (error) throw error;
-    const rows = [['ID','Nombre','Alias','Lev (partidos)','Killer (jugadores)','Carnicero','Banderin','Virgen','Pied','Mecha','Estado']];
-    data.forEach(u => {
-      const p = u.picks_data || {};
-      const levCount = Object.keys(p.lev || {}).length;
-      const killerCount = (p.killer || []).length;
-      const carniceroCount = (p.carnicero || []).length;
-      const banderinCount = (p.banderin || []).length;
-      const virgenCount = (p.virgen || []).length;
-      const piedCount = (p.pied || []).length;
-      const mechaCount = (p.mecha || []).length;
-      const completo = levCount >= 72 && killerCount >= 15 && carniceroCount >= 10;
-      rows.push([u.id, u.nombre_completo, u.nombre_usuario || '—', levCount, killerCount, carniceroCount, banderinCount, virgenCount, piedCount, mechaCount, completo ? 'COMPLETO' : 'INCOMPLETO']);
-    });
-    const csv = rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
+    const res = await fetch("/api/admin?action=picks-export-csv", { headers: { "X-Admin-Token": ADMIN_TOKEN } });
+    const blob = await res.blob();
     const a = document.createElement('a');
-    a.href = url;
-    a.download = `rosca-mundial-picks-resumen-${new Date().toISOString().slice(0,10)}.csv`;
+    a.href = URL.createObjectURL(blob);
+    a.download = `rosca-picks-${new Date().toISOString().slice(0,10)}.csv`;
     a.click();
-    URL.revokeObjectURL(url);
-    showToast(`✅ CSV generado — ${data.length} usuarios`, 'success');
+    showToast('CSV descargado', 'success');
   } catch(e) { showToast('Error: ' + e.message, 'error'); }
 }
 
@@ -1495,4 +1553,138 @@ function showToast(msg,type="") {
   t._to=setTimeout(()=>t.classList.remove("show"),3500);
 }
 document.addEventListener("keydown", e => { if(e.key==="Enter"&&document.getElementById("loginScreen")&&!document.getElementById("loginScreen").classList.contains("hidden")) doLogin(); });
+
+// NOTI dest show/hide
+document.addEventListener("DOMContentLoaded", () => {
+  const sel = document.getElementById("noti-dest");
+  if (sel) sel.addEventListener("change", () => {
+    const campo = document.getElementById("noti-usuario-field");
+    if (campo) campo.style.display = sel.value === "uno" ? "block" : "none";
+  });
+  const sqlEl = document.getElementById("sql-cupos-code");
+  if (sqlEl) sqlEl.textContent = SQL_CUPOS;
+});
+
+// ═══════════════════════════════════════════════════════════
+//  CUPOS
+// ═══════════════════════════════════════════════════════════
+const SQL_CUPOS = `-- EJECUTAR UNA VEZ en Supabase > SQL Editor
+
+CREATE TABLE IF NOT EXISTS cupos (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  usuario_id UUID NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+  numero INTEGER NOT NULL DEFAULT 1,
+  alias TEXT NOT NULL,
+  activo BOOLEAN NOT NULL DEFAULT FALSE,
+  picks_data JSONB DEFAULT '{}',
+  picks_completos BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  CONSTRAINT uq_usuario_cupo UNIQUE(usuario_id, numero)
+);
+CREATE INDEX IF NOT EXISTS idx_cupos_usuario ON cupos(usuario_id);
+ALTER TABLE cupos ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='cupos' AND policyname='cupos_propios') THEN
+    CREATE POLICY cupos_propios ON cupos FOR ALL TO authenticated
+      USING (usuario_id = auth.uid()) WITH CHECK (usuario_id = auth.uid());
+  END IF;
+END $$;
+ALTER TABLE ranking             ADD COLUMN IF NOT EXISTS cupo_id UUID REFERENCES cupos(id);
+ALTER TABLE ranking_killer      ADD COLUMN IF NOT EXISTS cupo_id UUID REFERENCES cupos(id);
+ALTER TABLE ranking_carnicero   ADD COLUMN IF NOT EXISTS cupo_id UUID REFERENCES cupos(id);
+ALTER TABLE ranking_banderin    ADD COLUMN IF NOT EXISTS cupo_id UUID REFERENCES cupos(id);
+ALTER TABLE ranking_virgen      ADD COLUMN IF NOT EXISTS cupo_id UUID REFERENCES cupos(id);
+ALTER TABLE ranking_pie_de_nina ADD COLUMN IF NOT EXISTS cupo_id UUID REFERENCES cupos(id);
+ALTER TABLE ranking_mechacorta  ADD COLUMN IF NOT EXISTS cupo_id UUID REFERENCES cupos(id);
+ALTER TABLE predicciones        ADD COLUMN IF NOT EXISTS cupo_id UUID REFERENCES cupos(id);
+ALTER TABLE picks_killer        ADD COLUMN IF NOT EXISTS cupo_id UUID REFERENCES cupos(id);
+ALTER TABLE picks_equipos       ADD COLUMN IF NOT EXISTS cupo_id UUID REFERENCES cupos(id);
+
+-- Crear cupo #1 para usuarios existentes
+INSERT INTO cupos (usuario_id, numero, alias, activo, picks_data, picks_completos)
+SELECT id, 1, nombre_usuario, activo, COALESCE(picks_data,'{}'), COALESCE(picks_completos,false)
+FROM usuarios
+WHERE id NOT IN (SELECT usuario_id FROM cupos WHERE numero = 1)
+ON CONFLICT DO NOTHING;`;
+
+let cuposData = [], cuposBusqueda = {}, cuposFiltroActivo = "";
+
+function copiarSQL() {
+  navigator.clipboard.writeText(SQL_CUPOS).then(() => showToast("SQL copiado!", "success")).catch(() => showToast("No se pudo copiar","error"));
+}
+
+async function cargarCupos() {
+  try {
+    const d = await api("cupos");
+    cuposData = d.cupos || [];
+    if (d.stats) {
+      document.getElementById("cs-total").textContent = d.stats.totalCupos;
+      document.getElementById("cs-activos").textContent = d.stats.totalActivos;
+      document.getElementById("cs-multi").textContent = d.stats.usuariosMulti;
+    }
+    document.getElementById("cupos-count").textContent = `${cuposData.length} cupos en el sistema`;
+    renderCuposTable(cuposData);
+  } catch(e) { showToast("Error cupos: "+e.message,"error"); }
+}
+
+function renderCuposTable(data) {
+  document.getElementById("tb-cupos").innerHTML = data.map((c,i) => `
+    <tr>
+      <td style="color:rgba(255,255,255,0.3);font-size:11px;">${i+1}</td>
+      <td><strong>${c.alias}</strong></td>
+      <td style="font-size:12px;color:rgba(255,255,255,0.5);">${c.usuario_id?.slice(0,8)}...</td>
+      <td><span class="pill pill-blue">Cupo #${c.numero}</span></td>
+      <td>${c.activo?'<span class="pill pill-green">Activo</span>':'<span class="pill pill-yellow">Inactivo</span>'}</td>
+      <td>${c.picks_completos?'<span class="pill pill-green">Completo</span>':'<span class="pill pill-gray">Incompleto</span>'}</td>
+      <td style="font-size:11px;color:rgba(255,255,255,0.35);">${fmtFecha(c.created_at)}</td>
+      <td>
+        <button class="btn btn-sm btn-navy" onclick="editarAliasCupo('${c.id}','${c.alias.replace(/'/g,"\\'").replace(/"/g,"&quot;")}')">✏️</button>
+        ${!c.activo?`<button class="btn btn-sm btn-green" onclick="activarCupo('${c.id}')">✓ Activar</button>`:""}
+      </td>
+    </tr>`).join("") || '<tr><td colspan="8" style="color:rgba(255,255,255,0.3);text-align:center;padding:20px;">Sin cupos — ejecuta el SQL primero</td></tr>';
+}
+
+function filtrarCuposUI(q) {
+  const filtered = cuposData.filter(c => (c.alias||"").toLowerCase().includes(q.toLowerCase())||c.usuario_id?.includes(q));
+  renderCuposTable(cuposFiltroActivo ? filtered.filter(c => cuposFiltroActivo==="activo"?c.activo:!c.activo) : filtered);
+}
+function filtrarCuposEstado(v) { cuposFiltroActivo=v; filtrarCuposUI(document.getElementById("cupos-q")?.value||""); }
+
+async function activarCupo(cupo_id) {
+  try { await api("cupos",{method:"PATCH",body:{cupo_id,activo:true}}); showToast("Cupo activado","success"); cargarCupos(); }
+  catch(e) { showToast("Error: "+e.message,"error"); }
+}
+async function editarAliasCupo(cupo_id, alias_actual) {
+  const nuevo = prompt("Nuevo alias:", alias_actual);
+  if (!nuevo||nuevo.trim()===alias_actual) return;
+  try { await api("cupos",{method:"PATCH",body:{cupo_id,alias:nuevo.trim()}}); showToast("Alias actualizado","success"); cargarCupos(); }
+  catch(e) { showToast("Error: "+e.message,"error"); }
+}
+function openModalAgregarCupo() {
+  document.getElementById("ac-correo").value="";
+  document.getElementById("ac-alias").value="";
+  document.getElementById("ac-usuario-encontrado").textContent="";
+  cuposBusqueda={};
+  document.getElementById("modalAgregarCupo").classList.add("show");
+}
+async function buscarUsuarioParaCupo(correo) {
+  const el = document.getElementById("ac-usuario-encontrado");
+  if (!correo||!correo.includes("@")) { el.textContent=""; cuposBusqueda={}; return; }
+  try {
+    const d = await api("usuarios?q="+encodeURIComponent(correo)+"&limit=1");
+    const u = d.usuarios?.[0];
+    if (u) { cuposBusqueda=u; el.textContent="✓ "+u.nombre+" (@"+(u.alias||"—")+")"; el.style.color="#4ADE80"; }
+    else    { cuposBusqueda={}; el.textContent="Usuario no encontrado"; el.style.color="#F87171"; }
+  } catch(e) { el.textContent="Error: "+e.message; }
+}
+async function crearCupoManual() {
+  if (!cuposBusqueda.id) { showToast("Busca y confirma el usuario primero","error"); return; }
+  const alias = document.getElementById("ac-alias").value.trim();
+  try {
+    await api("cupos",{method:"POST",body:{usuario_id:cuposBusqueda.id,alias:alias||undefined}});
+    closeModal("modalAgregarCupo");
+    showToast("Cupo creado y activado","success");
+    cargarCupos();
+  } catch(e) { showToast("Error: "+e.message,"error"); }
+}
 </script>
