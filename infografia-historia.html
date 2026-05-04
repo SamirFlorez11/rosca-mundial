@@ -1,0 +1,362 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=540">
+<title>Rosca Mundial — Historia IG</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+  body {
+    width: 540px; height: 960px;
+    overflow: hidden; position: relative;
+    background:
+      radial-gradient(ellipse 80% 55% at 50% 42%, rgba(255,255,255,0.09) 0%, transparent 62%),
+      linear-gradient(148deg,
+        #FFCC00 0%, #FFBB00 36%,
+        #0044CC 36%, #003BBB 66%,
+        #FF0A20 66%, #E8001B 100%
+      );
+  }
+
+  /* ── DECORATIVE RINGS ── */
+  .deco { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .ring { position: absolute; border-radius: 50%; animation: rotateSlow linear infinite; }
+  .ring-1 { width: 240px; height: 240px; top: -70px; left: -70px; animation-duration: 25s; border: 2px solid rgba(255,204,0,0.2); }
+  .ring-2 { width: 150px; height: 150px; top: -20px; left: -10px; animation-duration: 17s; animation-direction: reverse; border: 1px solid rgba(255,204,0,0.13); }
+  .ring-3 { width: 280px; height: 280px; bottom: -80px; right: -80px; animation-duration: 30s; border: 2px solid rgba(0,68,204,0.2); }
+  .ring-4 { width: 170px; height: 170px; bottom: -30px; right: -30px; animation-duration: 20s; animation-direction: reverse; border: 1px solid rgba(255,10,32,0.18); }
+  .ring-5 { width: 120px; height: 120px; top: 45%; right: -35px; animation-duration: 16s; border: 1px solid rgba(255,255,255,0.1); }
+  @keyframes rotateSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  /* ── FLOATING EMOJIS ── */
+  .fiesta { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .fiesta span { position: absolute; animation: floatP ease-in-out infinite; line-height: 1; }
+  @keyframes floatP {
+    0%,100% { transform: translateY(0) rotate(-11deg) scale(1); }
+    38%      { transform: translateY(-18px) rotate(9deg) scale(1.09); }
+    72%      { transform: translateY(10px) rotate(-4deg) scale(0.93); }
+  }
+
+  /* ── GRADIENT BORDER WRAP ── */
+  .story-wrap {
+    position: absolute; top: 16px; left: 10px;
+    padding: 3px; border-radius: 20px; z-index: 1;
+    background: linear-gradient(135deg, #FFCC00, #FF6600, #0044CC, #FF0A20, #FFCC00);
+    background-size: 300% 300%;
+    animation: borderShift 7s ease infinite;
+    box-shadow: 0 16px 60px rgba(0,0,0,0.7), 0 0 50px rgba(255,200,0,0.2);
+  }
+  @keyframes borderShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+  /* ── STORY CARD ── */
+  .story {
+    width: 516px; background: rgba(5,8,20,0.93);
+    border-radius: 18px; overflow: hidden;
+    display: flex; flex-direction: column;
+    backdrop-filter: blur(10px);
+  }
+
+  /* ── TRICOLOR ── */
+  .tricolor { height: 6px; background: linear-gradient(90deg, #FFCC00 33.33%, #0044CC 33.33% 66.66%, #FF0A20 66.66%); flex-shrink: 0; }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 20px 11px;
+    background: linear-gradient(135deg, rgba(8,14,30,0.98), rgba(12,18,40,0.95));
+    border-bottom: 1px solid rgba(255,204,0,0.13); flex-shrink: 0;
+    position: relative; overflow: hidden;
+  }
+  .header::after {
+    content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 180px;
+    background: linear-gradient(90deg, transparent, rgba(255,204,0,0.05));
+  }
+  .logo {
+    width: 50px; height: 50px; border-radius: 11px; object-fit: cover; flex-shrink: 0;
+    border: 2px solid rgba(255,204,0,0.6);
+    box-shadow: 0 0 22px rgba(255,204,0,0.32), 0 0 50px rgba(255,204,0,0.14);
+  }
+  .header-title {
+    font-size: 25px; font-weight: 900; letter-spacing: 3.5px; line-height: 1;
+    background: linear-gradient(90deg, #FFEE00 0%, #FFAA00 25%, #FF7700 50%, #FFAA00 75%, #FFEE00 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    animation: shimmer 3.5s linear infinite;
+  }
+  @keyframes shimmer { to { background-position: 200% center; } }
+  .header-sub { font-size: 8px; font-weight: 700; letter-spacing: 2px; color: rgba(255,255,255,0.28); margin-top: 3px; text-transform: uppercase; }
+
+  /* ── SECTION LABEL ── */
+  .sec-label {
+    font-size: 17px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase;
+    padding: 10px 16px 8px; display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    background: linear-gradient(90deg, rgba(255,204,0,0.1), rgba(0,68,204,0.06), transparent);
+    border-left: 4px solid;
+  }
+  .sec-label.gold  { border-color: #FFCC00; color: #FFDD44; text-shadow: 0 0 16px rgba(255,210,0,0.45); }
+  .sec-label.money { border-color: #22DD66; color: #44FF88; text-shadow: 0 0 16px rgba(34,221,102,0.4); }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.12), transparent); }
+
+  /* ── GRAND PRIZE GRID ── */
+  .grand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; padding: 0 11px 4px; flex-shrink: 0; }
+
+  /* Full-bleed: image fills entire card, text overlay top-left */
+  .grand-item {
+    border-radius: 11px; overflow: hidden;
+    position: relative; height: 170px;
+  }
+  .grand-item.g1 { border: 1px solid rgba(255,210,0,0.55); box-shadow: 0 0 25px rgba(255,210,0,0.14); }
+  .grand-item.g2 { border: 1px solid rgba(255,110,0,0.5);  box-shadow: 0 0 25px rgba(255,110,0,0.12); }
+  .grand-item.g3 { border: 1px solid rgba(40,130,255,0.5); box-shadow: 0 0 25px rgba(40,130,255,0.12); }
+  .grand-item.g4 { border: 1px solid rgba(190,100,255,0.5);box-shadow: 0 0 25px rgba(190,100,255,0.12); }
+
+  .grand-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+  }
+  .grand-img img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Gradient overlay for text legibility */
+  .grand-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(145deg,
+      rgba(0,0,0,0.72) 0%,
+      rgba(0,0,0,0.35) 45%,
+      rgba(0,0,0,0.06) 100%
+    );
+    z-index: 1;
+  }
+
+  /* Text overlay top-left */
+  .grand-label {
+    position: absolute; top: 0; left: 0;
+    padding: 10px 12px;
+    z-index: 2; text-align: left;
+  }
+  .grand-num {
+    font-size: 8px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase;
+    display: inline-block; padding: 2px 8px; border-radius: 20px; margin-bottom: 5px;
+  }
+  .grand-item.g1 .grand-num { color: #FFEE00; background: rgba(255,238,0,0.18); border: 1px solid rgba(255,238,0,0.5); text-shadow: 0 0 8px rgba(255,210,0,0.8); }
+  .grand-item.g2 .grand-num { color: #FF9040; background: rgba(255,144,64,0.18); border: 1px solid rgba(255,144,64,0.5); text-shadow: 0 0 8px rgba(255,120,0,0.8); }
+  .grand-item.g3 .grand-num { color: #60BBFF; background: rgba(96,187,255,0.18); border: 1px solid rgba(96,187,255,0.5); text-shadow: 0 0 8px rgba(40,150,255,0.8); }
+  .grand-item.g4 .grand-num { color: #DD88FF; background: rgba(221,136,255,0.18); border: 1px solid rgba(221,136,255,0.5); text-shadow: 0 0 8px rgba(190,80,255,0.8); }
+
+  .grand-name { font-size: 15px; font-weight: 900; color: #fff; line-height: 1.1; text-shadow: 0 2px 10px rgba(0,0,0,0.9); }
+  .grand-item.g1 .grand-name { background: linear-gradient(90deg,#FFE84D,#FFB800,#FF8800); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .grand-item.g2 .grand-name { background: linear-gradient(90deg,#FFAA70,#FF6800,#FF3800); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .grand-item.g3 .grand-name { background: linear-gradient(90deg,#88CCFF,#50AAFF,#5060FF); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .grand-item.g4 .grand-name { background: linear-gradient(90deg,#E890FF,#CC40FF,#AA10FF); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .grand-model { font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 3px; font-weight: 600; text-shadow: 0 1px 6px rgba(0,0,0,0.9); }
+
+  /* ── CASH PRIZES ── */
+  .cash-list { padding: 0 11px 6px; display: flex; flex-direction: column; gap: 5px; flex: 1; }
+
+  .cash-row {
+    display: flex; align-items: center; gap: 9px;
+    border-radius: 9px; padding: 9px 12px;
+    position: relative; overflow: hidden;
+  }
+  .cash-row::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, transparent 45%);
+    pointer-events: none; border-radius: 9px;
+  }
+  .cash-row::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px; border-radius: 4px 0 0 4px;
+  }
+  .cr-killer    { background: rgba(28,12,2,0.85); border: 1px solid rgba(255,165,0,0.25); }
+  .cr-carnicero { background: rgba(28,5,5,0.85);  border: 1px solid rgba(255,50,50,0.25); }
+  .cr-banderin  { background: rgba(4,12,34,0.85); border: 1px solid rgba(50,120,255,0.25); }
+  .cr-virgen    { background: rgba(4,22,8,0.85);  border: 1px solid rgba(30,200,70,0.25); }
+  .cr-pied      { background: rgba(28,4,20,0.85); border: 1px solid rgba(255,50,210,0.25); }
+  .cr-mecha     { background: rgba(14,6,30,0.85); border: 1px solid rgba(170,60,255,0.25); }
+
+  .cr-killer::before    { background: linear-gradient(180deg,#FFE840,#FF9000,#FF5000); }
+  .cr-carnicero::before { background: linear-gradient(180deg,#FF8888,#FF2020,#CC0000); }
+  .cr-banderin::before  { background: linear-gradient(180deg,#88CCFF,#3090FF,#0055EE); }
+  .cr-virgen::before    { background: linear-gradient(180deg,#88FF88,#20C820,#008800); }
+  .cr-pied::before      { background: linear-gradient(180deg,#FFB8FF,#FF40CC,#CC0099); }
+  .cr-mecha::before     { background: linear-gradient(180deg,#D8B0FF,#A840FF,#7700EE); }
+
+  /* money floating */
+  .money-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .money-bg span { position: absolute; font-size: 13px; opacity: 0.18; animation: floatUp 4s ease-in-out infinite; }
+  @keyframes floatUp { 0%,100%{transform:translateY(0) rotate(-8deg)} 50%{transform:translateY(-6px) rotate(8deg)} }
+
+  .cash-emoji { font-size: 22px; flex-shrink: 0; z-index: 1; filter: drop-shadow(0 1px 6px rgba(255,255,255,0.2)); }
+  .cash-body { flex: 1; z-index: 1; }
+  .cash-name { font-size: 14px; font-weight: 800; }
+  .cr-killer    .cash-name { background: linear-gradient(90deg,#FFE84D,#FFAA00,#FF6000); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .cr-carnicero .cash-name { background: linear-gradient(90deg,#FF9090,#FF2828,#CC0000); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .cr-banderin  .cash-name { background: linear-gradient(90deg,#A8DEFF,#40A0FF,#0060EE); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .cr-virgen    .cash-name { background: linear-gradient(90deg,#90FFA8,#18DC40,#009820); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .cr-pied      .cash-name { background: linear-gradient(90deg,#FFD8FF,#FF40D8,#EE00A0); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .cr-mecha     .cash-name { background: linear-gradient(90deg,#E8C8FF,#B850FF,#8800FF); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+  .cash-desc { font-size: 7.5px; color: rgba(255,255,255,0.3); font-weight: 500; margin-top: 1px; }
+  .cash-amount { z-index: 1; text-align: right; flex-shrink: 0; }
+  .cash-cop {
+    font-size: 21px; font-weight: 900; color: #FFDD00; line-height: 1;
+    text-shadow: 0 0 10px rgba(255,220,0,0.9), 0 0 24px rgba(255,180,0,0.55), 0 0 44px rgba(255,130,0,0.28);
+  }
+  .cash-unit { font-size: 8.5px; color: rgba(255,210,0,0.42); font-weight: 700; letter-spacing: 0.8px; }
+
+  /* ── NOTE ── */
+  .note {
+    margin: 0 11px 5px; flex-shrink: 0;
+    background: rgba(255,210,0,0.06); border: 1px solid rgba(255,210,0,0.26);
+    border-radius: 8px; padding: 6px 11px;
+    font-size: 8.5px; font-weight: 600; color: rgba(255,220,0,0.92); text-align: center; line-height: 1.5;
+    text-shadow: 0 0 10px rgba(255,200,0,0.3);
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 7px 18px 9px; flex-shrink: 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    background: rgba(0,0,0,0.3);
+  }
+  .f-url { font-size: 9px; font-weight: 700; letter-spacing: 1.8px; color: rgba(255,255,255,0.2); text-transform: uppercase; }
+  .f-event { font-size: 8.5px; font-weight: 700; color: rgba(255,215,0,0.5); letter-spacing: 0.5px; text-align: center; }
+  .f-date { font-size: 7.5px; color: rgba(255,255,255,0.17); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- ANILLOS DECORATIVOS -->
+<div class="deco">
+  <div class="ring ring-1"></div>
+  <div class="ring ring-2"></div>
+  <div class="ring ring-3"></div>
+  <div class="ring ring-4"></div>
+  <div class="ring ring-5"></div>
+</div>
+
+<!-- EMOJIS DE FIESTA -->
+<div class="fiesta">
+  <span style="left:1%;top:2%;animation-delay:0s;animation-duration:5.2s;font-size:30px">🎉</span>
+  <span style="left:3%;top:17%;animation-delay:1.1s;animation-duration:4.8s;font-size:22px">⭐</span>
+  <span style="left:1%;top:36%;animation-delay:1.9s;animation-duration:5.5s;font-size:26px">🎊</span>
+  <span style="left:2%;top:55%;animation-delay:0.4s;animation-duration:4.6s;font-size:20px">✨</span>
+  <span style="left:1%;top:73%;animation-delay:2.2s;animation-duration:5.8s;font-size:24px">🏆</span>
+  <span style="left:2%;top:89%;animation-delay:0.7s;animation-duration:4.3s;font-size:22px">🎈</span>
+  <span style="left:88%;top:3%;animation-delay:0.5s;animation-duration:5.1s;font-size:32px">🥳</span>
+  <span style="left:90%;top:19%;animation-delay:1.4s;animation-duration:4.7s;font-size:22px">💫</span>
+  <span style="left:87%;top:37%;animation-delay:0.9s;animation-duration:5.4s;font-size:26px">🎆</span>
+  <span style="left:90%;top:56%;animation-delay:2.1s;animation-duration:4.9s;font-size:20px">🌟</span>
+  <span style="left:88%;top:73%;animation-delay:0.3s;animation-duration:5.6s;font-size:24px">🎇</span>
+  <span style="left:89%;top:90%;animation-delay:1.2s;animation-duration:4.5s;font-size:18px">🎁</span>
+  <span style="left:38%;top:0.5%;animation-delay:1.5s;animation-duration:5.1s;font-size:18px">💥</span>
+  <span style="left:60%;top:97%;animation-delay:0.6s;animation-duration:4.8s;font-size:20px">🎊</span>
+</div>
+
+<!-- CARD CON BORDE DEGRADADO -->
+<div class="story-wrap">
+<div class="story">
+  <div class="tricolor"></div>
+
+  <div class="header">
+    <img src="/logo.png" alt="Rosca Mundial" class="logo">
+    <div>
+      <div class="header-title">ROSCA MUNDIAL</div>
+      <div class="header-sub">FIFA World Cup 2026 · Tabla de Premios</div>
+    </div>
+  </div>
+
+  <div class="sec-label gold">🏅 Premio Mayor — Ranking L·E·V</div>
+  <div class="grand-grid">
+    <div class="grand-item g1">
+      <div class="grand-img"><img src="/premio-1.jpg" alt="iPhone 17 Pro Max"></div>
+      <div class="grand-overlay"></div>
+      <div class="grand-label">
+        <div class="grand-num">🥇 1 LUGAR</div>
+        <div class="grand-name">iPhone 17<br>Pro Max</div>
+        <div class="grand-model">Apple · Titanio</div>
+      </div>
+    </div>
+    <div class="grand-item g2">
+      <div class="grand-img"><img src="/premio-2.png" alt="Bose S1 Pro+"></div>
+      <div class="grand-overlay"></div>
+      <div class="grand-label">
+        <div class="grand-num">🥈 2 LUGAR</div>
+        <div class="grand-name">Bose<br>S1 Pro+</div>
+        <div class="grand-model">Altavoz Portátil</div>
+      </div>
+    </div>
+    <div class="grand-item g3">
+      <div class="grand-img"><img src="/premio-3.jpg" alt="PlayStation 5"></div>
+      <div class="grand-overlay"></div>
+      <div class="grand-label">
+        <div class="grand-num">🥉 3 LUGAR</div>
+        <div class="grand-name">PlayStation 5</div>
+        <div class="grand-model">Consola + Control</div>
+      </div>
+    </div>
+    <div class="grand-item g4">
+      <div class="grand-img"><img src="/premio-4.png" alt="AirPods Pro 3"></div>
+      <div class="grand-overlay"></div>
+      <div class="grand-label">
+        <div class="grand-num">🏅 4 LUGAR</div>
+        <div class="grand-name">AirPods Pro 3</div>
+        <div class="grand-model">3ª Gen · ANC</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label money">💸 Premios en Efectivo</div>
+  <div class="cash-list">
+    <div class="cash-row cr-killer">
+      <div class="money-bg"><span style="left:70%;top:10%">💸</span><span style="left:84%;top:55%;font-size:10px;animation-delay:1.2s">💸</span></div>
+      <div class="cash-emoji">⚔️</div>
+      <div class="cash-body"><div class="cash-name">El Killer</div><div class="cash-desc">15 jugadores más G+A · máx 3 mismo equipo</div></div>
+      <div class="cash-amount"><div class="cash-cop">$1.000.000</div><div class="cash-unit">COP</div></div>
+    </div>
+    <div class="cash-row cr-carnicero">
+      <div class="money-bg"><span style="left:68%;top:15%;animation-delay:0.6s">💸</span><span style="left:82%;top:55%;font-size:10px;animation-delay:1.8s">💸</span></div>
+      <div class="cash-emoji">🔪</div>
+      <div class="cash-body"><div class="cash-name">El Carnicero</div><div class="cash-desc">10 equipos más tarjetas · 🟡=1pt 🔴=2pts</div></div>
+      <div class="cash-amount"><div class="cash-cop">$800.000</div><div class="cash-unit">COP</div></div>
+    </div>
+    <div class="cash-row cr-banderin">
+      <div class="money-bg"><span style="left:72%;top:20%;animation-delay:0.9s">💸</span></div>
+      <div class="cash-emoji">🚩</div>
+      <div class="cash-body"><div class="cash-name">El Banderín</div><div class="cash-desc">10 equipos más corners en el torneo</div></div>
+      <div class="cash-amount"><div class="cash-cop">$500.000</div><div class="cash-unit">COP</div></div>
+    </div>
+    <div class="cash-row cr-virgen">
+      <div class="money-bg"><span style="left:70%;top:12%;animation-delay:1.5s">💸</span></div>
+      <div class="cash-emoji">🕊️</div>
+      <div class="cash-body"><div class="cash-name">El Virgen</div><div class="cash-desc">10 equipos que anoten menos goles</div></div>
+      <div class="cash-amount"><div class="cash-cop">$400.000</div><div class="cash-unit">COP</div></div>
+    </div>
+    <div class="cash-row cr-pied">
+      <div class="money-bg"><span style="left:71%;top:18%;animation-delay:0.3s">💸</span></div>
+      <div class="cash-emoji">🎀</div>
+      <div class="cash-body"><div class="cash-name">El Pie de Niña</div><div class="cash-desc">10 equipos menos tarjetas · 🟡=1pt 🔴=2pts</div></div>
+      <div class="cash-amount"><div class="cash-cop">$300.000</div><div class="cash-unit">COP</div></div>
+    </div>
+    <div class="cash-row cr-mecha">
+      <div class="money-bg"><span style="left:69%;top:22%;animation-delay:2.0s">💸</span></div>
+      <div class="cash-emoji">✂️</div>
+      <div class="cash-body"><div class="cash-name">El Mechacorta</div><div class="cash-desc">10 equipos menos corners en el torneo</div></div>
+      <div class="cash-amount"><div class="cash-cop">$300.000</div><div class="cash-unit">COP</div></div>
+    </div>
+  </div>
+
+  <div class="note">💡 Un mismo participante puede ganar en múltiples categorías · Solo si se completan 400 cupos</div>
+
+  <div class="footer">
+    <div class="f-url">roscamundial.com</div>
+    <div><div class="f-event">FIFA WORLD CUP 2026</div><div class="f-date">11 Jun – 19 Jul 2026 · USA · CAN · MEX</div></div>
+    <div class="f-url">🇨🇴</div>
+  </div>
+</div>
+</div>
+
+</body>
+</html>

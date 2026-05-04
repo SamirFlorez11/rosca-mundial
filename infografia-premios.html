@@ -1,0 +1,407 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infografía Premios — Rosca Mundial</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+  body {
+    position: relative;
+    display: flex; align-items: flex-start; justify-content: center;
+    min-height: 100vh; padding: 44px 20px;
+    overflow-x: hidden;
+    background:
+      radial-gradient(ellipse 75% 55% at 50% 45%, rgba(255,255,255,0.09) 0%, transparent 65%),
+      linear-gradient(148deg,
+        #FFCC00 0%, #FFBB00 36%,
+        #0044CC 36%, #003BBB 66%,
+        #FF0A20 66%, #E8001B 100%
+      );
+  }
+
+  /* ── DECORATIVE RINGS ── */
+  .deco { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .ring {
+    position: absolute; border-radius: 50%;
+    animation: rotateSlow linear infinite;
+  }
+  .ring-1 { width: 320px; height: 320px; top: -100px; left: -100px; animation-duration: 28s; border: 2px solid rgba(255,204,0,0.22); }
+  .ring-2 { width: 200px; height: 200px; top: -30px; left: -20px; animation-duration: 19s; animation-direction: reverse; border: 1px solid rgba(255,204,0,0.14); }
+  .ring-3 { width: 380px; height: 380px; bottom: -120px; right: -120px; animation-duration: 32s; border: 2px solid rgba(0,68,204,0.22); }
+  .ring-4 { width: 240px; height: 240px; bottom: -50px; right: -50px; animation-duration: 22s; animation-direction: reverse; border: 1px solid rgba(255,10,32,0.2); }
+  .ring-5 { width: 160px; height: 160px; top: 42%; right: -50px; animation-duration: 18s; border: 1px solid rgba(255,255,255,0.12); }
+  .ring-6 { width: 140px; height: 140px; top: 28%; left: -45px; animation-duration: 15s; animation-direction: reverse; border: 1px solid rgba(255,255,255,0.1); }
+  @keyframes rotateSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  /* ── FLOATING EMOJIS ── */
+  .confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .confetti span { position: absolute; animation: floatEmoji ease-in-out infinite; line-height: 1; }
+  @keyframes floatEmoji {
+    0%,100% { transform: translateY(0) rotate(-12deg) scale(1); }
+    35%      { transform: translateY(-24px) rotate(10deg) scale(1.1); }
+    70%      { transform: translateY(13px) rotate(-5deg) scale(0.91); }
+  }
+
+  /* ── GRADIENT BORDER WRAP ── */
+  .card-wrap {
+    position: relative; z-index: 1;
+    padding: 3px; border-radius: 23px;
+    background: linear-gradient(135deg, #FFCC00, #FF6600, #0044CC, #FF0A20, #FFCC00);
+    background-size: 300% 300%;
+    animation: borderShift 7s ease infinite;
+    box-shadow: 0 24px 90px rgba(0,0,0,0.7), 0 0 60px rgba(255,200,0,0.2), 0 0 120px rgba(0,68,204,0.15);
+  }
+  @keyframes borderShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+  /* ── CARD ── */
+  .card {
+    width: 800px; background: rgba(5,8,20,0.93);
+    overflow: hidden; position: relative;
+    border-radius: 20px; backdrop-filter: blur(12px);
+  }
+
+  /* ── TRICOLOR ── */
+  .tricolor { height: 7px; background: linear-gradient(90deg, #FFCC00 33.33%, #0044CC 33.33% 66.66%, #FF0A20 66.66%); }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex; align-items: center; gap: 18px;
+    padding: 22px 36px 18px;
+    background: linear-gradient(135deg, rgba(8,14,30,0.98), rgba(12,18,40,0.95));
+    border-bottom: 1px solid rgba(255,204,0,0.15);
+    position: relative; overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute; top: 0; right: 0; bottom: 0; width: 250px;
+    background: linear-gradient(90deg, transparent, rgba(255,204,0,0.05));
+  }
+  .logo {
+    width: 64px; height: 64px; border-radius: 14px; object-fit: cover; flex-shrink: 0;
+    border: 2px solid rgba(255,204,0,0.6);
+    box-shadow: 0 0 30px rgba(255,204,0,0.35), 0 0 70px rgba(255,204,0,0.15);
+  }
+  .header-title {
+    font-size: 34px; font-weight: 900; letter-spacing: 5px; line-height: 1;
+    background: linear-gradient(90deg, #FFEE00 0%, #FFAA00 25%, #FF7700 50%, #FFAA00 75%, #FFEE00 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    animation: shimmer 3.5s linear infinite;
+  }
+  @keyframes shimmer { to { background-position: 200% center; } }
+  .header-sub { font-size: 10px; font-weight: 700; letter-spacing: 3px; color: rgba(255,255,255,0.3); margin-top: 5px; text-transform: uppercase; }
+
+  /* ── SECTION TITLES ── */
+  .sec-title {
+    font-size: 26px; font-weight: 900; letter-spacing: 4px; text-transform: uppercase;
+    padding: 20px 28px 14px; display: flex; align-items: center; gap: 14px;
+    background: linear-gradient(90deg, rgba(255,204,0,0.1), rgba(0,68,204,0.06), transparent);
+    border-left: 6px solid;
+  }
+  .sec-title.gold  { border-color: #FFCC00; color: #FFDD44; text-shadow: 0 0 20px rgba(255,210,0,0.45); }
+  .sec-title.money { border-color: #22DD66; color: #44FF88; text-shadow: 0 0 20px rgba(34,221,102,0.4); }
+  .sec-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.12), transparent); }
+
+  /* ── GRAND PRIZE GRID ── */
+  .grand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px 6px; }
+
+  /* Full-bleed card: image fills everything, text overlaid top-left */
+  .grand-item {
+    border-radius: 14px; overflow: hidden;
+    position: relative; height: 260px;
+  }
+  .grand-item.g1 { border: 1px solid rgba(255,210,0,0.6); box-shadow: 0 0 40px rgba(255,210,0,0.18); }
+  .grand-item.g2 { border: 1px solid rgba(255,110,0,0.55); box-shadow: 0 0 40px rgba(255,110,0,0.15); }
+  .grand-item.g3 { border: 1px solid rgba(40,130,255,0.55); box-shadow: 0 0 40px rgba(40,130,255,0.15); }
+  .grand-item.g4 { border: 1px solid rgba(190,100,255,0.55); box-shadow: 0 0 40px rgba(190,100,255,0.15); }
+
+  /* Image fills the entire card */
+  .grand-img-placeholder {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+  }
+  .grand-img-placeholder img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+
+  /* Dark gradient overlay so text is legible */
+  .grand-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(145deg,
+      rgba(0,0,0,0.72) 0%,
+      rgba(0,0,0,0.38) 45%,
+      rgba(0,0,0,0.08) 100%
+    );
+    z-index: 1;
+  }
+
+  /* Text in top-left corner over the image */
+  .grand-label {
+    position: absolute; top: 0; left: 0;
+    padding: 14px 16px;
+    z-index: 2; text-align: left;
+  }
+  .grand-num {
+    font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
+    display: inline-block; padding: 3px 10px; border-radius: 20px; margin-bottom: 7px;
+  }
+  .grand-item.g1 .grand-num { color: #FFEE00; background: rgba(255,238,0,0.18); border: 1px solid rgba(255,238,0,0.5); text-shadow: 0 0 10px rgba(255,210,0,0.8); }
+  .grand-item.g2 .grand-num { color: #FF9040; background: rgba(255,144,64,0.18); border: 1px solid rgba(255,144,64,0.5); text-shadow: 0 0 10px rgba(255,120,0,0.8); }
+  .grand-item.g3 .grand-num { color: #60BBFF; background: rgba(96,187,255,0.18); border: 1px solid rgba(96,187,255,0.5); text-shadow: 0 0 10px rgba(40,150,255,0.8); }
+  .grand-item.g4 .grand-num { color: #DD88FF; background: rgba(221,136,255,0.18); border: 1px solid rgba(221,136,255,0.5); text-shadow: 0 0 10px rgba(190,80,255,0.8); }
+
+  .grand-name { font-size: 20px; font-weight: 900; color: #fff; letter-spacing: 0.3px; line-height: 1.1; text-shadow: 0 2px 12px rgba(0,0,0,0.9); }
+  .grand-model { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 3px; font-weight: 600; text-shadow: 0 1px 6px rgba(0,0,0,0.8); }
+
+  /* ── CASH PRIZES ── */
+  .prizes-list { padding: 0 20px 14px; display: flex; flex-direction: column; gap: 8px; }
+
+  .prize-row {
+    display: flex; align-items: center; gap: 14px;
+    border-radius: 13px; padding: 15px 20px;
+    position: relative; overflow: hidden;
+  }
+  /* subtle inner shine */
+  .prize-row::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, transparent 45%);
+    pointer-events: none; border-radius: 13px;
+  }
+  .prize-row::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 5px; border-radius: 5px 0 0 5px;
+  }
+  .pr-killer    { background: rgba(28,12,2,0.85); border: 1px solid rgba(255,165,0,0.28); }
+  .pr-carnicero { background: rgba(28,5,5,0.85);  border: 1px solid rgba(255,50,50,0.28); }
+  .pr-banderin  { background: rgba(4,12,34,0.85);  border: 1px solid rgba(50,120,255,0.28); }
+  .pr-virgen    { background: rgba(4,22,8,0.85);   border: 1px solid rgba(30,200,70,0.28); }
+  .pr-pied      { background: rgba(28,4,20,0.85);  border: 1px solid rgba(255,50,210,0.28); }
+  .pr-mecha     { background: rgba(14,6,30,0.85);  border: 1px solid rgba(170,60,255,0.28); }
+
+  .pr-killer::before    { background: linear-gradient(180deg,#FFE840,#FF9000,#FF5000); }
+  .pr-carnicero::before { background: linear-gradient(180deg,#FF8888,#FF2020,#CC0000); }
+  .pr-banderin::before  { background: linear-gradient(180deg,#88CCFF,#3090FF,#0055EE); }
+  .pr-virgen::before    { background: linear-gradient(180deg,#88FF88,#20C820,#008800); }
+  .pr-pied::before      { background: linear-gradient(180deg,#FFB8FF,#FF40CC,#CC0099); }
+  .pr-mecha::before     { background: linear-gradient(180deg,#D8B0FF,#A840FF,#7700EE); }
+
+  .prize-emoji { font-size: 34px; flex-shrink: 0; z-index: 1; filter: drop-shadow(0 2px 10px rgba(255,255,255,0.25)); }
+  .prize-body { flex: 1; z-index: 1; }
+  .prize-name { font-size: 21px; font-weight: 800; letter-spacing: 0.3px; }
+  .pr-killer    .prize-name { background: linear-gradient(90deg,#FFE84D,#FFAA00,#FF6000); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .pr-carnicero .prize-name { background: linear-gradient(90deg,#FF9090,#FF2828,#CC0000); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .pr-banderin  .prize-name { background: linear-gradient(90deg,#A8DEFF,#40A0FF,#0060EE); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .pr-virgen    .prize-name { background: linear-gradient(90deg,#90FFA8,#18DC40,#009820); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .pr-pied      .prize-name { background: linear-gradient(90deg,#FFD8FF,#FF40D8,#EE00A0); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .pr-mecha     .prize-name { background: linear-gradient(90deg,#E8C8FF,#B850FF,#8800FF); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+  .prize-desc { font-size: 13px; color: rgba(255,255,255,0.38); margin-top: 2px; font-weight: 500; line-height: 1.4; }
+  .prize-amount { text-align: right; flex-shrink: 0; z-index: 1; }
+  .prize-cop {
+    font-size: 34px; font-weight: 900; color: #FFDD00; line-height: 1;
+    text-shadow:
+      0 0 12px rgba(255,220,0,0.9),
+      0 0 28px rgba(255,180,0,0.6),
+      0 0 55px rgba(255,130,0,0.3);
+  }
+  .prize-unit { font-size: 11px; color: rgba(255,210,0,0.45); font-weight: 700; letter-spacing: 1px; margin-top: 3px; }
+
+  /* ── NOTE ── */
+  .note {
+    margin: 0 20px 12px;
+    background: rgba(255,210,0,0.06);
+    border: 1px solid rgba(255,210,0,0.28);
+    border-radius: 10px; padding: 11px 18px;
+    font-size: 11px; font-weight: 600; color: rgba(255,220,0,0.92); line-height: 1.5; text-align: center;
+    text-shadow: 0 0 12px rgba(255,200,0,0.35);
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 28px 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    background: rgba(0,0,0,0.3);
+  }
+  .footer-url { font-size: 12px; font-weight: 700; letter-spacing: 2px; color: rgba(255,255,255,0.2); text-transform: uppercase; }
+  .footer-event { font-size: 11px; font-weight: 700; color: rgba(255,215,0,0.55); letter-spacing: 1px; text-align: center; }
+  .footer-date { font-size: 10px; color: rgba(255,255,255,0.18); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- ANILLOS DECORATIVOS -->
+<div class="deco">
+  <div class="ring ring-1"></div>
+  <div class="ring ring-2"></div>
+  <div class="ring ring-3"></div>
+  <div class="ring ring-4"></div>
+  <div class="ring ring-5"></div>
+  <div class="ring ring-6"></div>
+</div>
+
+<!-- EMOJIS DE FIESTA -->
+<div class="confetti">
+  <span style="left:1%;top:2%;animation-delay:0s;animation-duration:5.3s;font-size:38px">🎉</span>
+  <span style="left:4%;top:13%;animation-delay:1.0s;animation-duration:4.9s;font-size:28px">⭐</span>
+  <span style="left:1%;top:28%;animation-delay:1.9s;animation-duration:5.6s;font-size:32px">🎊</span>
+  <span style="left:3%;top:46%;animation-delay:0.4s;animation-duration:4.7s;font-size:24px">✨</span>
+  <span style="left:1%;top:65%;animation-delay:2.3s;animation-duration:5.9s;font-size:30px">🏆</span>
+  <span style="left:2%;top:82%;animation-delay:0.8s;animation-duration:4.4s;font-size:26px">🎈</span>
+  <span style="left:3%;top:95%;animation-delay:1.4s;animation-duration:5.1s;font-size:22px">💥</span>
+  <span style="left:93%;top:4%;animation-delay:0.5s;animation-duration:5.1s;font-size:36px">🥳</span>
+  <span style="left:95%;top:18%;animation-delay:1.5s;animation-duration:4.8s;font-size:26px">💫</span>
+  <span style="left:92%;top:35%;animation-delay:0.9s;animation-duration:5.4s;font-size:30px">🎆</span>
+  <span style="left:94%;top:53%;animation-delay:2.1s;animation-duration:4.9s;font-size:24px">🌟</span>
+  <span style="left:91%;top:70%;animation-delay:0.3s;animation-duration:5.7s;font-size:28px">🎇</span>
+  <span style="left:95%;top:86%;animation-delay:1.2s;animation-duration:4.6s;font-size:22px">🎁</span>
+  <span style="left:27%;top:0.8%;animation-delay:1.6s;animation-duration:5.2s;font-size:22px">🎊</span>
+  <span style="left:63%;top:1%;animation-delay:0.6s;animation-duration:4.5s;font-size:24px">⭐</span>
+  <span style="left:18%;top:97%;animation-delay:1.8s;animation-duration:5.3s;font-size:26px">🥳</span>
+  <span style="left:52%;top:97.5%;animation-delay:0.2s;animation-duration:4.8s;font-size:24px">🎉</span>
+  <span style="left:80%;top:97%;animation-delay:1.1s;animation-duration:5.0s;font-size:28px">💫</span>
+</div>
+
+<!-- CARD CON BORDE DEGRADADO -->
+<div class="card-wrap">
+<div class="card">
+  <div class="tricolor"></div>
+
+  <div class="header">
+    <img src="/logo.png" alt="Rosca Mundial" class="logo">
+    <div>
+      <div class="header-title">ROSCA MUNDIAL</div>
+      <div class="header-sub">FIFA World Cup 2026 · Tabla de Premios</div>
+    </div>
+  </div>
+
+  <div class="sec-title gold">🏅 Premio Mayor — Ranking L·E·V</div>
+  <div class="grand-grid">
+    <div class="grand-item g1">
+      <div class="grand-img-placeholder"><img src="/premio-1.jpg" alt="iPhone 17 Pro Max"></div>
+      <div class="grand-overlay"></div>
+      <div class="grand-label">
+        <div class="grand-num">🥇 1 LUGAR</div>
+        <div class="grand-name">iPhone 17<br>Pro Max</div>
+        <div class="grand-model">Apple · Titanio</div>
+      </div>
+    </div>
+    <div class="grand-item g2">
+      <div class="grand-img-placeholder"><img src="/premio-2.png" alt="Bose S1 Pro+"></div>
+      <div class="grand-overlay"></div>
+      <div class="grand-label">
+        <div class="grand-num">🥈 2 LUGAR</div>
+        <div class="grand-name">Bose<br>S1 Pro+</div>
+        <div class="grand-model">Altavoz Portátil</div>
+      </div>
+    </div>
+    <div class="grand-item g3">
+      <div class="grand-img-placeholder"><img src="/premio-3.jpg" alt="PlayStation 5"></div>
+      <div class="grand-overlay"></div>
+      <div class="grand-label">
+        <div class="grand-num">🥉 3 LUGAR</div>
+        <div class="grand-name">PlayStation 5</div>
+        <div class="grand-model">Consola + Control</div>
+      </div>
+    </div>
+    <div class="grand-item g4">
+      <div class="grand-img-placeholder"><img src="/premio-4.png" alt="AirPods Pro 3"></div>
+      <div class="grand-overlay"></div>
+      <div class="grand-label">
+        <div class="grand-num">🏅 4 LUGAR</div>
+        <div class="grand-name">AirPods Pro 3</div>
+        <div class="grand-model">3ª Gen · ANC</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-title money">💸 Premios en Efectivo</div>
+  <div class="prizes-list">
+    <div class="prize-row pr-killer">
+      <div class="prize-emoji">⚔️</div>
+      <div class="prize-body">
+        <div class="prize-name">El Killer</div>
+        <div class="prize-desc">15 jugadores que totalicen más G + A (Máx. 3 del mismo equipo)</div>
+      </div>
+      <div class="prize-amount">
+        <div class="prize-cop">$1.000.000</div>
+        <div class="prize-unit">COP EFECTIVO</div>
+      </div>
+    </div>
+    <div class="prize-row pr-carnicero">
+      <div class="prize-emoji">🔪</div>
+      <div class="prize-body">
+        <div class="prize-name">El Carnicero</div>
+        <div class="prize-desc">10 equipos que sumen más tarjetas · 🟡=1pt 🔴=2pts</div>
+      </div>
+      <div class="prize-amount">
+        <div class="prize-cop">$800.000</div>
+        <div class="prize-unit">COP EFECTIVO</div>
+      </div>
+    </div>
+    <div class="prize-row pr-banderin">
+      <div class="prize-emoji">🚩</div>
+      <div class="prize-body">
+        <div class="prize-name">El Banderín</div>
+        <div class="prize-desc">10 equipos que sumen más corners en el torneo</div>
+      </div>
+      <div class="prize-amount">
+        <div class="prize-cop">$500.000</div>
+        <div class="prize-unit">COP EFECTIVO</div>
+      </div>
+    </div>
+    <div class="prize-row pr-virgen">
+      <div class="prize-emoji">🕊️</div>
+      <div class="prize-body">
+        <div class="prize-name">El Virgen</div>
+        <div class="prize-desc">10 equipos que anoten menos goles en el torneo</div>
+      </div>
+      <div class="prize-amount">
+        <div class="prize-cop">$400.000</div>
+        <div class="prize-unit">COP EFECTIVO</div>
+      </div>
+    </div>
+    <div class="prize-row pr-pied">
+      <div class="prize-emoji">🎀</div>
+      <div class="prize-body">
+        <div class="prize-name">El Pie de Niña</div>
+        <div class="prize-desc">10 equipos que reciban menos tarjetas · 🟡=1pt 🔴=2pts</div>
+      </div>
+      <div class="prize-amount">
+        <div class="prize-cop">$300.000</div>
+        <div class="prize-unit">COP EFECTIVO</div>
+      </div>
+    </div>
+    <div class="prize-row pr-mecha">
+      <div class="prize-emoji">✂️</div>
+      <div class="prize-body">
+        <div class="prize-name">El Mechacorta</div>
+        <div class="prize-desc">10 equipos que sumen menos corners en el torneo</div>
+      </div>
+      <div class="prize-amount">
+        <div class="prize-cop">$300.000</div>
+        <div class="prize-unit">COP EFECTIVO</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    💡 Un mismo participante puede ganar en múltiples categorías simultáneamente · Solo se realiza si se completan los 400 cupos
+  </div>
+
+  <div class="footer">
+    <div class="footer-url">roscamundial.com</div>
+    <div>
+      <div class="footer-event">FIFA WORLD CUP 2026</div>
+      <div class="footer-date">11 Jun – 19 Jul 2026 · USA · CAN · MEX</div>
+    </div>
+    <div class="footer-url">🇨🇴 colombia</div>
+  </div>
+</div>
+</div>
+
+</body>
+</html>
