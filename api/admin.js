@@ -113,8 +113,10 @@ export default async function handler(req, res) {
         ...u,
         alias: u.nombre_usuario,
         nombre: u.nombre_completo,
-        pago_estado: pagosMap[u.id]?.estado || "SIN_PAGO",
-        pago_metodo: pagosMap[u.id]?.metodo_pago || null,
+        // Fallback: si activo=true pero no hay fila en pagos, mostrar como pagado
+        pago_estado: pagosMap[u.id]?.estado || (u.activo ? "APPROVED" : "SIN_PAGO"),
+        pago_metodo: pagosMap[u.id]?.metodo_pago || (u.activo ? "ACTIVADO_MANUAL" : null),
+        tiene_pago_registrado: !!pagosMap[u.id],
       }));
       return ok(res, { usuarios, total: parseInt(rCount.data?.count ?? 0) });
     }
@@ -392,6 +394,31 @@ export default async function handler(req, res) {
     } catch (e) {
       return err(res, `Error ejecutando sync: ${e.message}`, 500);
     }
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  REGISTRAR PAGO MANUAL — para usuarios activos sin fila en pagos
+  // ══════════════════════════════════════════════════════
+  if (action === "registrar-pago" && req.method === "POST") {
+    const { usuario_id } = req.body || {};
+    if (!usuario_id) return err(res, "Falta usuario_id");
+    // Verificar que el usuario existe y está activo
+    const rU = await sb("usuarios", { params: { id: `eq.${usuario_id}`, select: "id,nombre_completo,activo" } });
+    const usuario = rU.data?.[0];
+    if (!usuario) return err(res, "Usuario no encontrado");
+    // Insertar pago APPROVED
+    const rP = await sb("pagos", { method: "POST", body: {
+      usuario_id,
+      monto: 60000,
+      moneda: "COP",
+      estado: "APPROVED",
+      metodo_pago: "WOMPI_WEBHOOK_MANUAL",
+      wompi_transaction_id: `MANUAL_ADMIN_${Date.now()}`
+    }});
+    // Asegurar activo = true
+    await sb(`usuarios?id=eq.${usuario_id}`, { method: "PATCH", body: { activo: true } });
+    await log("pago_registrado_manual", { usuario_id, nombre: usuario.nombre_completo });
+    return ok(res, { mensaje: `Pago registrado para ${usuario.nombre_completo}` }, 201);
   }
 
   // ══════════════════════════════════════════════════════

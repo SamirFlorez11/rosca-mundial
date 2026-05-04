@@ -1169,9 +1169,10 @@ async function cargarUsuarios() {
         <td>${pillEstado(u.pago_estado)}</td>
         <td>${u.picks_completos?'<span class="pill pill-green">Completos</span>':'<span class="pill pill-yellow">Incompletos</span>'}</td>
         <td><label class="toggle"><input type="checkbox" ${u.activo?"checked":""} onchange="toggleUser('${u.id}',this.checked)"><span class="slider"></span></label></td>
-        <td>
+        <td style="display:flex;gap:4px;flex-wrap:wrap;">
           <button class="btn btn-sm btn-blue" onclick="verPicks('${u.id}','${u.nombre}')">Picks</button>
           <button class="btn btn-sm btn-navy" onclick="editarAliasDirecto('${u.nombre}','${u.alias||""}','${u.id}')">✏️</button>
+          ${!u.tiene_pago_registrado ? `<button class="btn btn-sm btn-green" onclick="registrarPagoManual('${u.id}','${u.nombre}',this)" title="Registrar pago ($60k)">💳 Pago</button>` : ""}
         </td>
       </tr>`).join("");
     const totalPags = Math.ceil(d.total/20);
@@ -1189,6 +1190,15 @@ function filtrarUsuarioPicks(v)  { userPicks=v;  userPage=1; cargarUsuarios(); }
 async function toggleUser(id, activo) {
   try { await api("usuarios", {method:"PATCH", body:{id, activo}}); showToast(`Usuario ${activo?"activado ✓":"desactivado"}`,"success"); }
   catch(e) { showToast("Error: "+e.message,"error"); }
+async function registrarPagoManual(id, nombre, btn) {
+  if (!confirm(`¿Registrar pago de $60.000 COP para ${nombre}?`)) return;
+  try {
+    await api("registrar-pago", {method:"POST", body:{usuario_id:id}});
+    showToast(`✓ Pago registrado para ${nombre}`, "success");
+    if (btn) btn.remove();
+    cargarUsuarios();
+  } catch(e) { showToast("Error: "+e.message, "error"); }
+}
 }
 function openModalCrearUsuario() { document.getElementById("modalCrearUsuario").classList.add("show"); }
 async function crearUsuarioManual() {
