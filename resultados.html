@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROSCA MUNDIAL — Resultados</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
+
+:root {
+  --bg:#0a0e1a; --card:#111827; --card2:#1a2235; --border:#1e2d45;
+  --text:#e8eaf0; --muted:#6b7a99; --amarillo:#FCD116; --azul:#003087; --rojo:#CE1126;
+}
+body.dia {
+  --bg:#f0f4f8; --card:#ffffff; --card2:#e8edf5;
+  --border:#c5d0e0; --text:#0f172a; --muted:#4a5568;
+  --amarillo:#1e3a8a; /* en modo día el amarillo se vuelve azul oscuro */
+}
+/* Overrides adicionales modo día para evitar amarillo sobre blanco */
+body.dia .nav-brand,
+body.dia .nav-title,
+body.dia .tab-btn.active,
+body.dia .cat-name,
+body.dia .row-name { color:#1e3a8a; }
+body.dia .tab-btn.active { border-bottom-color:#1e3a8a; }
+body.dia .gf-btn.active,
+body.dia .pf-btn.active,
+body.dia .btn-select.active { color:#1e3a8a; border-color:#1e3a8a; background:rgba(30,58,138,0.08); }
+body.dia .gf-btn:hover,
+body.dia .pf-btn:hover,
+body.dia .btn-select:hover { color:#1e3a8a; border-color:#1e3a8a; }
+body.dia .search-input:focus { border-color:#1e3a8a; }
+body.dia .row-card:hover { border-color:rgba(30,58,138,0.35); }
+body.dia .row-card.selected { border-color:#1e3a8a !important; background:rgba(30,58,138,0.05); }
+body.dia .row-card.expanded { border-color:rgba(30,58,138,0.3); }
+body.dia .row-card.expanded .row-arrow { color:#1e3a8a; }
+body.dia .detail-stat-val { color:#1e3a8a; }
+body.dia .pos-badge { background:rgba(30,58,138,0.1); color:#1e3a8a; }
+body.dia .summary-bar { background:rgba(30,58,138,0.07); border-color:rgba(30,58,138,0.25); }
+body.dia .summary-title { color:#1e3a8a; }
+body.dia .summary-stat span { color:#1e3a8a; }
+body { background:var(--bg); color:var(--text); min-height:100vh; }
+
+/* ── TRICOLOR ── */
+.tricolor { height:5px; background:linear-gradient(90deg,#FCD116 33.33%,#003087 33.33% 66.66%,#CE1126 66.66%); position:fixed; top:0; left:0; right:0; z-index:1000; }
+
+/* ── NAVBAR ── */
+.navbar {
+  position:fixed; top:5px; left:0; right:0; z-index:999;
+  background:rgba(10,14,26,0.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border); padding:0 20px; height:60px;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+}
+body.dia .navbar { background:rgba(240,244,248,0.97); }
+.nav-left  { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.nav-logo  { width:32px; height:32px; border-radius:7px; object-fit:cover; }
+.nav-brand { font-size:16px; font-weight:800; letter-spacing:2px; color:var(--amarillo); }
+.nav-brand span { display:block; font-size:9px; color:var(--muted); letter-spacing:0.5px; font-weight:600; }
+.nav-title { font-size:13px; font-weight:800; letter-spacing:2px; color:var(--amarillo); text-transform:uppercase; flex:1; text-align:center; }
+.nav-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.btn-nav {
+  font-weight:700; font-size:12px; letter-spacing:1px; padding:7px 14px; height:34px;
+  border-radius:8px; cursor:pointer; transition:all 0.2s; border:none; text-transform:uppercase;
+  display:inline-flex; align-items:center; gap:6px; white-space:nowrap; text-decoration:none;
+}
+.btn-back { background:none; border:1px solid var(--border); color:var(--muted); }
+.btn-back:hover { border-color:var(--amarillo); color:var(--amarillo); }
+.btn-tema {
+  background:none; border:1px solid var(--border); color:var(--muted);
+  width:34px; height:34px; border-radius:8px; cursor:pointer; font-size:16px;
+  display:flex; align-items:center; justify-content:center; transition:all 0.2s;
+}
+.btn-tema:hover { border-color:var(--amarillo); color:var(--amarillo); }
+
+/* ── TAB BAR ── */
+.tab-bar {
+  position:fixed; top:65px; left:0; right:0; z-index:998;
+  background:rgba(10,14,26,0.97); backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border); padding:0 20px;
+  display:flex; align-items:stretch; gap:0;
+}
+body.dia .tab-bar { background:rgba(240,244,248,0.97); }
+.tab-btn {
+  font-size:12px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+  padding:14px 20px; cursor:pointer; border:none; background:none;
+  color:var(--muted); border-bottom:3px solid transparent;
+  transition:all 0.2s; white-space:nowrap;
+}
+.tab-btn.active { color:var(--amarillo); border-bottom-color:var(--amarillo); }
+.tab-btn:hover:not(.active) { color:var(--text); }
+
+/* ── MAIN ── */
+.main { padding-top:120px; max-width:900px; margin:0 auto; padding-left:16px; padding-right:16px; padding-bottom:40px; }
+
+/* ── BANNER ── */
+.data-banner {
+  background:rgba(252,209,22,0.07); border:1px solid rgba(252,209,22,0.2);
+  border-radius:10px; padding:12px 16px; margin-bottom:14px;
+  font-size:12px; font-weight:600; color:rgba(252,209,22,0.8); line-height:1.6;
+}
+body.dia .data-banner { background:rgba(30,58,138,0.07); border-color:rgba(30,58,138,0.2); color:#1e3a8a; }
+.data-banner strong { color:var(--amarillo); }
+body.dia .data-banner strong { color:#003087; }
+
+/* ── TOOLBAR ── */
+.toolbar { display:flex; gap:8px; margin-bottom:12px; align-items:center; flex-wrap:wrap; }
+.search-wrap { position:relative; flex:1; min-width:180px; }
+.search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:14px; pointer-events:none; }
+.search-input {
+  width:100%; background:var(--card); border:1px solid var(--border); color:var(--text);
+  padding:10px 12px 10px 36px; border-radius:10px; font-size:13px; font-weight:500;
+  outline:none; transition:border-color 0.2s;
+}
+.search-input:focus { border-color:var(--amarillo); }
+.search-input::placeholder { color:var(--muted); }
+
+.btn-select {
+  font-size:12px; font-weight:700; letter-spacing:0.5px; padding:10px 14px;
+  border:1px solid var(--border); background:none; color:var(--muted);
+  border-radius:10px; cursor:pointer; transition:all 0.2s; white-space:nowrap;
+}
+.btn-select:hover, .btn-select.active {
+  border-color:var(--amarillo); color:var(--amarillo); background:rgba(252,209,22,0.07);
+}
+
+/* GROUP FILTER (equipos) */
+.group-filter { display:flex; gap:5px; margin-bottom:10px; flex-wrap:wrap; }
+.gf-btn {
+  font-size:11px; font-weight:700; padding:4px 10px; border-radius:6px;
+  border:1px solid var(--border); background:none; color:var(--muted);
+  cursor:pointer; transition:all 0.2s;
+}
+.gf-btn:hover, .gf-btn.active { background:rgba(252,209,22,0.1); border-color:var(--amarillo); color:var(--amarillo); }
+
+/* POS FILTER (jugadores) */
+.pos-filter { display:flex; gap:5px; margin-bottom:10px; flex-wrap:wrap; }
+.pf-btn {
+  font-size:11px; font-weight:700; padding:4px 10px; border-radius:6px;
+  border:1px solid var(--border); background:none; color:var(--muted);
+  cursor:pointer; transition:all 0.2s;
+}
+.pf-btn:hover, .pf-btn.active { background:rgba(252,209,22,0.1); border-color:var(--amarillo); color:var(--amarillo); }
+
+/* ── SUMMARY BAR ── */
+.summary-bar {
+  display:none; background:rgba(252,209,22,0.08); border:1px solid rgba(252,209,22,0.25);
+  border-radius:12px; padding:12px 16px; margin-bottom:12px;
+  align-items:center; gap:12px; flex-wrap:wrap;
+}
+.summary-bar.visible { display:flex; }
+.summary-title { font-size:12px; font-weight:800; color:var(--amarillo); letter-spacing:0.5px; flex-shrink:0; }
+.summary-stats { display:flex; gap:10px; flex:1; flex-wrap:wrap; }
+.summary-stat {
+  background:var(--card); border:1px solid var(--border); border-radius:8px;
+  padding:5px 12px; font-size:12px; font-weight:700; color:var(--text); white-space:nowrap;
+}
+.summary-stat span { color:var(--amarillo); margin-left:4px; }
+.btn-clear-sel {
+  font-size:11px; font-weight:700; padding:5px 12px; border-radius:8px;
+  border:1px solid rgba(206,17,38,0.3); background:none; color:#ef4444;
+  cursor:pointer; transition:all 0.2s; flex-shrink:0;
+}
+.btn-clear-sel:hover { background:rgba(239,68,68,0.1); }
+
+/* ── ROW CARD ── */
+.row-card {
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  margin-bottom:8px; overflow:hidden; cursor:pointer; transition:border-color 0.2s;
+}
+.row-card:hover { border-color:rgba(252,209,22,0.3); }
+.row-card.selected { border-color:var(--amarillo) !important; background:rgba(252,209,22,0.04); }
+.row-card.expanded { border-color:rgba(252,209,22,0.25); }
+
+.row-main {
+  display:flex; align-items:center; gap:12px; padding:12px 16px;
+}
+
+/* Checkbox */
+.row-check { width:20px; height:20px; flex-shrink:0; display:none; }
+.select-mode .row-check { display:flex; align-items:center; justify-content:center; }
+.check-box {
+  width:18px; height:18px; border:2px solid var(--border); border-radius:4px;
+  background:var(--card2); transition:all 0.2s; font-size:11px;
+  display:flex; align-items:center; justify-content:center;
+}
+.row-card.selected .check-box { border-color:var(--amarillo); background:var(--amarillo); color:#000; }
+
+/* Flag + info */
+.row-flag { font-size:22px; flex-shrink:0; line-height:1; }
+.row-info { flex:1; min-width:0; }
+.row-name { font-size:14px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.row-sub { font-size:11px; color:var(--muted); margin-top:2px; display:flex; align-items:center; gap:6px; }
+.pos-badge {
+  font-size:9px; font-weight:800; letter-spacing:1px; padding:1px 6px; border-radius:4px;
+  background:rgba(252,209,22,0.12); color:var(--amarillo); text-transform:uppercase;
+}
+.group-badge {
+  font-size:9px; font-weight:800; padding:1px 6px; border-radius:4px;
+  background:rgba(0,48,135,0.18); color:#7eaaff; letter-spacing:1px;
+}
+
+/* Stat chips inline */
+.row-stats { display:flex; gap:6px; flex-shrink:0; align-items:center; }
+.stat-chip {
+  font-size:11px; font-weight:700; color:var(--muted);
+  background:var(--card2); border:1px solid var(--border);
+  padding:3px 8px; border-radius:6px; white-space:nowrap;
+}
+.stat-chip b { color:var(--text); }
+.row-arrow { color:var(--muted); font-size:14px; flex-shrink:0; transition:transform 0.2s; }
+.row-card.expanded .row-arrow { transform:rotate(90deg); color:var(--amarillo); }
+
+/* ── EXPANDED DETAIL ── */
+.row-detail { display:none; border-top:1px solid var(--border); padding:14px 16px; background:var(--card2); }
+.row-card.expanded .row-detail { display:block; }
+
+.detail-stats-grid {
+  display:grid; gap:8px; margin-bottom:14px;
+}
+.detail-stats-grid.jugador-grid { grid-template-columns:repeat(3,1fr); }
+.detail-stats-grid.equipo-grid  { grid-template-columns:repeat(4,1fr); }
+
+.detail-stat {
+  background:var(--card); border:1px solid var(--border); border-radius:10px;
+  padding:10px 12px; text-align:center;
+}
+.detail-stat-val { font-size:28px; font-weight:900; color:var(--amarillo); line-height:1; }
+.detail-stat-lbl { font-size:10px; color:var(--muted); margin-top:4px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+
+.detail-table-title {
+  font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+  color:var(--muted); margin-bottom:8px;
+}
+.table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:8px; }
+.detail-table {
+  width:100%; border-collapse:collapse; font-size:12px; min-width:420px;
+}
+.detail-table th {
+  padding:8px 10px; text-align:left; font-size:10px; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase; color:var(--muted);
+  background:var(--card); border-bottom:1px solid var(--border); white-space:nowrap;
+}
+.detail-table td {
+  padding:9px 10px; border-bottom:1px solid rgba(30,45,69,0.5);
+  color:var(--muted); text-align:center;
+}
+.detail-table td:first-child { text-align:left; color:var(--text); font-weight:600; }
+.detail-table .empty-row td {
+  padding:20px; color:var(--muted); font-style:italic; font-size:11px; text-align:center; border:none;
+}
+
+/* ── MOBILE ── */
+@media (max-width:600px) {
+  .navbar { padding:0 12px; height:56px; }
+  .nav-brand { font-size:14px; }
+  .nav-brand span { display:none; }
+  .nav-title { font-size:11px; letter-spacing:1px; }
+  .btn-back .back-label { display:none; }
+  .tab-btn { padding:12px 14px; font-size:11px; }
+  .main { padding-top:115px; padding-left:10px; padding-right:10px; }
+  .row-stats { display:none; } /* chips hidden on mobile — visible in expanded */
+  .detail-stats-grid.jugador-grid { grid-template-columns:repeat(3,1fr); }
+  .detail-stats-grid.equipo-grid  { grid-template-columns:repeat(2,1fr); }
+  .detail-stat-val { font-size:22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="tricolor"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-left">
+    <img src="/logo.png" alt="Rosca Mundial" class="nav-logo">
+    <div class="nav-brand">ROSCA MUNDIAL<span>FIFA World Cup 2026</span></div>
+  </div>
+  <div class="nav-title">RESULTADOS</div>
+  <div class="nav-right">
+    <button class="btn-tema" id="btnTema" onclick="toggleTema()">🌙</button>
+    <a href="dashboard.html" class="btn-nav btn-back">← <span class="back-label">Dashboard</span></a>
+  </div>
+</nav>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <button class="tab-btn active" id="tabJug" onclick="switchTab('jugadores')">⚽ JUGADORES</button>
+  <button class="tab-btn"        id="tabEq"  onclick="switchTab('equipos')">🛡️ EQUIPOS</button>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- BANNER -->
+  <div class="data-banner">
+    📋 El listado de jugadores se actualizará el <strong>11 de mayo</strong> con las prelistas de convocados al mundial · Las listas definitivas se publicarán el <strong>26 de mayo</strong> cuando se completen las convocatorias oficiales.
+  </div>
+
+  <!-- ===== JUGADORES ===== -->
+  <section id="secJugadores">
+
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="searchJug" type="text" placeholder="Buscar jugador..." oninput="filtrarJug()">
+      </div>
+      <button class="btn-select" id="btnSelJug" onclick="toggleSeleccionJug()">☑️ Seleccionar varios</button>
+    </div>
+
+    <!-- Filtro posición -->
+    <div class="pos-filter" id="posFilter">
+      <button class="pf-btn active" data-pos="ALL" onclick="setPosFilter(this)">Todos</button>
+      <button class="pf-btn" data-pos="POR" onclick="setPosFilter(this)">🧤 Porteros</button>
+      <button class="pf-btn" data-pos="DEF" onclick="setPosFilter(this)">🛡️ Defensas</button>
+      <button class="pf-btn" data-pos="MED" onclick="setPosFilter(this)">⚙️ Mediocampistas</button>
+      <button class="pf-btn" data-pos="DEL" onclick="setPosFilter(this)">⚔️ Delanteros</button>
+    </div>
+
+    <!-- Summary bar jugadores -->
+    <div class="summary-bar" id="summaryJug">
+      <div class="summary-title" id="summaryJugTitle">0 jugadores</div>
+      <div class="summary-stats">
+        <div class="summary-stat">⚽ Goles <span>—</span></div>
+        <div class="summary-stat">🅰️ Asistencias <span>—</span></div>
+        <div class="summary-stat">🎯 G+A <span>—</span></div>
+      </div>
+      <button class="btn-clear-sel" onclick="clearSelJug()">✕ Limpiar</button>
+    </div>
+
+    <div id="listaJugadores"></div>
+  </section>
+
+  <!-- ===== EQUIPOS ===== -->
+  <section id="secEquipos" style="display:none">
+
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="searchEq" type="text" placeholder="Buscar equipo..." oninput="filtrarEq()">
+      </div>
+      <button class="btn-select" id="btnSelEq" onclick="toggleSeleccionEq()">☑️ Seleccionar varios</button>
+    </div>
+
+    <!-- Filtro grupo -->
+    <div class="group-filter" id="groupFilter">
+      <button class="gf-btn active" data-grupo="ALL" onclick="setGrupoFilter(this)">Todos</button>
+      <button class="gf-btn" data-grupo="A" onclick="setGrupoFilter(this)">Grupo A</button>
+      <button class="gf-btn" data-grupo="B" onclick="setGrupoFilter(this)">Grupo B</button>
+      <button class="gf-btn" data-grupo="C" onclick="setGrupoFilter(this)">Grupo C</button>
+      <button class="gf-btn" data-grupo="D" onclick="setGrupoFilter(this)">Grupo D</button>
+      <button class="gf-btn" data-grupo="E" onclick="setGrupoFilter(this)">Grupo E</button>
+      <button class="gf-btn" data-grupo="F" onclick="setGrupoFilter(this)">Grupo F</button>
+      <button class="gf-btn" data-grupo="G" onclick="setGrupoFilter(this)">Grupo G</button>
+      <button class="gf-btn" data-grupo="H" onclick="setGrupoFilter(this)">Grupo H</button>
+      <button class="gf-btn" data-grupo="I" onclick="setGrupoFilter(this)">Grupo I</button>
+      <button class="gf-btn" data-grupo="J" onclick="setGrupoFilter(this)">Grupo J</button>
+      <button class="gf-btn" data-grupo="K" onclick="setGrupoFilter(this)">Grupo K</button>
+      <button class="gf-btn" data-grupo="L" onclick="setGrupoFilter(this)">Grupo L</button>
+    </div>
+
+    <!-- Summary bar equipos -->
+    <div class="summary-bar" id="summaryEq">
+      <div class="summary-title" id="summaryEqTitle">0 equipos</div>
+      <div class="summary-stats">
+        <div class="summary-stat">⚽ Goles <span>—</span></div>
+        <div class="summary-stat">🟡 Amarillas <span>—</span></div>
+        <div class="summary-stat">🔴 Rojas <span>—</span></div>
+        <div class="summary-stat">🔵 Corners <span>—</span></div>
+      </div>
+      <button class="btn-clear-sel" onclick="clearSelEq()">✕ Limpiar</button>
+    </div>
+
+    <div id="listaEquipos"></div>
+  </section>
+
+</main>
+
+<script src="/datos.js"></script>
+<script>
+// TODO: conectar con Supabase cuando inicie el mundial (11 jun 2026)
+
+// ── DATOS ──────────────────────────────────────────────────────────────────
+// Datos desde /datos.js (fuente única)
+const JUGADORES = JUGADORES_PRELISTA; // alias para este archivo
+
+const EQ_MAP = {};
+EQUIPOS.forEach(e => EQ_MAP[e.id] = e);
+
+// ── STATE ────────────────────────────────────────────────────────────────
+let selJug = new Set(), selEq = new Set();
+let modeJug = false, modeEq = false;
+let posFilter = 'ALL', grupoFilter = 'ALL';
+let expandedJug = null, expandedEq = null;
+
+// ── RENDER JUGADORES ─────────────────────────────────────────────────────
+function renderJugadores() {
+  const q   = document.getElementById('searchJug').value.trim().toLowerCase();
+  const sel = modeJug;
+  const list = JUGADORES.filter(j => {
+    if (posFilter !== 'ALL' && j.pos !== posFilter) return false;
+    if (q && !j.nombre.toLowerCase().includes(q) && !(EQ_MAP[j.equipo]?.nombre.toLowerCase().includes(q))) return false;
+    return true;
+  });
+
+  const eq = EQ_MAP;
+  document.getElementById('listaJugadores').innerHTML = list.map(j => {
+    const team = eq[j.equipo];
+    const isSel = selJug.has(j.id);
+    const isExp = expandedJug === j.id;
+    return `
+    <div class="row-card${isSel?' selected':''}${isExp?' expanded':''} ${sel?'select-mode':''}"
+         id="jug-${j.id}" onclick="clickJug('${j.id}')">
+      <div class="row-main">
+        <div class="row-check"><div class="check-box">${isSel?'✓':''}</div></div>
+        <div class="row-flag">${team?.flag||''}</div>
+        <div class="row-info">
+          <div class="row-name">${j.nombre}</div>
+          <div class="row-sub">
+            <span class="pos-badge">${j.pos}</span>
+            <span>${team?.nombre||''}</span>
+          </div>
+        </div>
+        <div class="row-stats">
+          <div class="stat-chip">⚽ <b>—</b></div>
+          <div class="stat-chip">🅰️ <b>—</b></div>
+          <div class="stat-chip">🎯 <b>—</b></div>
+        </div>
+        <div class="row-arrow">›</div>
+      </div>
+      <div class="row-detail">
+        <div class="detail-stats-grid jugador-grid">
+          <div class="detail-stat"><div class="detail-stat-val">—</div><div class="detail-stat-lbl">⚽ Goles</div></div>
+          <div class="detail-stat"><div class="detail-stat-val">—</div><div class="detail-stat-lbl">🅰️ Asistencias</div></div>
+          <div class="detail-stat"><div class="detail-stat-val">—</div><div class="detail-stat-lbl">🎯 G + A</div></div>
+        </div>
+        <div class="detail-table-title">📋 Por partido</div>
+        <div class="table-scroll">
+          <table class="detail-table">
+            <thead><tr>
+              <th>Partido</th><th>Rival</th><th>Fecha</th><th>Min.</th><th>Goles</th><th>Asist.</th>
+            </tr></thead>
+            <tbody><tr class="empty-row">
+              <td colspan="6">— Sin datos · Disponible desde el 11 de junio de 2026 —</td>
+            </tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  }).join('') || '<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px">No se encontraron jugadores</div>';
+}
+
+// ── RENDER EQUIPOS ───────────────────────────────────────────────────────
+function renderEquipos() {
+  const q = document.getElementById('searchEq').value.trim().toLowerCase();
+  const list = EQUIPOS.filter(e => {
+    if (grupoFilter !== 'ALL' && e.grupo !== grupoFilter) return false;
+    if (q && !e.nombre.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  document.getElementById('listaEquipos').innerHTML = list.map(e => {
+    const isSel = selEq.has(e.id);
+    const isExp = expandedEq === e.id;
+    return `
+    <div class="row-card${isSel?' selected':''}${isExp?' expanded':''} ${modeEq?'select-mode':''}"
+         id="eq-${e.id}" onclick="clickEq('${e.id}')">
+      <div class="row-main">
+        <div class="row-check"><div class="check-box">${isSel?'✓':''}</div></div>
+        <div class="row-flag">${e.flag}</div>
+        <div class="row-info">
+          <div class="row-name">${e.nombre}</div>
+          <div class="row-sub"><span class="group-badge">Grupo ${e.grupo}</span></div>
+        </div>
+        <div class="row-stats">
+          <div class="stat-chip">⚽ <b>—</b></div>
+          <div class="stat-chip">🟡 <b>—</b></div>
+          <div class="stat-chip">🔴 <b>—</b></div>
+          <div class="stat-chip">🔵 <b>—</b></div>
+        </div>
+        <div class="row-arrow">›</div>
+      </div>
+      <div class="row-detail">
+        <div class="detail-stats-grid equipo-grid">
+          <div class="detail-stat"><div class="detail-stat-val">—</div><div class="detail-stat-lbl">⚽ Goles</div></div>
+          <div class="detail-stat"><div class="detail-stat-val">—</div><div class="detail-stat-lbl">🟡 Amarillas</div></div>
+          <div class="detail-stat"><div class="detail-stat-val">—</div><div class="detail-stat-lbl">🔴 Rojas</div></div>
+          <div class="detail-stat"><div class="detail-stat-val">—</div><div class="detail-stat-lbl">🔵 Corners</div></div>
+        </div>
+        <div class="detail-table-title">📋 Por partido</div>
+        <div class="table-scroll">
+          <table class="detail-table">
+            <thead><tr>
+              <th>Partido</th><th>Rival</th><th>Fecha</th><th>Goles</th><th>🟡</th><th>🔴</th><th>Corners</th>
+            </tr></thead>
+            <tbody><tr class="empty-row">
+              <td colspan="7">— Sin datos · Disponible desde el 11 de junio de 2026 —</td>
+            </tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  }).join('') || '<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px">No se encontraron equipos</div>';
+}
+
+// ── CLICK HANDLERS ───────────────────────────────────────────────────────
+function clickJug(id) {
+  if (modeJug) {
+    if (selJug.has(id)) selJug.delete(id); else selJug.add(id);
+    updateSummaryJug();
+    renderJugadores();
+  } else {
+    expandedJug = expandedJug === id ? null : id;
+    renderJugadores();
+  }
+}
+function clickEq(id) {
+  if (modeEq) {
+    if (selEq.has(id)) selEq.delete(id); else selEq.add(id);
+    updateSummaryEq();
+    renderEquipos();
+  } else {
+    expandedEq = expandedEq === id ? null : id;
+    renderEquipos();
+  }
+}
+
+// ── MULTI-SELECT ─────────────────────────────────────────────────────────
+function toggleSeleccionJug() {
+  modeJug = !modeJug;
+  document.getElementById('btnSelJug').classList.toggle('active', modeJug);
+  if (!modeJug) { selJug.clear(); updateSummaryJug(); }
+  expandedJug = null;
+  renderJugadores();
+}
+function toggleSeleccionEq() {
+  modeEq = !modeEq;
+  document.getElementById('btnSelEq').classList.toggle('active', modeEq);
+  if (!modeEq) { selEq.clear(); updateSummaryEq(); }
+  expandedEq = null;
+  renderEquipos();
+}
+function clearSelJug() { selJug.clear(); updateSummaryJug(); renderJugadores(); }
+function clearSelEq()  { selEq.clear(); updateSummaryEq(); renderEquipos(); }
+
+function updateSummaryJug() {
+  const n = selJug.size;
+  const bar = document.getElementById('summaryJug');
+  bar.classList.toggle('visible', n >= 2);
+  document.getElementById('summaryJugTitle').textContent = n + ' jugador' + (n !== 1 ? 'es' : '') + ' seleccionado' + (n !== 1 ? 's' : '');
+}
+function updateSummaryEq() {
+  const n = selEq.size;
+  const bar = document.getElementById('summaryEq');
+  bar.classList.toggle('visible', n >= 2);
+  document.getElementById('summaryEqTitle').textContent = n + ' equipo' + (n !== 1 ? 's' : '') + ' seleccionado' + (n !== 1 ? 's' : '');
+}
+
+// ── FILTROS ──────────────────────────────────────────────────────────────
+function filtrarJug() { expandedJug = null; renderJugadores(); }
+function filtrarEq()  { expandedEq = null;  renderEquipos();  }
+
+function setPosFilter(btn) {
+  posFilter = btn.dataset.pos;
+  document.querySelectorAll('.pf-btn').forEach(b => b.classList.toggle('active', b === btn));
+  expandedJug = null; renderJugadores();
+}
+function setGrupoFilter(btn) {
+  grupoFilter = btn.dataset.grupo;
+  document.querySelectorAll('.gf-btn').forEach(b => b.classList.toggle('active', b === btn));
+  expandedEq = null; renderEquipos();
+}
+
+// ── TABS ─────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.getElementById('secJugadores').style.display = tab === 'jugadores' ? '' : 'none';
+  document.getElementById('secEquipos').style.display   = tab === 'equipos'   ? '' : 'none';
+  document.getElementById('tabJug').classList.toggle('active', tab === 'jugadores');
+  document.getElementById('tabEq').classList.toggle('active',  tab === 'equipos');
+}
+
+// ── TEMA ─────────────────────────────────────────────────────────────────
+function toggleTema() {
+  const esDia = document.body.classList.toggle('dia');
+  document.getElementById('btnTema').textContent = esDia ? '☀️' : '🌙';
+  localStorage.setItem('rosca-tema', esDia ? 'dia' : 'noche');
+}
+(function() {
+  const t = localStorage.getItem('rosca-tema');
+  if (t === 'dia') {
+    document.body.classList.add('dia');
+    const btn = document.getElementById('btnTema');
+    if (btn) btn.textContent = '☀️';
+  }
+})();
+
+// ── INIT ─────────────────────────────────────────────────────────────────
+renderJugadores();
+renderEquipos();
+</script>
+</body>
+</html>

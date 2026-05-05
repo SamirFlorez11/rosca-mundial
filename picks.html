@@ -1380,9 +1380,8 @@ function mostrarAlertaError(msg) {
   setTimeout(() => toast.remove(), 2500);
 }
 function cerrarModalConfirmar() { document.getElementById('modalConfirmar').classList.remove('open'); }
-function ejecutarConfirmar() {
+async function ejecutarConfirmar() {
   cerrarModalConfirmar();
-  const esCatActiva = catActiva !== null;
   const nombreCat = {
     lev: 'Predicciones L/E/V',
     killer: 'El Killer',
@@ -1394,12 +1393,31 @@ function ejecutarConfirmar() {
   };
   const cat = catActiva || '__todos__';
   const nombre = nombreCat[cat] || 'todos';
-  // Guardar en Supabase
+
+  // Mostrar spinner mientras se guarda
+  const spinner = document.createElement('div');
+  spinner.id = 'save-spinner';
+  spinner.style.cssText = 'position:fixed;top:90px;left:50%;transform:translateX(-50%);background:rgba(0,48,135,0.92);color:#FCD116;border-radius:10px;padding:12px 24px;z-index:9999;font-family:Poppins,sans-serif;font-weight:700;font-size:14px;';
+  spinner.textContent = '💾 Guardando picks...';
+  document.body.appendChild(spinner);
+
+  let ok = true;
   if (window.guardarPicksSupabase) {
-    window.guardarPicksSupabase(cat).then(ok => {
-      if (!ok) console.error('Error guardando picks en Supabase');
-    });
+    try {
+      ok = await window.guardarPicksSupabase(cat);
+    } catch (e) {
+      console.error('Error guardando picks:', e);
+      ok = false;
+    }
   }
+
+  spinner.remove();
+
+  if (!ok) {
+    mostrarAlertaError('Error al guardar. Verifica tu conexión e intenta de nuevo.');
+    return;
+  }
+
   mostrarAlertaConfirmacion(nombre);
   setTimeout(() => volverAlMenu(), 2200);
 }
@@ -1617,85 +1635,91 @@ function mostrarCupoIndicador(cupo) {
   ind.textContent = 'Editando: ' + cupo.alias + ' (Cupo #' + cupo.numero + ') — Vuelve al Dashboard para cambiar de cupo';
 }
 
-// ── Guardar picks (Supabase para usuarios, localStorage para invitados) ────
+// ── Guardar picks via API (usa SERVICE_KEY server-side, bypasses RLS) ────────
 window.guardarPicksSupabase = async function(cat) {
   const { data: { session } } = await supabase.auth.getSession();
 
-  if (!session) {
-    const current = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
-    if (cat === '__todos__' || cat === 'lev')       current.lev       = STATE.lev;
-    if (cat === '__todos__' || cat === 'killer')     current.killer    = STATE.killer;
-    if (cat === '__todos__' || cat === 'carnicero')  current.carnicero = STATE.carnicero;
-    if (cat === '__todos__' || cat === 'banderin')   current.banderin  = STATE.banderin;
-    if (cat === '__todos__' || cat === 'virgen')     current.virgen    = STATE.virgen;
-    if (cat === '__todos__' || cat === 'pied')       current.pied      = STATE.pied;
-    if (cat === '__todos__' || cat === 'mecha')      current.mecha     = STATE.mecha;
-    localStorage.setItem(LS_KEY, JSON.stringify(current));
-    return true;
-  }
+  // ── Siempre guardar en localStorage como respaldo ─────────────────────────
+  const lsData = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+  if (cat === '__todos__' || cat === 'lev')       lsData.lev       = STATE.lev;
+  if (cat === '__todos__' || cat === 'killer')     lsData.killer    = STATE.killer;
+  if (cat === '__todos__' || cat === 'carnicero')  lsData.carnicero = STATE.carnicero;
+  if (cat === '__todos__' || cat === 'banderin')   lsData.banderin  = STATE.banderin;
+  if (cat === '__todos__' || cat === 'virgen')     lsData.virgen    = STATE.virgen;
+  if (cat === '__todos__' || cat === 'pied')       lsData.pied      = STATE.pied;
+  if (cat === '__todos__' || cat === 'mecha')      lsData.mecha     = STATE.mecha;
+  localStorage.setItem(LS_KEY, JSON.stringify(lsData));
 
-  const user = session.user;
+  if (!session) return true; // invitado: solo localStorage
 
-  const mezclar = (base) => {
-    const n = { ...base };
-    if (cat === '__todos__' || cat === 'lev')       n.lev       = STATE.lev;
-    if (cat === '__todos__' || cat === 'killer')     n.killer    = STATE.killer;
-    if (cat === '__todos__' || cat === 'carnicero')  n.carnicero = STATE.carnicero;
-    if (cat === '__todos__' || cat === 'banderin')   n.banderin  = STATE.banderin;
-    if (cat === '__todos__' || cat === 'virgen')     n.virgen    = STATE.virgen;
-    if (cat === '__todos__' || cat === 'pied')       n.pied      = STATE.pied;
-    if (cat === '__todos__' || cat === 'mecha')      n.mecha     = STATE.mecha;
-    return n;
-  };
-  const esCompleto = (d) =>
-    Object.keys(d.lev||{}).length >= 72 &&
-    (d.killer||[]).length >= 15 &&
-    (d.carnicero||[]).length >= 10;
-
-  // ── Intentar guardar en cupo activo ──────────────────────────────────────
-  const cupo_id = await getCupoIdActivo(user.id);
-  if (cupo_id) {
-    const { data: cupoActual } = await supabase
-      .from('cupos').select('picks_data,numero').eq('id', cupo_id).maybeSingle();
-    if (cupoActual) {
-      const nuevo = mezclar(cupoActual.picks_data || {});
-      const completo = esCompleto(nuevo);
-      const { error } = await supabase
-        .from('cupos').update({ picks_data: nuevo, picks_completos: completo }).eq('id', cupo_id);
-      if (!error) {
-        await supabase.from('usuarios')
-          .update({ picks_data: nuevo, picks_completos: completo }).eq('id', user.id);
-        return true;
-      }
-    } else {
-      localStorage.removeItem(CUPO_KEY);
+  // ── Guardar en Supabase via API (SERVICE_KEY, no afecta RLS) ─────────────
+  try {
+    const state = {
+      lev: STATE.lev, killer: STATE.killer, carnicero: STATE.carnicero,
+      banderin: STATE.banderin, virgen: STATE.virgen, pied: STATE.pied, mecha: STATE.mecha
+    };
+    const res = await fetch('/api/picks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify({ cat, state })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      console.error('Error API picks:', data.error);
+      return false;
     }
+    return true;
+  } catch (e) {
+    console.error('Error guardando picks:', e);
+    return false;
   }
-
-  // ── Fallback: guardar directo en usuarios.picks_data ────────────────────
-  const { data: actual } = await supabase
-    .from('usuarios').select('picks_data').eq('id', user.id).single();
-  const nuevo = mezclar(actual?.picks_data || {});
-  const completo = esCompleto(nuevo);
-  const { error } = await supabase
-    .from('usuarios').update({ picks_data: nuevo, picks_completos: completo }).eq('id', user.id);
-  return !error;
 };
 
 // ── Inicializar ────────────────────────────────────────────────────────────
+function tienePicks(data) {
+  if (!data) return false;
+  return Object.keys(data.lev || {}).length > 0 ||
+         (data.killer || []).length > 0 ||
+         (data.carnicero || []).length > 0;
+}
+
 (async () => {
   const perfil = await verificarAuth();
   if (!perfil) return;
+
   if (perfil.id && !perfil.esInvitado) {
+    // 1. Intentar cargar desde API (servidor con SERVICE_KEY)
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const r = await fetch('/api/picks', {
+          headers: { Authorization: `Bearer ${session.access_token}` }
+        });
+        if (r.ok) {
+          const { picks_data } = await r.json();
+          if (tienePicks(picks_data)) { cargarPicksEnState(picks_data); return; }
+        }
+      }
+    } catch (e) { console.warn('No se pudo cargar picks desde API:', e); }
+
+    // 2. Fallback: cupo activo
     const cupo = await getCupoInfo(perfil.id);
-    const cupoTienePicks = cupo?.picks_data && (
-      Object.keys(cupo.picks_data.lev || {}).length > 0 ||
-      (cupo.picks_data.killer || []).length > 0 ||
-      (cupo.picks_data.carnicero || []).length > 0
-    );
     if (cupo) mostrarCupoIndicador(cupo);
-    if (cupoTienePicks) { cargarPicksEnState(cupo.picks_data); return; }
+    if (tienePicks(cupo?.picks_data)) { cargarPicksEnState(cupo.picks_data); return; }
+
+    // 3. Fallback: usuarios.picks_data del perfil
+    if (tienePicks(perfil.picks_data)) { cargarPicksEnState(perfil.picks_data); return; }
   }
+
+  // 4. Último fallback: localStorage (invitado o sin picks en BD)
+  const lsData = localStorage.getItem(LS_KEY);
+  if (lsData) {
+    try { cargarPicksEnState(JSON.parse(lsData)); return; } catch (_) {}
+  }
+
   cargarPicksEnState(perfil.picks_data);
 })();
 </script>
