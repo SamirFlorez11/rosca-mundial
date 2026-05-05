@@ -37,91 +37,170 @@ async function sportmonksQuery(endpoint) {
 
 // =============================================
 // GESTIÓN AUTOMÁTICA DE FASES
-// Se ejecuta al inicio de cada cron
+// Se ejecuta al inicio de cada cron (cada 2 min)
+//
+// REGLA PRINCIPAL: Una vez que el cron cierra una fase (cerrada_en queda
+// registrado), NUNCA la vuelve a abrir automáticamente. El admin puede
+// reabrirla manualmente desde el panel.
+//
+// Valores esperados en partidos.fase (ajustar si Sportmonks usa otros nombres):
+//   'grupos' | '16avos' | '8vos' | 'cuartos' | 'semis' | 'tercer_puesto' | 'final'
 // =============================================
 async function gestionarFasesAutomatico() {
   console.log('🔓 Verificando fases automáticas...');
   try {
     const ahora = new Date();
 
-    // Fechas clave del Mundial 2026 (UTC-5 Colombia)
-    // Convertidas a UTC sumando 5 horas
-    const FASES = [
-      {
-        id: null, // se busca por nombre
-        nombre: 'Picks Iniciales',
-        apertura: new Date('2026-05-12T05:00:00Z'), // 12 mayo 00:00 COL
-        cierre:   new Date('2026-06-11T22:30:00Z'), // 11 junio 17:30 COL
-      },
-      {
-        nombre: 'Fase de Grupos',
-        apertura: new Date('2026-06-11T23:00:00Z'), // 11 junio 18:00 COL (tras primer partido)
-        cierre:   new Date('2026-06-26T23:59:00Z'), // 26 junio fin grupos
-      },
-      {
-        nombre: '16avos',
-        apertura: new Date('2026-06-27T05:00:00Z'),
-        cierre:   new Date('2026-06-29T23:59:00Z'),
-      },
-      {
-        nombre: 'Cuartos',
-        apertura: new Date('2026-07-04T05:00:00Z'),
-        cierre:   new Date('2026-07-05T23:59:00Z'),
-      },
-      {
-        nombre: 'Semis',
-        apertura: new Date('2026-07-08T05:00:00Z'),
-        cierre:   new Date('2026-07-09T23:59:00Z'),
-      },
-      {
-        nombre: 'Final',
-        apertura: new Date('2026-07-14T05:00:00Z'),
-        cierre:   new Date('2026-07-15T23:59:00Z'),
-      },
+    const fasesDB = await supabaseQuery(
+      'fases?select=id,nombre,estado,cerrada_en,abierta_en&order=fecha_inicio.asc'
+    );
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    const abrirFase = async (f, motivo) => {
+      await supabaseQuery(`fases?id=eq.${f.id}`, 'PATCH', {
+        estado: 'abierto', abierta_en: ahora.toISOString()
+      });
+      await supabaseQuery('logs', 'POST', {
+        accion: 'fase_abierta_automatica',
+        detalle: { fase: f.nombre, motivo, ts: ahora.toISOString() }
+      });
+      console.log(`✅ Fase "${f.nombre}" abierta (${motivo})`);
+    };
+
+    const cerrarFase = async (f, motivo) => {
+      await supabaseQuery(`fases?id=eq.${f.id}`, 'PATCH', {
+        estado: 'cerrado', cerrada_en: ahora.toISOString()
+      });
+      await supabaseQuery('logs', 'POST', {
+        accion: 'fase_cerrada_automatica',
+        detalle: { fase: f.nombre, motivo, ts: ahora.toISOString() }
+      });
+      console.log(`✅ Fase "${f.nombre}" cerrada (${motivo})`);
+    };
+
+    // ¿Quedan partidos sin terminar en una fase? (programado o en_curso)
+    const hayPendientes = async (fasePartidos) => {
+      try {
+        const r = await supabaseQuery(
+          `partidos?fase=eq.${fasePartidos}&estado=in.(programado,en_curso)&select=id&limit=1`
+        );
+        return r.length > 0;
+      } catch { return true; } // ante duda, asumir que sí hay pendientes
+    };
+
+    // Minutos transcurridos desde que terminó el último partido de una fase.
+    // Usa fecha_hora + 2h como estimación del momento de fin del partido.
+    // Devuelve null si no hay partidos finalizados en esa fase.
+    const minDesdeUltimoPartido = async (fasePartidos) => {
+      try {
+        const r = await supabaseQuery(
+          `partidos?fase=eq.${fasePartidos}&estado=eq.finalizado&select=fecha_hora&order=fecha_hora.desc&limit=1`
+        );
+        if (!r.length) return null;
+        const finEstimado = new Date(r[0].fecha_hora);
+        finEstimado.setHours(finEstimado.getHours() + 2); // ~2h por partido
+        return (ahora - finEstimado) / 60000;
+      } catch { return null; }
+    };
+
+    // Minutos que faltan para el primer partido de una fase.
+    // Valor negativo = ya comenzó. Devuelve null si no hay partidos.
+    const minParaPrimerPartido = async (fasePartidos) => {
+      try {
+        const r = await supabaseQuery(
+          `partidos?fase=eq.${fasePartidos}&select=fecha_hora&order=fecha_hora.asc&limit=1`
+        );
+        if (!r.length) return null;
+        return (new Date(r[0].fecha_hora) - ahora) / 60000;
+      } catch { return null; }
+    };
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PICKS INICIALES
+    // Abre: 12 mayo 00:00 COT (05:00 UTC) — fecha fija
+    // Cierra: 30 min antes del primer partido de grupos (dinámico)
+    //         Fallback duro: 11 junio 22:00 UTC = 17:00 COT
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      const f = fasesDB.find(d => d.nombre === 'Picks Iniciales');
+      if (f && !f.cerrada_en) {
+        const APERTURA   = new Date('2026-05-01T05:00:00Z'); // 1 mayo — ya pasó, abre de inmediato
+        const CIERRE_MAX = new Date('2026-06-11T22:00:00Z'); // fallback duro
+
+        if (f.estado !== 'abierto' && ahora >= APERTURA) {
+          await abrirFase(f, 'apertura_programada_mayo1');
+        } else if (f.estado === 'abierto') {
+          const minPrimero = await minParaPrimerPartido('grupos');
+          const cerrar = (minPrimero !== null && minPrimero <= 30) || ahora >= CIERRE_MAX;
+          if (cerrar) await cerrarFase(f, '30min_antes_primer_partido_grupos');
+        }
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // FASE DE GRUPOS
+    // Misma ventana que Picks Iniciales: abre desde mayo 1, cierra antes del
+    // primer partido del torneo (los picks de grupos se hacen antes de que empiece)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      const f = fasesDB.find(d => d.nombre === 'Fase de Grupos');
+      if (f && !f.cerrada_en) {
+        const APERTURA   = new Date('2026-05-01T05:00:00Z');
+        const CIERRE_MAX = new Date('2026-06-11T22:00:00Z');
+
+        if (f.estado !== 'abierto' && ahora >= APERTURA) {
+          await abrirFase(f, 'apertura_programada_mayo1');
+        } else if (f.estado === 'abierto') {
+          const minPrimero = await minParaPrimerPartido('grupos');
+          const cerrar = (minPrimero !== null && minPrimero <= 30) || ahora >= CIERRE_MAX;
+          if (cerrar) await cerrarFase(f, '30min_antes_primer_partido_grupos');
+        }
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // FASES ELIMINATORIAS (dinámica, basada en partidos reales de la BD)
+    //
+    // Apertura: cuando NO quedan partidos pendientes en la fase previa
+    //           Y han pasado ≥ 30 min desde el último partido de esa fase
+    // Cierre:   cuando falta ≤ 30 min para el primer partido de esta fase
+    //
+    // Ajusta `fasePrev` y `faseProp` si los valores en partidos.fase difieren.
+    // ═══════════════════════════════════════════════════════════════════════════
+    const KNOCK = [
+      // nombre en fases  | fase previa en partidos | fase propia en partidos
+      { nombre: '16avos',  fasePrev: 'grupos',   faseProp: '16avos'        },
+      { nombre: 'Cuartos', fasePrev: '8vos',     faseProp: 'cuartos'       },
+      { nombre: 'Semis',   fasePrev: 'cuartos',  faseProp: 'semis'         },
+      // Final + 3er puesto abren juntos tras las dos semis
+      { nombre: 'Final',   fasePrev: 'semis',    faseProp: 'tercer_puesto' },
     ];
 
-    // Obtener fases actuales de Supabase
-    const fasesDB = await supabaseQuery('fases?select=id,nombre,estado,fecha_inicio,fecha_fin&order=fecha_inicio.asc');
+    for (const def of KNOCK) {
+      const f = fasesDB.find(d => d.nombre === def.nombre);
+      if (!f || f.cerrada_en) continue; // no existe o ya cerrada definitivamente
 
-    for (const fase of FASES) {
-      const faseDB = fasesDB.find(f => f.nombre === fase.nombre);
-      if (!faseDB) continue;
-
-      const debeEstarAbierta = ahora >= fase.apertura && ahora <= fase.cierre;
-      const debeEstarCerrada = ahora > fase.cierre;
-      const estaAbierta      = faseDB.estado === 'abierto';
-      const estaCerrada      = faseDB.estado === 'cerrado';
-
-      // Abrir si llegó la hora y no está abierta
-      if (debeEstarAbierta && !estaAbierta) {
-        await supabaseQuery(`fases?id=eq.${faseDB.id}`, 'PATCH', {
-          estado: 'abierto',
-          abierta_en: ahora.toISOString()
-        });
-        await supabaseQuery('logs', 'POST', {
-          accion: 'fase_abierta_automatica',
-          detalle: { mensaje: `Fase "${fase.nombre}" abierta automáticamente`, fase_id: faseDB.id, timestamp: ahora.toISOString() }
-        });
-        console.log(`✅ Fase "${fase.nombre}" abierta automáticamente`);
-      }
-
-      // Cerrar si pasó el cierre y no está cerrada
-      if (debeEstarCerrada && !estaCerrada) {
-        await supabaseQuery(`fases?id=eq.${faseDB.id}`, 'PATCH', {
-          estado: 'cerrado',
-          cerrada_en: ahora.toISOString()
-        });
-        await supabaseQuery('logs', 'POST', {
-          accion: 'fase_cerrada_automatica',
-          detalle: { mensaje: `Fase "${fase.nombre}" cerrada automáticamente`, fase_id: faseDB.id, timestamp: ahora.toISOString() }
-        });
-        console.log(`✅ Fase "${fase.nombre}" cerrada automáticamente`);
+      if (f.estado !== 'abierto') {
+        // Condición de apertura: todos los partidos previos finalizados + 30 min
+        const pendientes = await hayPendientes(def.fasePrev);
+        if (pendientes) continue;
+        const min = await minDesdeUltimoPartido(def.fasePrev);
+        if (min !== null && min >= 30) {
+          await abrirFase(f, `30min_tras_fin_${def.fasePrev}`);
+        }
+      } else {
+        // Condición de cierre: 30 min para el primer partido de esta fase
+        const min = await minParaPrimerPartido(def.faseProp);
+        if (min !== null && min <= 30) {
+          await cerrarFase(f, `30min_antes_${def.faseProp}`);
+        }
       }
     }
 
     console.log('✅ Verificación de fases completada');
-  } catch (error) {
-    console.error('❌ Error gestionando fases:', error.message);
+  } catch (err) {
+    console.error('❌ Error gestionando fases:', err.message);
   }
 }
 

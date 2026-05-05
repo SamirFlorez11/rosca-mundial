@@ -70,7 +70,9 @@ export default async function handler(req, res) {
       const pendientes = parseInt(rPendientes.data?.count ?? 0);
       const conPicks   = parseInt(rConPicks.data?.count   ?? 0);
       const pagos      = Array.isArray(rRecaudado.data) ? rRecaudado.data : [];
-      const recaudado  = pagos.reduce((a, p) => a + (p.monto || 0), 0);
+      const recaudadoPagos = pagos.reduce((a, p) => a + (p.monto || 0), 0);
+      // Usar el mayor: pagos reales vs activos×60.000 (usuarios activados sin fila en pagos)
+      const recaudado  = Math.max(recaudadoPagos, inscritos * 60000);
       const hace14     = new Date(Date.now() - 14 * 86400000).toISOString();
       const rDiario    = await sb("pagos", { params: { estado: "eq.APPROVED", created_at: `gte.${hace14}`, select: "created_at", order: "created_at.asc" } });
       const dias = {};
@@ -166,12 +168,17 @@ export default async function handler(req, res) {
         order: "created_at.desc", offset: String(from), limit: String(limit)
       };
       if (estado) params.estado = `eq.${estado}`;
-      const [rPagos, rAprobados] = await Promise.all([
+      const [rPagos, rAprobados, rActivos] = await Promise.all([
         sb("pagos", { params }),
         sb("pagos", { params: { estado: "eq.APPROVED", select: "monto" } }),
+        sb("usuarios", { params: { activo: "eq.true", select: "id" } }),
       ]);
-      const aprobados      = Array.isArray(rAprobados.data) ? rAprobados.data : [];
-      const totalRecaudado = aprobados.reduce((a, p) => a + (p.monto || 0), 0);
+      const aprobados         = Array.isArray(rAprobados.data) ? rAprobados.data : [];
+      const activosCount      = Array.isArray(rActivos.data) ? rActivos.data.length : 0;
+      const recaudadoPorPagos = aprobados.reduce((a, p) => a + (p.monto || 0), 0);
+      // Usar el mayor entre lo que dice la tabla pagos y activos×60.000
+      // (algunos usuarios fueron activados manualmente sin fila en pagos)
+      const totalRecaudado    = Math.max(recaudadoPorPagos, activosCount * 60000);
       return ok(res, { pagos: rPagos.data || [], totalRecaudado, pozo: Math.round(totalRecaudado * 0.7), organizador: Math.round(totalRecaudado * 0.3) });
     }
     if (req.method === "PATCH") {
@@ -248,8 +255,17 @@ export default async function handler(req, res) {
       const { fase_id, estado } = req.body || {};
       if (!fase_id || !estado) return err(res, "Faltan campos");
       if (!["abierto","cerrado","bloqueada"].includes(estado)) return err(res, "Estado inválido. Usar: abierto | cerrado | bloqueada");
+      const ahora = new Date().toISOString();
       const abierto = estado === "abierto";
-      await sb(`fases?id=eq.${fase_id}`, { method: "PATCH", body: { estado, picks_visibles: abierto, updated_at: new Date().toISOString() } });
+      // Al cerrar manualmente: setear cerrada_en para que el cron no lo reabra automáticamente.
+      // Al abrir manualmente: limpiar cerrada_en para que el cron pueda volver a gestionarlo.
+      const patchBody = {
+        estado,
+        picks_visibles: abierto,
+        updated_at: ahora,
+        ...(abierto ? { cerrada_en: null, abierta_en: ahora } : { cerrada_en: ahora })
+      };
+      await sb(`fases?id=eq.${fase_id}`, { method: "PATCH", body: patchBody });
       await log("fase_cambiada_manual", { fase_id, estado });
       return ok(res, { mensaje: `Fase ${estado}` });
     }

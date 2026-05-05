@@ -24,9 +24,19 @@
   /* Modo día/noche */
   body.dia {
     --bg: #f0f4f8; --card: #ffffff; --card2: #e8edf5;
+    --panel: #ffffff;
     --border: #c5d0e0; --text: #0f172a; --muted: #4a5568; --amarillo: #1e3a8a;
   }
   body.dia .navbar { background: rgba(240,244,248,0.97); }
+  /* Listas de opciones (jugadores/equipos) en modo día */
+  body.dia .option-item { color: #0f172a; }
+  body.dia .option-item:hover:not(.selected):not(.disabled) { background: rgba(0,0,0,0.05); border-color: #c5d0e0; }
+  body.dia .option-item.selected { background: rgba(22,163,74,0.10); border-color: rgba(22,163,74,0.35); }
+  body.dia .opt-name { color: #0f172a; }
+  body.dia .opt-detail { color: #4a5568; }
+  body.dia .opt-add { color: #1e3a8a; }
+  body.dia .search-header { background: #e8edf5; }
+  body.dia .picks-selected-list { background: #f8fafc; }
   .cat-name { color: #FCD116 !important; }
   .cat-prize { color: #FCD116 !important; }
   body.dia .cat-name { color: #1e3a8a !important; }
@@ -2504,6 +2514,7 @@ window.guardarPicksSupabase = async function(cat) {
   const { data: { session } } = await supabase.auth.getSession();
 
   if (!session) {
+    // Invitado: guardar en localStorage
     const current = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
     if (cat === '__todos__' || cat === 'lev')       current.lev       = STATE.lev;
     if (cat === '__todos__' || cat === 'killer')     current.killer    = STATE.killer;
@@ -2518,39 +2529,55 @@ window.guardarPicksSupabase = async function(cat) {
 
   const user = session.user;
 
-  // Intentar guardar en cupo activo
+  // Helper: aplica la categoría guardada sobre una base existente
+  const mezclar = (base) => {
+    const n = { ...base };
+    if (cat === '__todos__' || cat === 'lev')       n.lev       = STATE.lev;
+    if (cat === '__todos__' || cat === 'killer')     n.killer    = STATE.killer;
+    if (cat === '__todos__' || cat === 'carnicero')  n.carnicero = STATE.carnicero;
+    if (cat === '__todos__' || cat === 'banderin')   n.banderin  = STATE.banderin;
+    if (cat === '__todos__' || cat === 'virgen')     n.virgen    = STATE.virgen;
+    if (cat === '__todos__' || cat === 'pied')       n.pied      = STATE.pied;
+    if (cat === '__todos__' || cat === 'mecha')      n.mecha     = STATE.mecha;
+    return n;
+  };
+  const esCompleto = (d) =>
+    Object.keys(d.lev||{}).length >= 72 &&
+    (d.killer||[]).length >= 15 &&
+    (d.carnicero||[]).length >= 10;
+
+  // ── Intentar guardar en cupo activo ──────────────────────────────────────
   const cupo_id = await getCupoIdActivo(user.id);
   if (cupo_id) {
-    const { data: cupoActual } = await supabase.from('cupos').select('picks_data,numero').eq('id', cupo_id).single();
-    const base = cupoActual?.picks_data || {};
-    const nuevo = { ...base };
-    if (cat === '__todos__' || cat === 'lev')       nuevo.lev       = STATE.lev;
-    if (cat === '__todos__' || cat === 'killer')     nuevo.killer    = STATE.killer;
-    if (cat === '__todos__' || cat === 'carnicero')  nuevo.carnicero = STATE.carnicero;
-    if (cat === '__todos__' || cat === 'banderin')   nuevo.banderin  = STATE.banderin;
-    if (cat === '__todos__' || cat === 'virgen')     nuevo.virgen    = STATE.virgen;
-    if (cat === '__todos__' || cat === 'pied')       nuevo.pied      = STATE.pied;
-    if (cat === '__todos__' || cat === 'mecha')      nuevo.mecha     = STATE.mecha;
-    const completo = Object.keys(nuevo.lev||{}).length >= 72 && (nuevo.killer||[]).length >= 15 && (nuevo.carnicero||[]).length >= 10;
-    const { error } = await supabase.from('cupos').update({ picks_data: nuevo, picks_completos: completo }).eq('id', cupo_id);
-    if (!error) {
-      if (cupoActual?.numero === 1) await supabase.from('usuarios').update({ picks_data: nuevo, picks_completos: completo }).eq('id', user.id);
-      return true;
+    // Obtener el cupo actual (si no existe, data será null — no un error)
+    const { data: cupoActual } = await supabase
+      .from('cupos').select('picks_data,numero').eq('id', cupo_id).maybeSingle();
+
+    if (cupoActual) {
+      // Cupo existe → guardar picks
+      const nuevo = mezclar(cupoActual.picks_data || {});
+      const completo = esCompleto(nuevo);
+      const { error } = await supabase
+        .from('cupos').update({ picks_data: nuevo, picks_completos: completo }).eq('id', cupo_id);
+      if (!error) {
+        // Siempre sincronizar a usuarios.picks_data como respaldo
+        await supabase.from('usuarios')
+          .update({ picks_data: nuevo, picks_completos: completo }).eq('id', user.id);
+        return true;
+      }
+    } else {
+      // El cupo_id en localStorage ya no existe en BD → limpiar y continuar al fallback
+      localStorage.removeItem(CUPO_KEY);
     }
   }
 
-  // Fallback: guardar en usuarios.picks_data
-  const { data: actual } = await supabase.from('usuarios').select('picks_data').eq('id', user.id).single();
-  const base = actual?.picks_data || {};
-  const nuevo = { ...base };
-  if (cat === '__todos__' || cat === 'lev')       nuevo.lev       = STATE.lev;
-  if (cat === '__todos__' || cat === 'killer')     nuevo.killer    = STATE.killer;
-  if (cat === '__todos__' || cat === 'carnicero')  nuevo.carnicero = STATE.carnicero;
-  if (cat === '__todos__' || cat === 'banderin')   nuevo.banderin  = STATE.banderin;
-  if (cat === '__todos__' || cat === 'virgen')     nuevo.virgen    = STATE.virgen;
-  if (cat === '__todos__' || cat === 'pied')       nuevo.pied      = STATE.pied;
-  if (cat === '__todos__' || cat === 'mecha')      nuevo.mecha     = STATE.mecha;
-  const { error } = await supabase.from('usuarios').update({ picks_data: nuevo }).eq('id', user.id);
+  // ── Fallback: guardar directo en usuarios.picks_data ────────────────────
+  const { data: actual } = await supabase
+    .from('usuarios').select('picks_data').eq('id', user.id).single();
+  const nuevo = mezclar(actual?.picks_data || {});
+  const completo = esCompleto(nuevo);
+  const { error } = await supabase
+    .from('usuarios').update({ picks_data: nuevo, picks_completos: completo }).eq('id', user.id);
   return !error;
 };
 
@@ -2560,7 +2587,14 @@ window.guardarPicksSupabase = async function(cat) {
   if (!perfil) return;
   if (perfil.id && !perfil.esInvitado) {
     const cupo = await getCupoInfo(perfil.id);
-    if (cupo) { mostrarCupoIndicador(cupo); cargarPicksEnState(cupo.picks_data); return; }
+    // Usar picks del cupo solo si tiene datos; si no, caer a usuarios.picks_data
+    const cupoTienePicks = cupo?.picks_data && (
+      Object.keys(cupo.picks_data.lev || {}).length > 0 ||
+      (cupo.picks_data.killer || []).length > 0 ||
+      (cupo.picks_data.carnicero || []).length > 0
+    );
+    if (cupo) mostrarCupoIndicador(cupo);
+    if (cupoTienePicks) { cargarPicksEnState(cupo.picks_data); return; }
   }
   cargarPicksEnState(perfil.picks_data);
 })();

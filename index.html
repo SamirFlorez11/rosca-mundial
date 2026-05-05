@@ -348,6 +348,66 @@
   </div>
 </div>
 
+<!-- MODAL POLÍTICA DE TRATAMIENTO DE DATOS -->
+<div class="modal-overlay" id="modalPolitica">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>Política de Tratamiento de Datos Personales</h2>
+      <p>Ley 1581 de 2012 y Decreto 1377 de 2013 — Colombia</p>
+      <button class="modal-close" onclick="closeModal('modalPolitica')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h3>1. Responsable del tratamiento</h3>
+      <p><strong>Samir Leonardo Flórez Calao</strong>, persona natural identificada con cédula de ciudadanía, con domicilio en la ciudad de Montería, Córdoba, Colombia. Correo de contacto: <strong>roscamundial@gmail.com</strong>.</p>
+
+      <h3>2. Marco legal</h3>
+      <p>El tratamiento de datos personales se realiza conforme a la <strong>Ley Estatutaria 1581 de 2012</strong> de protección de datos personales, el <strong>Decreto Reglamentario 1377 de 2013</strong> y demás normas vigentes sobre Habeas Data en Colombia.</p>
+
+      <h3>3. Datos personales que se recopilan</h3>
+      <p>Con el registro en <strong>Rosca Mundial 2026</strong> se recopilan los siguientes datos:</p>
+      <ul>
+        <li>Nombre completo</li>
+        <li>Número de documento de identidad (cédula de ciudadanía)</li>
+        <li>Correo electrónico</li>
+        <li>Número de celular</li>
+        <li>Ciudad de residencia</li>
+        <li>Datos de transacción del pago (procesados por Wompi S.A.S.)</li>
+      </ul>
+
+      <h3>4. Finalidad del tratamiento</h3>
+      <p>Los datos recopilados se utilizan exclusivamente para:</p>
+      <ul>
+        <li>Validar la identidad del participante y garantizar cupos únicos por persona.</li>
+        <li>Gestionar el pago de inscripción y confirmar la participación.</li>
+        <li>Comunicar resultados, actualizaciones y notificaciones relacionadas con la competencia.</li>
+        <li>Entregar premios a los ganadores.</li>
+        <li>Cumplir obligaciones legales aplicables.</li>
+      </ul>
+      <p>Los datos <strong>no serán vendidos, cedidos ni compartidos</strong> con terceros con fines comerciales o publicitarios.</p>
+
+      <h3>5. Derechos del titular</h3>
+      <p>Como titular de sus datos personales, usted tiene derecho a:</p>
+      <ul>
+        <li><strong>Conocer</strong> los datos personales que se tienen sobre usted.</li>
+        <li><strong>Actualizar y rectificar</strong> sus datos cuando sean inexactos o incompletos.</li>
+        <li><strong>Solicitar prueba</strong> de la autorización otorgada para el tratamiento.</li>
+        <li><strong>Revocar la autorización</strong> y/o solicitar la supresión de sus datos, salvo que exista deber legal o contractual que lo impida.</li>
+        <li><strong>Presentar quejas</strong> ante la Superintendencia de Industria y Comercio (SIC) por infracciones a la ley.</li>
+      </ul>
+      <p>Para ejercer sus derechos, envíe su solicitud a <strong>roscamundial@gmail.com</strong> indicando su nombre, documento de identidad y la solicitud específica. Responderemos en un plazo máximo de <strong>10 días hábiles</strong>.</p>
+
+      <h3>6. Seguridad de la información</h3>
+      <p>Los datos se almacenan en servidores seguros con cifrado en tránsito (HTTPS/TLS). El acceso está restringido únicamente al responsable del tratamiento. Se adoptan medidas técnicas y administrativas razonables para prevenir acceso no autorizado, pérdida o divulgación.</p>
+
+      <h3>7. Vigencia de la autorización</h3>
+      <p>Esta autorización estará vigente durante el desarrollo de <strong>Rosca Mundial 2026</strong> y hasta por <strong>un (1) año</strong> posterior a la finalización de la competencia, plazo necesario para la entrega de premios y resolución de reclamaciones. Vencido este término, los datos serán eliminados o anonimizados.</p>
+
+      <h3>8. Autorización</h3>
+      <p>Al marcar la casilla de verificación en el formulario de registro, el participante manifiesta que ha leído, entendido y aceptado de manera libre, expresa e informada la presente política de tratamiento de datos personales, autorizando al responsable a tratarlos conforme a las finalidades descritas.</p>
+    </div>
+  </div>
+</div>
+
 <!-- BRAND PANEL -->
 <div class="brand-panel">
   <div class="poster-bg" id="posterLeft"></div>
@@ -468,7 +528,7 @@
       <div class="terminos-box">
         <div class="terminos">
           <input type="checkbox" id="terminos">
-          <label for="terminos">He leído el <a onclick="openModal('modalReglas');return false;" href="#">reglamento oficial</a> en su totalidad, lo entiendo y estoy de acuerdo con todos sus términos y condiciones.</label>
+          <label for="terminos">He leído el <a onclick="openModal('modalReglas');return false;" href="#">reglamento oficial</a> y la <a onclick="openModal('modalPolitica');return false;" href="#">política de tratamiento de datos</a>, los entiendo y acepto en su totalidad.</label>
         </div>
         <div class="terminos-warning" id="terminosWarning">⚠️ Debes aceptar el reglamento para continuar</div>
       </div>
