@@ -37,6 +37,15 @@
   body.dia .opt-add { color: #1e3a8a; }
   body.dia .search-header { background: #e8edf5; }
   body.dia .picks-selected-list { background: #f8fafc; }
+
+  /* ── Progress bar: modo día ──────────────────────────────────────────────── */
+  body.dia .progress-bar-wrap {
+    background: rgba(230,235,245,0.98);
+    border-bottom: 1px solid rgba(0,48,135,0.12);
+  }
+  body.dia .prog-label { color: #4a5568; }
+  body.dia .prog-count { color: #1e3a8a; }
+  body.dia .cierre-badge { color: #ce1126; background: rgba(206,17,38,0.08); border-color: rgba(206,17,38,0.35); }
   .cat-name { color: #FCD116 !important; }
   .cat-prize { color: #FCD116 !important; }
   body.dia .cat-name { color: #1e3a8a !important; }
@@ -119,8 +128,8 @@
   .prog-count { font-family:'Poppins',sans-serif; font-size: 18px; color: var(--amarillo); white-space: nowrap; }
 
   .cierre-badge {
-    font-family:'Poppins',sans-serif; font-size: 11px; color: var(--rojo);
-    background: rgba(206,17,38,0.12); border: 1px solid rgba(206,17,38,0.3);
+    font-family:'Poppins',sans-serif; font-size: 11px; font-weight: 700; color: #ff4444;
+    background: rgba(206,17,38,0.18); border: 1px solid rgba(255,68,68,0.5);
     padding: 3px 10px; border-radius: 6px; white-space: nowrap;
   }
 
@@ -140,6 +149,42 @@
   }
   .menu-subtitle {
     font-family:'Poppins',sans-serif; font-size: 13px; color: var(--muted); margin-top: 4px;
+  }
+
+  /* BANNERS DE RANKING */
+  .ranking-banner {
+    position: relative; overflow: hidden;
+    border-radius: 10px; margin: 6px 0 2px;
+    padding: 11px 16px 11px 22px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ranking-banner::before { content: none; }
+  .ranking-banner-content { position: relative; z-index: 1; }
+  .ranking-banner-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px; font-weight: 800;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: #fff; line-height: 1.3;
+  }
+  .ranking-banner-sub {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.5px; color: rgba(255,255,255,0.5);
+  }
+  .ranking-banner.principal { border: 1px solid rgba(252,209,22,0.25); }
+  .ranking-banner.principal .ranking-banner-title { color: #a8c4ff; }
+  .ranking-banner.secundario { border: 1px solid rgba(100,140,255,0.25); margin-top: 10px; }
+  .ranking-banner.secundario .ranking-banner-title { color: #a8c4ff; }
+
+  /* Modo día */
+  body.dia .ranking-banner.principal { border-color: rgba(30,58,138,0.3); }
+  body.dia .ranking-banner.secundario { border-color: rgba(30,58,138,0.25); }
+  body.dia .ranking-banner-title { color: #1e3a8a !important; }
+  body.dia .ranking-banner-sub { color: #4a5568; }
+  .ranking-banner .flag-bar {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background: linear-gradient(to bottom, #FCD116 0% 50%, #003087 50% 75%, #CE1126 75% 100%);
+    border-radius: 10px 0 0 10px; z-index: 2;
   }
 
   /* CATEGORÍA ROWS en menú */
@@ -348,7 +393,7 @@
     padding: 5px 10px; border-radius: 6px; font-family:'Poppins',sans-serif;
     font-weight: 700; font-size: 12px; cursor: pointer;
     border: 1px solid var(--border); background: var(--card); color: var(--muted);
-    transition: all 0.12s;
+    transition: background-color 0.12s, border-color 0.12s, color 0.12s;
     touch-action: manipulation; /* evita doble-tap zoom en móvil */
     -webkit-tap-highlight-color: transparent;
     user-select: none;
@@ -356,7 +401,9 @@
   .lev-btn.sel-L { background: rgba(56,130,221,0.15); border-color: #378ADD; color: #85B7EB; }
   .lev-btn.sel-E { background: rgba(239,159,39,0.15); border-color: #EF9F27; color: #FAC775; }
   .lev-btn.sel-V { background: rgba(216,90,48,0.15); border-color: #D85A30; color: #F0997B; }
-  .lev-btn:hover:not(.sel-L):not(.sel-E):not(.sel-V) { border-color: var(--amarillo); color: var(--text); }
+  @media (hover: hover) and (pointer: fine) {
+    .lev-btn:hover:not(.sel-L):not(.sel-E):not(.sel-V) { border-color: var(--amarillo); color: var(--text); }
+  }
   .lev-btn:focus, .lev-btn:focus-visible { outline: none !important; box-shadow: none !important; }
   .lev-btn { outline: none; }
 
@@ -416,62 +463,101 @@
     .picks-selected-list { max-height: 200px; }
   }
 
+  /* ── Progress bar móvil ─────────────────────── */
+  @media (max-width: 480px) {
+    .progress-bar-wrap { padding: 6px 12px; gap: 8px; }
+    .prog-label { display: none; }         /* ocultar "Progreso:" para ganar espacio */
+    .prog-count { font-size: 14px; }
+    .cierre-badge { font-size: 10px; padding: 2px 7px; }
+  }
+  @media (max-width: 360px) {
+    .cierre-badge { display: none; }       /* pantallas muy pequeñas: solo barra + número */
+  }
+
   /* ── Navbar móvil ───────────────────────────── */
   @media (max-width: 600px) {
     .navbar { padding: 0 8px; gap: 2px; }
     /* Logo más pequeño */
     .nav-left img { width: 30px !important; height: 30px !important; }
-    .nav-left { gap: 6px; min-width: 0; }
+    .nav-left { gap: 5px; min-width: 0; flex-shrink: 1; max-width: 120px; }
     /* Ocultar subtítulo y reducir brand */
     .nav-brand span { display: none; }
-    .nav-brand { font-size: 14px; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    /* ← Volver: solo flecha en pantallas muy pequeñas */
+    .nav-brand { font-size: 13px; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* ← Volver: solo flecha */
     .btn-volver-label { display: none; }
-    #btnVolver { padding: 0 10px; font-size: 14px; margin-left: 4px; }
+    #btnVolver { padding: 0 10px; font-size: 16px; margin-left: 2px; flex-shrink: 0; }
+    /* Ocultar ✏️ Modificar en móvil — se puede modificar directamente en la categoría */
+    #btnModificar { display: none !important; }
+    /* El div central (contenía btnModificar) no ocupa espacio */
+    #btnModificar + div, .navbar > div[style*="flex:1"] { flex: 0 !important; min-width: 0 !important; }
     /* Ocultar texto de botones derechos — solo emojis */
     .btn-label { display: none; }
-    /* Ocultar PDF (siempre deshabilitado hasta junio) */
+    /* Ocultar PDF y badge invitado */
     .btn-pdf { display: none !important; }
+    #badgeInvitado { display: none !important; }
     /* Achicar botones de acción */
     #btnVerPicks, .btn-nav.btn-confirm { padding: 0 9px; font-size: 14px; min-width: 0; }
     .btn-tema { width: 32px; height: 32px; font-size: 15px; }
-    /* Gap derecho */
-    .navbar > div:last-child { gap: 4px; }
-    /* Modificar centrado */
-    #btnModificar { font-size: 11px; padding: 0 8px; }
+    /* Gap derecho más ajustado */
+    .navbar > div:last-child { gap: 3px; }
+  }
+
+  /* ── Menú de categorías en móvil ─────────────── */
+  @media (max-width: 500px) {
+    .cat-row { padding: 10px 12px; gap: 10px; }
+    .cat-emoji { font-size: 22px; }
+    .cat-name { font-size: 15px; letter-spacing: 0.5px; }
+    .cat-desc { font-size: 11px; }
+    /* Prize: truncar si es muy largo (solo afecta LEV) */
+    .cat-prize { font-size: 11px; white-space: normal; line-height: 1.3; }
+    .cat-progress { font-size: 11px; }
+    .cat-badge { font-size: 10px; padding: 2px 7px; }
+    .cat-arrow { display: none; }
+    .menu-title { font-size: 20px; }
+    .menu-subtitle { font-size: 11px; }
+    .menu-header { padding: 16px 16px 12px; }
   }
 </style>
 </head>
 <body>
+<script>(function(){if(localStorage.getItem('rosca-tema')==='dia')document.body.classList.add('dia');})()</script>
 
-<!-- BANNER INVITADO (oculto por defecto, se muestra si no hay sesión) -->
-<div id="banner-registrar" style="display:none;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;background:linear-gradient(90deg,rgba(206,17,38,0.18),rgba(0,48,135,0.18));border-bottom:2px solid rgba(252,209,22,0.4);padding:12px 20px;position:sticky;top:0;z-index:1000;">
-  <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.9);">👁 Modo Invitado — Tus picks se guardan en este dispositivo únicamente.</span>
-  <a href="/index.html" style="background:var(--amarillo, #FCD116);color:#0D1B3E;font-family:'Poppins',sans-serif;font-size:15px;letter-spacing:2px;padding:9px 20px;border-radius:10px;text-decoration:none;font-weight:900;transition:all 0.2s;white-space:nowrap;">⚽ REGISTRARME PARA CONFIRMAR MIS PICKS</a>
+<!-- BANNER INVITADO — barra fija en la parte inferior, solo visible sin sesión -->
+<div id="banner-registrar" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:1001;background:linear-gradient(90deg,#2a0000,#00104a);border-top:2px solid #FCD116;padding:10px 16px;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;">
+  <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+    <span style="font-size:20px;flex-shrink:0;">👁</span>
+    <div style="min-width:0;">
+      <div style="font-size:12px;font-weight:800;color:#FCD116;letter-spacing:1.5px;text-transform:uppercase;line-height:1.2;">Modo Invitado ⚠️</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.75);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Tus picks se perderán al cerrar el navegador — Regístrate para guardarlos</div>
+    </div>
+  </div>
+  <a href="/index.html" style="flex-shrink:0;background:#FCD116;color:#0D1B3E;font-family:'Poppins',sans-serif;font-size:12px;font-weight:900;letter-spacing:1px;padding:8px 16px;border-radius:8px;text-decoration:none;white-space:nowrap;box-shadow:0 2px 8px rgba(252,209,22,0.4);">⚽ Registrarme</a>
 </div>
 
 <div class="tricolor"></div>
 
 <!-- NAVBAR -->
 <nav class="navbar" style="justify-content:space-between;">
-  <!-- IZQUIERDA: logo + brand + volver -->
-  <div class="nav-left" style="min-width:0;overflow:hidden;">
-    <img src="/logo.png" style="width:44px;height:44px;object-fit:contain;border-radius:8px;flex-shrink:0;">
-    <div class="nav-brand">
+  <!-- IZQUIERDA: logo + brand -->
+  <div class="nav-left" style="min-width:0;overflow:hidden;flex-shrink:1;">
+    <img src="/logo.png" style="width:40px;height:40px;object-fit:contain;border-radius:8px;flex-shrink:0;">
+    <div class="nav-brand" style="overflow:hidden;">
       ROSCA MUNDIAL
-      <span>MUNDIAL USA · MÉXICO · CANADÁ 2026</span>
+      <span id="navSubtitle">MUNDIAL USA · MÉXICO · CANADÁ 2026</span>
     </div>
   </div>
-  <!-- VOLVER + MODIFICAR (se muestran contextualmente) -->
-  <button class="btn-nav btn-back" onclick="volverAlMenu()" id="btnVolver" style="display:none;flex-shrink:0;margin-left:8px">← <span class="btn-volver-label">Seleccionar categoría</span></button>
-  <div style="flex:1;display:flex;justify-content:center;min-width:0;">
-    <button class="btn-nav btn-modify" id="btnModificar" onclick="toggleModoEdicion()" style="display:none">✏️ <span class="btn-label">Modificar picks</span></button>
+  <!-- VOLVER (contextual, se muestra al entrar a categoría) -->
+  <button class="btn-nav btn-back" onclick="volverAlMenu()" id="btnVolver" style="display:none;flex-shrink:0;margin-left:6px;">← <span class="btn-volver-label">Categorías</span></button>
+  <div id="navCenter" style="flex:1;display:flex;justify-content:center;min-width:0;">
+    <button class="btn-nav btn-modify" id="btnModificar" onclick="toggleModoEdicion()" style="display:none">✏️ <span class="btn-label">Modificar</span></button>
   </div>
   <!-- DERECHA: acciones + modo día/noche -->
-  <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+  <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;">
     <button class="btn-nav btn-modify" id="btnVerPicks" onclick="abrirResumenPicks()" style="display:none">👁 <span class="btn-label">Ver picks</span></button>
     <button id="btnGenerarPDF2" onclick="solicitarPDF()" title="Disponible 30 min antes del partido inicial" style="opacity:0.5;cursor:not-allowed;" disabled class="btn-nav btn-pdf">📄 <span class="btn-label">PDF</span></button>
-    <button class="btn-nav btn-confirm" onclick="window.location.href='dashboard.html'">🏠 <span class="btn-label">Dashboard</span></button>
+    <!-- Badge invitado (visible solo en modo invitado, oculto si hay sesión) -->
+    <span id="badgeInvitado" style="display:none;background:rgba(252,209,22,0.15);border:1px solid rgba(252,209,22,0.5);color:#FCD116;font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;letter-spacing:1px;white-space:nowrap;">👁 INVITADO</span>
+    <button class="btn-nav btn-confirm" id="btnIrDashboard" onclick="window.location.href=(window.esInvitado?'/index.html':'/dashboard.html')">🏠 <span class="btn-label" id="btnDashLabel">Dashboard</span></button>
     <button class="btn-tema" id="btnTema" onclick="toggleTema()" title="Cambiar modo día/noche">🌙</button>
   </div>
 </nav>
@@ -511,6 +597,15 @@
 
     <div class="cat-list">
 
+      <!-- ══ RANKING PRINCIPAL ══ -->
+      <div class="ranking-banner principal">
+        <div class="flag-bar"></div>
+        <div class="ranking-banner-content">
+          <div class="ranking-banner-title">🏆 Ranking Principal L/E/V</div>
+          <div class="ranking-banner-sub">El gran torneo de predicciones partido a partido</div>
+        </div>
+      </div>
+
       <!-- L/E/V Grupos -->
       <div class="cat-row lev" onclick="abrirCategoria('lev')">
         <div class="cat-emoji">⚽</div>
@@ -519,11 +614,20 @@
           <div class="cat-desc">Local · Empate · Visitante por cada partido — Fase de Grupos (72) + Eliminatorias (32)</div>
         </div>
         <div class="cat-status">
-          <div class="cat-prize">🥇 iPhone / Bose / PS5 / AirPods</div>
+          <div class="cat-prize">🥇 iPhone / Bose / PS5 / AirPods Pro 3</div>
           <div class="cat-progress"><span id="lev-prog">0</span>/104 partidos</div>
           <div class="cat-badge incompleto" id="lev-badge">Incompleto</div>
         </div>
         <div class="cat-arrow">→</div>
+      </div>
+
+      <!-- ══ RANKINGS SECUNDARIOS ══ -->
+      <div class="ranking-banner secundario">
+        <div class="flag-bar"></div>
+        <div class="ranking-banner-content">
+          <div class="ranking-banner-title">⚡ Rankings Secundarios</div>
+          <div class="ranking-banner-sub">Categorías especiales con premios en efectivo</div>
+        </div>
       </div>
 
       <!-- El Killer -->
@@ -1082,9 +1186,13 @@ function pickLEV(id, val) {
     btn.className = 'lev-btn' + (newSel === v ? ' sel-' + v : '');
     btn.blur(); // quitar foco para evitar el recuadro del navegador
   });
-  renderPicksLEV();
-  renderTabsCategoria('lev');
-  actualizarContador();
+  // Diferir los re-renders al siguiente frame para no causar reflow entre mousedown/mouseup
+  // (soluciona el bug de PC donde el click no registraba por el reflow sincrónico)
+  requestAnimationFrame(() => {
+    renderPicksLEV();
+    renderTabsCategoria('lev');
+    actualizarContador();
+  });
 }
 
 function renderPicksLEV() {
@@ -1158,7 +1266,7 @@ function renderPicksCategoria(cat) {
     const item = cfg.tipo === 'jugadores'
       ? JUGADORES_PRELISTA.find(j => j.id === id)
       : EQUIPOS.find(e => e.id === id);
-    if (!item) return '';
+    if (!item) return `<div class="pick-item empty"><div class="pick-num">${i+1}</div><div class="pick-name" style="color:var(--muted);font-size:12px">Pick ${i+1} — vacío</div></div>`;
     const detail = cfg.tipo === 'jugadores'
       ? `${item.pos} · ${EQUIPOS.find(e=>e.id===item.equipo)?.nombre||''}`
       : `Grupo ${item.grupo}`;
@@ -1578,7 +1686,8 @@ async function verificarAuth() {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
     mostrarBannerInvitado();
-    const savedRaw = localStorage.getItem(LS_KEY);
+    // Invitados usan sessionStorage → picks desaparecen al cerrar el navegador
+    const savedRaw = sessionStorage.getItem(LS_KEY);
     const picks_data = savedRaw ? JSON.parse(savedRaw) : null;
     return { id: null, nombre: 'Invitado', activo: true, picks_data, esInvitado: true };
   }
@@ -1589,18 +1698,32 @@ async function verificarAuth() {
 function mostrarBannerInvitado() {
   const banner = document.getElementById('banner-registrar');
   if (banner) banner.style.display = 'flex';
+  // Padding extra al body para que el contenido no quede oculto bajo el banner
+  document.body.style.paddingBottom = '62px';
+  // Badge en navbar
+  const badge = document.getElementById('badgeInvitado');
+  if (badge) badge.style.display = 'inline-block';
+  // Botón dashboard → Inicio
+  const lbl = document.getElementById('btnDashLabel');
+  if (lbl) lbl.textContent = 'Inicio';
+  // Subtítulo navbar: modo invitado
+  const sub = document.getElementById('navSubtitle');
+  if (sub) { sub.textContent = 'Modo Invitado'; sub.style.color = '#FCD116'; }
+  window.esInvitado = true;
 }
+
 
 // ── Cargar picks guardados en STATE ───────────────────────────────────────
 function cargarPicksEnState(picks_data) {
   if (!picks_data) return;
   if (picks_data.lev)       Object.assign(STATE.lev, picks_data.lev);
-  if (picks_data.killer)    STATE.killer    = picks_data.killer;
-  if (picks_data.carnicero) STATE.carnicero = picks_data.carnicero;
-  if (picks_data.banderin)  STATE.banderin  = picks_data.banderin;
-  if (picks_data.virgen)    STATE.virgen    = picks_data.virgen;
-  if (picks_data.pied)      STATE.pied      = picks_data.pied;
-  if (picks_data.mecha)     STATE.mecha     = picks_data.mecha;
+  // Filtrar jugadores que ya no existen en datos.js (lista oficial actualizada)
+  if (picks_data.killer)    STATE.killer    = picks_data.killer.filter(id => JUGADORES_PRELISTA.some(j => j.id === id));
+  if (picks_data.carnicero) STATE.carnicero = picks_data.carnicero.filter(id => EQUIPOS.some(e => e.id === id));
+  if (picks_data.banderin)  STATE.banderin  = picks_data.banderin.filter(id => EQUIPOS.some(e => e.id === id));
+  if (picks_data.virgen)    STATE.virgen    = picks_data.virgen.filter(id => EQUIPOS.some(e => e.id === id));
+  if (picks_data.pied)      STATE.pied      = picks_data.pied.filter(id => EQUIPOS.some(e => e.id === id));
+  if (picks_data.mecha)     STATE.mecha     = picks_data.mecha.filter(id => EQUIPOS.some(e => e.id === id));
   actualizarProgreso();
   actualizarMenuBadges();
 }
@@ -1639,8 +1762,11 @@ function mostrarCupoIndicador(cupo) {
 window.guardarPicksSupabase = async function(cat) {
   const { data: { session } } = await supabase.auth.getSession();
 
-  // ── Siempre guardar en localStorage como respaldo ─────────────────────────
-  const lsData = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+  // ── Guardar localmente como respaldo ────────────────────────────────────
+  // Invitados: sessionStorage (se borra al cerrar el navegador)
+  // Usuarios registrados: localStorage (persiste como respaldo offline)
+  const storage = session ? localStorage : sessionStorage;
+  const lsData = JSON.parse(storage.getItem(LS_KEY) || '{}');
   if (cat === '__todos__' || cat === 'lev')       lsData.lev       = STATE.lev;
   if (cat === '__todos__' || cat === 'killer')     lsData.killer    = STATE.killer;
   if (cat === '__todos__' || cat === 'carnicero')  lsData.carnicero = STATE.carnicero;
@@ -1648,9 +1774,9 @@ window.guardarPicksSupabase = async function(cat) {
   if (cat === '__todos__' || cat === 'virgen')     lsData.virgen    = STATE.virgen;
   if (cat === '__todos__' || cat === 'pied')       lsData.pied      = STATE.pied;
   if (cat === '__todos__' || cat === 'mecha')      lsData.mecha     = STATE.mecha;
-  localStorage.setItem(LS_KEY, JSON.stringify(lsData));
+  storage.setItem(LS_KEY, JSON.stringify(lsData));
 
-  if (!session) return true; // invitado: solo localStorage
+  if (!session) return true; // invitado: solo sessionStorage
 
   // ── Guardar en Supabase via API (SERVICE_KEY, no afecta RLS) ─────────────
   try {
@@ -1691,6 +1817,34 @@ function tienePicks(data) {
   if (!perfil) return;
 
   if (perfil.id && !perfil.esInvitado) {
+    // 0. Migrar picks de invitado → si acaban de registrarse desde modo invitado
+    const guestPicksRaw = sessionStorage.getItem(LS_KEY);
+    if (guestPicksRaw) {
+      try {
+        const guestPicks = JSON.parse(guestPicksRaw);
+        if (tienePicks(guestPicks)) {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            // Subir picks al servidor
+            await fetch('/api/picks', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+              body: JSON.stringify({ cat: '__todos__', state: guestPicks })
+            });
+            cargarPicksEnState(guestPicks);
+            sessionStorage.removeItem(LS_KEY);
+            // Mostrar aviso de migración exitosa
+            setTimeout(() => {
+              const t = document.getElementById('toast-invitado');
+              if (t) { t.style.display = 'flex'; setTimeout(() => t.style.display = 'none', 4000); }
+            }, 500);
+            return; // picks migrados y cargados
+          }
+        }
+      } catch (e) { console.warn('Error migrando picks de invitado:', e); }
+      sessionStorage.removeItem(LS_KEY); // limpiar aunque falle la migración
+    }
+
     // 1. Intentar cargar desde API (servidor con SERVICE_KEY)
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -1714,8 +1868,8 @@ function tienePicks(data) {
     if (tienePicks(perfil.picks_data)) { cargarPicksEnState(perfil.picks_data); return; }
   }
 
-  // 4. Último fallback: localStorage (invitado o sin picks en BD)
-  const lsData = localStorage.getItem(LS_KEY);
+  // 4. Último fallback: sessionStorage (invitado) o localStorage (usuario offline)
+  const lsData = sessionStorage.getItem(LS_KEY) || localStorage.getItem(LS_KEY);
   if (lsData) {
     try { cargarPicksEnState(JSON.parse(lsData)); return; } catch (_) {}
   }
@@ -1723,5 +1877,27 @@ function tienePicks(data) {
   cargarPicksEnState(perfil.picks_data);
 })();
 </script>
+
+<script>
+// Si viene desde dashboard con #pdf, scroll al botón PDF
+if (window.location.hash === '#pdf') {
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      const btn = document.getElementById('btnGenerarPDF') || document.getElementById('btnGenerarPDF2');
+      if (btn) {
+        btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        btn.style.transition = 'box-shadow 0.3s';
+        btn.style.boxShadow = '0 0 0 3px rgba(252,209,22,0.7)';
+        setTimeout(() => { if(btn) btn.style.boxShadow = ''; }, 2500);
+      }
+    }, 800);
+  });
+}
+</script>
+
+<!-- Toast migración picks invitado -->
+<div id="toast-invitado" style="display:none;position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:2000;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;padding:12px 20px;border-radius:12px;box-shadow:0 4px 20px rgba(34,197,94,0.4);align-items:center;gap:8px;white-space:nowrap;">
+  ✅ ¡Tus picks de invitado han sido guardados en tu cuenta!
+</div>
 </body>
 </html>
