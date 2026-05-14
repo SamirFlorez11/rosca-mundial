@@ -1854,7 +1854,12 @@ function tienePicks(data) {
         });
         if (r.ok) {
           const { picks_data } = await r.json();
-          if (tienePicks(picks_data)) { cargarPicksEnState(picks_data); return; }
+          if (tienePicks(picks_data)) {
+            cargarPicksEnState(picks_data);
+            // Sincronizar localStorage con Supabase para evitar datos obsoletos
+            localStorage.setItem(LS_KEY, JSON.stringify(picks_data));
+            return;
+          }
         }
       }
     } catch (e) { console.warn('No se pudo cargar picks desde API:', e); }
