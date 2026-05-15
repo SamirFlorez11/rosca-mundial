@@ -5,6 +5,9 @@
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SERVICE_KEY  = process.env.SUPABASE_SERVICE_KEY;
 
+const EQUIPO_CATS = ['carnicero', 'banderin', 'virgen', 'pied', 'mecha'];
+const CAT_DB_MAP  = { carnicero: 'carnicero', banderin: 'banderin', virgen: 'virgen', pied: 'pie_de_nina', mecha: 'mechacorta' };
+
 function cors(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -71,63 +74,81 @@ async function sbInsert(table, body) {
   return r.ok;
 }
 
-// Sincroniza picks_killer, picks_equipos y predicciones a partir del picks_data completo.
-// Si un jugador/equipo/partido no existe aún en la tabla (e.g. equipo no cargado), se omite sin error.
-async function sincronizarRelacional(userId, nuevo) {
+// Sincroniza SOLO la tabla relacional correspondiente a la categoría guardada.
+// cat='lev'      → predicciones
+// cat='killer'   → picks_killer
+// cat=equipo     → picks_equipos (solo esa categoría)
+// cat='__todos__'→ las tres tablas completas
+async function sincronizarRelacional(userId, nuevo, cat) {
+  const sincLEV    = cat === '__todos__' || cat === 'lev';
+  const sincKiller = cat === '__todos__' || cat === 'killer';
+  const sincEquipo = cat === '__todos__' || EQUIPO_CATS.includes(cat);
+
+  // Traer solo los datos de referencia que necesitamos
   const [jugadores, equipos, partidos] = await Promise.all([
-    sbGet('jugadores', { select: 'id,nombre_corto' }),
-    sbGet('equipos',   { select: 'id,codigo_fifa' }),
-    sbGet('partidos',  { select: 'id,numero_partido' }),
+    sincKiller ? sbGet('jugadores', { select: 'id,nombre_corto' }) : Promise.resolve([]),
+    sincEquipo ? sbGet('equipos',   { select: 'id,codigo_fifa' })  : Promise.resolve([]),
+    sincLEV    ? sbGet('partidos',  { select: 'id,numero_partido' }): Promise.resolve([]),
   ]);
 
-  const jugMap = {}; // datos.js ID (nombre_corto) → UUID
+  const jugMap = {};
   if (Array.isArray(jugadores)) jugadores.forEach(j => { if (j.nombre_corto) jugMap[j.nombre_corto] = j.id; });
 
-  const eqMap = {}; // codigo_fifa → UUID
+  const eqMap = {};
   if (Array.isArray(equipos)) equipos.forEach(e => { if (e.codigo_fifa) eqMap[e.codigo_fifa] = e.id; });
 
-  const parMap = {}; // numero_partido → UUID
+  const parMap = {};
   if (Array.isArray(partidos)) partidos.forEach(p => { if (p.numero_partido) parMap[p.numero_partido] = p.id; });
 
-  // Borrar registros actuales del usuario en las tres tablas
-  await Promise.all([
-    sbDelete('picks_killer',  { 'usuario_id': `eq.${userId}` }),
-    sbDelete('picks_equipos', { 'usuario_id': `eq.${userId}` }),
-    sbDelete('predicciones',  { 'usuario_id': `eq.${userId}` }),
-  ]);
-
-  // picks_killer: datos.js ID → jugador UUID (omite IDs de equipos no cargados aún)
-  const killerRows = (nuevo.killer || [])
-    .filter(id => jugMap[id])
-    .map(id => ({ usuario_id: userId, jugador_id: jugMap[id] }));
-
-  // picks_equipos: código de equipo → equipo UUID + categoría correcta para CHECK constraint
-  const CATS = [
-    { key: 'carnicero', cat: 'carnicero'  },
-    { key: 'banderin',  cat: 'banderin'   },
-    { key: 'virgen',    cat: 'virgen'     },
-    { key: 'pied',      cat: 'pie_de_nina' },
-    { key: 'mecha',     cat: 'mechacorta' },
-  ];
-  const equiposRows = [];
-  for (const { key, cat } of CATS) {
-    for (const code of (nuevo[key] || [])) {
-      if (eqMap[code]) equiposRows.push({ usuario_id: userId, equipo_id: eqMap[code], categoria: cat });
+  // Borrar solo lo que vamos a reemplazar
+  const deletes = [];
+  if (sincKiller) deletes.push(sbDelete('picks_killer', { 'usuario_id': `eq.${userId}` }));
+  if (sincLEV)    deletes.push(sbDelete('predicciones', { 'usuario_id': `eq.${userId}` }));
+  if (sincEquipo) {
+    if (cat === '__todos__') {
+      // Borrar todas las categorías de equipos
+      deletes.push(sbDelete('picks_equipos', { 'usuario_id': `eq.${userId}` }));
+    } else {
+      // Borrar solo la categoría específica guardada
+      deletes.push(sbDelete('picks_equipos', { 'usuario_id': `eq.${userId}`, 'categoria': `eq.${CAT_DB_MAP[cat]}` }));
     }
   }
+  await Promise.all(deletes);
 
-  // predicciones: p0→numero_partido 1, p1→2, ...
-  const predRows = [];
-  for (const [pKey, pred] of Object.entries(nuevo.lev || {})) {
-    const idx = parseInt(pKey.replace('p', ''), 10);
-    const partUUID = parMap[idx + 1];
-    if (partUUID && pred) predRows.push({ usuario_id: userId, partido_id: partUUID, prediccion: pred });
+  // Insertar
+  const inserts = [];
+
+  if (sincKiller) {
+    const rows = (nuevo.killer || [])
+      .filter(id => jugMap[id])
+      .map(id => ({ usuario_id: userId, jugador_id: jugMap[id] }));
+    if (rows.length) inserts.push(sbInsert('picks_killer', rows));
   }
 
-  const inserts = [];
-  if (killerRows.length)  inserts.push(sbInsert('picks_killer',  killerRows));
-  if (equiposRows.length) inserts.push(sbInsert('picks_equipos', equiposRows));
-  if (predRows.length)    inserts.push(sbInsert('predicciones',  predRows));
+  if (sincEquipo) {
+    const catsToSync = cat === '__todos__'
+      ? EQUIPO_CATS.map(k => ({ key: k, dbCat: CAT_DB_MAP[k] }))
+      : [{ key: cat, dbCat: CAT_DB_MAP[cat] }];
+
+    const rows = [];
+    for (const { key, dbCat } of catsToSync) {
+      for (const code of (nuevo[key] || [])) {
+        if (eqMap[code]) rows.push({ usuario_id: userId, equipo_id: eqMap[code], categoria: dbCat });
+      }
+    }
+    if (rows.length) inserts.push(sbInsert('picks_equipos', rows));
+  }
+
+  if (sincLEV) {
+    const rows = [];
+    for (const [pKey, pred] of Object.entries(nuevo.lev || {})) {
+      const idx = parseInt(pKey.replace('p', ''), 10);
+      const partUUID = parMap[idx + 1]; // p0 → numero_partido=1
+      if (partUUID && pred) rows.push({ usuario_id: userId, partido_id: partUUID, prediccion: pred });
+    }
+    if (rows.length) inserts.push(sbInsert('predicciones', rows));
+  }
+
   if (inserts.length) await Promise.all(inserts);
 }
 
@@ -189,8 +210,8 @@ export default async function handler(req, res) {
       }
     } catch (_) { /* tabla cupos puede no existir aún */ }
 
-    // Sincronizar tablas relacionales (best-effort: no falla el request si hay error)
-    try { await sincronizarRelacional(userId, nuevo); } catch (_) {}
+    // Sincronizar tablas relacionales solo para la categoría guardada (best-effort)
+    try { await sincronizarRelacional(userId, nuevo, cat); } catch (_) {}
 
     return res.json({ ok: true, picks_completos });
   }
