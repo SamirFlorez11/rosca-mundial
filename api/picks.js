@@ -46,6 +46,91 @@ async function sbPatch(table, params, body) {
   return r.ok;
 }
 
+async function sbDelete(table, params) {
+  const qs = new URLSearchParams(params).toString();
+  const url = `${SUPABASE_URL}/rest/v1/${table}${qs ? '?' + qs : ''}`;
+  const r = await fetch(url, {
+    method: 'DELETE',
+    headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}` }
+  });
+  return r.ok;
+}
+
+async function sbInsert(table, body) {
+  const url = `${SUPABASE_URL}/rest/v1/${table}`;
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: {
+      apikey: SERVICE_KEY,
+      Authorization: `Bearer ${SERVICE_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer: 'return=minimal'
+    },
+    body: JSON.stringify(body)
+  });
+  return r.ok;
+}
+
+// Sincroniza picks_killer, picks_equipos y predicciones a partir del picks_data completo.
+// Si un jugador/equipo/partido no existe aún en la tabla (e.g. equipo no cargado), se omite sin error.
+async function sincronizarRelacional(userId, nuevo) {
+  const [jugadores, equipos, partidos] = await Promise.all([
+    sbGet('jugadores', { select: 'id,nombre_corto' }),
+    sbGet('equipos',   { select: 'id,codigo_fifa' }),
+    sbGet('partidos',  { select: 'id,numero_partido' }),
+  ]);
+
+  const jugMap = {}; // datos.js ID (nombre_corto) → UUID
+  if (Array.isArray(jugadores)) jugadores.forEach(j => { if (j.nombre_corto) jugMap[j.nombre_corto] = j.id; });
+
+  const eqMap = {}; // codigo_fifa → UUID
+  if (Array.isArray(equipos)) equipos.forEach(e => { if (e.codigo_fifa) eqMap[e.codigo_fifa] = e.id; });
+
+  const parMap = {}; // numero_partido → UUID
+  if (Array.isArray(partidos)) partidos.forEach(p => { if (p.numero_partido) parMap[p.numero_partido] = p.id; });
+
+  // Borrar registros actuales del usuario en las tres tablas
+  await Promise.all([
+    sbDelete('picks_killer',  { 'usuario_id': `eq.${userId}` }),
+    sbDelete('picks_equipos', { 'usuario_id': `eq.${userId}` }),
+    sbDelete('predicciones',  { 'usuario_id': `eq.${userId}` }),
+  ]);
+
+  // picks_killer: datos.js ID → jugador UUID (omite IDs de equipos no cargados aún)
+  const killerRows = (nuevo.killer || [])
+    .filter(id => jugMap[id])
+    .map(id => ({ usuario_id: userId, jugador_id: jugMap[id] }));
+
+  // picks_equipos: código de equipo → equipo UUID + categoría correcta para CHECK constraint
+  const CATS = [
+    { key: 'carnicero', cat: 'carnicero'  },
+    { key: 'banderin',  cat: 'banderin'   },
+    { key: 'virgen',    cat: 'virgen'     },
+    { key: 'pied',      cat: 'pie_de_nina' },
+    { key: 'mecha',     cat: 'mechacorta' },
+  ];
+  const equiposRows = [];
+  for (const { key, cat } of CATS) {
+    for (const code of (nuevo[key] || [])) {
+      if (eqMap[code]) equiposRows.push({ usuario_id: userId, equipo_id: eqMap[code], categoria: cat });
+    }
+  }
+
+  // predicciones: p0→numero_partido 1, p1→2, ...
+  const predRows = [];
+  for (const [pKey, pred] of Object.entries(nuevo.lev || {})) {
+    const idx = parseInt(pKey.replace('p', ''), 10);
+    const partUUID = parMap[idx + 1];
+    if (partUUID && pred) predRows.push({ usuario_id: userId, partido_id: partUUID, prediccion: pred });
+  }
+
+  const inserts = [];
+  if (killerRows.length)  inserts.push(sbInsert('picks_killer',  killerRows));
+  if (equiposRows.length) inserts.push(sbInsert('picks_equipos', equiposRows));
+  if (predRows.length)    inserts.push(sbInsert('predicciones',  predRows));
+  if (inserts.length) await Promise.all(inserts);
+}
+
 export default async function handler(req, res) {
   cors(res);
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -91,8 +176,9 @@ export default async function handler(req, res) {
       (nuevo.killer || []).length >= 15 &&
       (nuevo.carnicero || []).length >= 10;
 
-    // Guardar en usuarios
+    // Guardar en usuarios (fuente de verdad principal)
     const ok = await sbPatch('usuarios', { 'id': `eq.${userId}` }, { picks_data: nuevo, picks_completos });
+    if (!ok) return res.status(500).json({ error: 'Error guardando en base de datos' });
 
     // Intentar guardar también en cupo activo (si existe la tabla)
     try {
@@ -101,9 +187,11 @@ export default async function handler(req, res) {
       if (cupo?.id) {
         await sbPatch('cupos', { 'id': `eq.${cupo.id}` }, { picks_data: nuevo, picks_completos });
       }
-    } catch (_) { /* cupos table may not exist yet */ }
+    } catch (_) { /* tabla cupos puede no existir aún */ }
 
-    if (!ok) return res.status(500).json({ error: 'Error guardando en base de datos' });
+    // Sincronizar tablas relacionales (best-effort: no falla el request si hay error)
+    try { await sincronizarRelacional(userId, nuevo); } catch (_) {}
+
     return res.json({ ok: true, picks_completos });
   }
 
