@@ -438,18 +438,8 @@
   .lev-btn-card .btn-name { font-size: 11px; font-weight: 700; text-align: center; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 96px; transition: color 0.15s; }
   .lev-btn-card .btn-sub  { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.45; transition: opacity 0.15s, color 0.15s; }
 
-  /* Icono de empate: tres barras horizontales finas (CSS puro, sin emoji) */
-  .empate-icon {
-    display: block;
-    width: 22px; height: 2px;
-    background: currentColor;
-    border-radius: 2px;
-    opacity: 0.45;
-    margin: 2px auto;
-    box-shadow: 0 -7px 0 currentColor, 0 7px 0 currentColor;
-    transition: opacity 0.15s, box-shadow 0.15s;
-    flex-shrink: 0;
-  }
+  /* Empate: sin icono, solo texto */
+  .empate-icon { display: none; }
 
   /* ── SELECCIONADO: Local ─────────────────────────── */
   .lev-btn-card.sel-L {
@@ -469,7 +459,7 @@
     border-right-color: rgba(252,209,22,0.25);
     box-shadow: inset 0 -3px 0 #C8A800, inset 0 0 20px rgba(252,209,22,0.06);
   }
-  .lev-btn-card.sel-E .empate-icon { opacity: 1; box-shadow: 0 -7px 0 #C8A800, 0 7px 0 #C8A800; filter: drop-shadow(0 0 4px rgba(252,209,22,0.5)); }
+  .lev-btn-card.sel-E .empate-icon { display: none; }
   .lev-btn-card.sel-E .btn-name { color: #E8C900; font-size: 12px; letter-spacing: 1px; }
   .lev-btn-card.sel-E .btn-sub  { color: #C8A800; opacity: 1; font-weight: 700; }
 
@@ -1153,7 +1143,7 @@ function actualizarContador() {
     const tot = PARTIDOS_LEV.filter(p => !p.bloqueado).length;
     document.getElementById('cntHecho').textContent = n;
     document.getElementById('cntTotal').textContent = '/ ' + tot + ' partidos con pick';
-    const completo = n >= tot;
+    const completo = n >= 1;  // se activa con al menos 1 partido elegido
     const btn = document.getElementById('btnConfirmarCat');
     if (btn) { btn.disabled = !completo; btn.style.opacity = completo ? '1' : '0.4'; }
   } else {
@@ -1243,7 +1233,7 @@ function renderPartidosTodos() {
       html += `<div class="partido-card opt-reveal${sel ? ' has-pick' : ''}">
         <div class="partido-card-meta">
           <span>Grupo ${g}</span>
-          <span>${p.fecha}</span>
+          <span>${p.fecha} · Hora COL</span>
         </div>
         <div class="partido-btns-row">
           <button class="lev-btn-card ${clsL}" data-pid="${p.id}" data-val="L" onclick="pickLEV('${p.id}','L')">
