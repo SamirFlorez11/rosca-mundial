@@ -22,7 +22,7 @@ async function supabase(endpoint, method = 'GET', body = null) {
   return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : null };
 }
 
-async function enviarCorreoBienvenida(correo, nombre) {
+async function enviarCorreoBienvenida(correo, nombre, usuarioId = null) {
   const html = `
     <!DOCTYPE html>
     <html lang="es">
@@ -62,19 +62,35 @@ async function enviarCorreoBienvenida(correo, nombre) {
     </html>
   `;
 
-  await fetch('https://api.resend.com/emails', {
+  const resendRes = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${RESEND_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: RESEND_FROM_EMAIL,
+      from: `Rosca Mundial <${RESEND_FROM_EMAIL}>`,
       to: correo,
       subject: '✅ ¡Registro confirmado! Ya estás en la Rosca Mundial 2026',
       html,
     }),
   });
+
+  const resendData = await resendRes.json().catch(() => ({}));
+
+  if (!resendRes.ok) {
+    console.error('❌ Resend error al enviar bienvenida:', resendRes.status, JSON.stringify(resendData));
+    // Registrar fallo en logs para auditoria
+    if (usuarioId) {
+      await supabase('logs', 'POST', {
+        usuario_id: usuarioId,
+        accion: 'error_correo_bienvenida',
+        detalle: { status: resendRes.status, error: resendData, correo },
+      }).catch(() => {});
+    }
+  } else {
+    console.log('✅ Correo bienvenida enviado. Resend ID:', resendData.id);
+  }
 }
 
 export default async function handler(req, res) {
@@ -151,7 +167,7 @@ export default async function handler(req, res) {
     });
 
     // Enviar correo de bienvenida
-    await enviarCorreoBienvenida(customer_email, usuario.nombre_completo);
+    await enviarCorreoBienvenida(customer_email, usuario.nombre_completo, usuario.id);
 
     // Actualizar notificación a enviada
     await supabase(
