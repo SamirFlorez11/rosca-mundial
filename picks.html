@@ -374,10 +374,18 @@
 
   /* LEV partidos */
   .grupo-header {
-    padding: 8px 12px 4px;
-    font-family:'Poppins',sans-serif; font-size: 14px; letter-spacing: 2px; color: var(--amarillo);
+    padding: 14px 14px 10px;
+    font-family:'Poppins',sans-serif;
     border-bottom: 1px solid rgba(30,45,69,0.5);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+  }
+  .grupo-header-title {
+    font-size: 15px; font-weight: 800; letter-spacing: 2px;
+    color: var(--amarillo); text-transform: uppercase; line-height: 1;
+  }
+  .grupo-header-sub {
+    font-size: 10px; color: var(--muted); letter-spacing: 0.5px;
+    margin-top: 3px; font-weight: 500;
   }
 
   .partido-card {
@@ -430,9 +438,35 @@
   .lev-btn-card .btn-name { font-size: 11px; font-weight: 700; text-align: center; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px; }
   .lev-btn-card .btn-sub  { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.5; }
 
-  .lev-btn-card.sel-L { background: rgba(56,130,221,0.18); color: #85B7EB; }
-  .lev-btn-card.sel-E { background: rgba(252,209,22,0.14); color: var(--amarillo); }
-  .lev-btn-card.sel-V { background: rgba(216,90,48,0.18); color: #F0997B; }
+  .lev-btn-card.sel-L {
+    background: rgba(56,130,221,0.28);
+    color: #A8CFFF;
+    border-right-color: rgba(56,130,221,0.3);
+    box-shadow: inset 0 -3px 0 #378ADD;
+  }
+  .lev-btn-card.sel-L .btn-flag  { filter: drop-shadow(0 0 6px rgba(56,130,221,0.7)); }
+  .lev-btn-card.sel-L .btn-name  { color: #A8CFFF; font-size: 12px; }
+  .lev-btn-card.sel-L .btn-sub   { color: #378ADD; opacity: 1; font-weight: 700; }
+
+  .lev-btn-card.sel-E {
+    background: rgba(252,209,22,0.20);
+    color: var(--amarillo);
+    border-right-color: rgba(252,209,22,0.3);
+    box-shadow: inset 0 -3px 0 var(--amarillo);
+  }
+  .lev-btn-card.sel-E .btn-flag  { filter: drop-shadow(0 0 6px rgba(252,209,22,0.7)); }
+  .lev-btn-card.sel-E .btn-name  { color: var(--amarillo); font-size: 12px; }
+  .lev-btn-card.sel-E .btn-sub   { color: var(--amarillo); opacity: 1; font-weight: 700; }
+
+  .lev-btn-card.sel-V {
+    background: rgba(216,90,48,0.28);
+    color: #FFB49A;
+    border-right-color: rgba(216,90,48,0.3);
+    box-shadow: inset 0 -3px 0 #D85A30;
+  }
+  .lev-btn-card.sel-V .btn-flag  { filter: drop-shadow(0 0 6px rgba(216,90,48,0.7)); }
+  .lev-btn-card.sel-V .btn-name  { color: #FFB49A; font-size: 12px; }
+  .lev-btn-card.sel-V .btn-sub   { color: #D85A30; opacity: 1; font-weight: 700; }
 
   @media (hover: hover) and (pointer: fine) {
     .lev-btn-card:hover:not(.sel-L):not(.sel-E):not(.sel-V) { background: rgba(255,255,255,0.05); color: var(--text); }
@@ -1179,7 +1213,10 @@ function renderPartidosTodos() {
   GRUPOS_LEV.forEach((g, idx) => {
     const ps = PARTIDOS_LEV.filter(p => p.grupo === g);
     if (!ps.length) return;
-    html += `<div class="grupo-header opt-reveal" id="grupo-sec-${g}" style="scroll-margin-top:150px;${idx>0?'margin-top:12px':''}">GRUPO ${g}</div>`;
+    html += `<div class="grupo-header opt-reveal" id="grupo-sec-${g}" style="scroll-margin-top:150px;${idx>0?'margin-top:16px':''}">
+      <div class="grupo-header-title">Grupo ${g}</div>
+      <div class="grupo-header-sub">Selecciona tus predicciones</div>
+    </div>`;
     ps.forEach(p => {
       const sel = STATE.lev[p.id];
       const clsL = sel === 'L' ? 'sel-L' : '';
