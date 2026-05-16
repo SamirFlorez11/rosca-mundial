@@ -380,32 +380,64 @@
     margin-bottom: 4px;
   }
 
-  .partido-row {
-    display: flex; align-items: center; gap: 8px;
-    padding: 8px 12px; border-radius: 8px; margin-bottom: 3px;
-    background: var(--card2); border: 1px solid var(--border);
+  .partido-card {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.15s;
   }
-  .partido-teams { flex: 1; font-family:'Poppins',sans-serif; font-weight: 600; font-size: 13px; }
-  .partido-vs { color: var(--muted); font-weight: 400; margin: 0 4px; font-size: 11px; }
-  .partido-date { font-family:'Poppins',sans-serif; font-size: 10px; color: var(--muted); flex-shrink: 0; width: 55px; text-align: right; }
-  .lev-btns { display: flex; gap: 3px; flex-shrink: 0; }
-  .lev-btn {
-    padding: 5px 10px; border-radius: 6px; font-family:'Poppins',sans-serif;
-    font-weight: 700; font-size: 12px; cursor: pointer;
-    border: 1px solid var(--border); background: var(--card); color: var(--muted);
-    transition: background-color 0.12s, border-color 0.12s, color 0.12s;
-    touch-action: manipulation; /* evita doble-tap zoom en móvil */
+  .partido-card.has-pick { border-color: rgba(252,209,22,0.3); }
+  .partido-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 12px;
+    font-size: 10px;
+    color: var(--muted);
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(30,45,69,0.4);
+  }
+  .partido-btns-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .lev-btn-card {
+    padding: 10px 6px;
+    border: none;
+    border-right: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    transition: background 0.12s, color 0.12s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: var(--muted);
+    touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    min-height: 62px;
+    justify-content: center;
+    width: 100%;
   }
-  .lev-btn.sel-L { background: rgba(56,130,221,0.15); border-color: #378ADD; color: #85B7EB; }
-  .lev-btn.sel-E { background: rgba(239,159,39,0.15); border-color: #EF9F27; color: #FAC775; }
-  .lev-btn.sel-V { background: rgba(216,90,48,0.15); border-color: #D85A30; color: #F0997B; }
+  .lev-btn-card:last-child { border-right: none; }
+  .lev-btn-card .btn-flag { font-size: 20px; line-height: 1; }
+  .lev-btn-card .btn-name { font-size: 11px; font-weight: 700; text-align: center; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px; }
+  .lev-btn-card .btn-sub  { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.5; }
+
+  .lev-btn-card.sel-L { background: rgba(56,130,221,0.18); color: #85B7EB; }
+  .lev-btn-card.sel-E { background: rgba(252,209,22,0.14); color: var(--amarillo); }
+  .lev-btn-card.sel-V { background: rgba(216,90,48,0.18); color: #F0997B; }
+
   @media (hover: hover) and (pointer: fine) {
-    .lev-btn:hover:not(.sel-L):not(.sel-E):not(.sel-V) { border-color: var(--amarillo); color: var(--text); }
+    .lev-btn-card:hover:not(.sel-L):not(.sel-E):not(.sel-V) { background: rgba(255,255,255,0.05); color: var(--text); }
   }
-  .lev-btn:focus, .lev-btn:focus-visible { outline: none !important; box-shadow: none !important; }
-  .lev-btn { outline: none; }
+  .lev-btn-card:focus, .lev-btn-card:focus-visible { outline: none !important; box-shadow: none !important; }
 
   /* Grupo tabs (para LEV) */
   .grupo-tabs { display: flex; gap: 4px; flex-wrap: wrap; padding: 10px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -1150,13 +1182,30 @@ function renderPartidosTodos() {
     html += `<div class="grupo-header opt-reveal" id="grupo-sec-${g}" style="scroll-margin-top:150px;${idx>0?'margin-top:12px':''}">GRUPO ${g}</div>`;
     ps.forEach(p => {
       const sel = STATE.lev[p.id];
-      html += `<div class="partido-row opt-reveal">
-        <div class="partido-teams">${p.local.flag} ${p.local.nombre}<span class="partido-vs"> vs </span>${p.visit.flag} ${p.visit.nombre}</div>
-        <div class="partido-date">${p.fecha}</div>
-        <div class="lev-btns">
-          <button class="lev-btn ${sel==='L'?'sel-L':''}" data-pid="${p.id}" data-val="L" onclick="pickLEV('${p.id}','L')">L</button>
-          <button class="lev-btn ${sel==='E'?'sel-E':''}" data-pid="${p.id}" data-val="E" onclick="pickLEV('${p.id}','E')">E</button>
-          <button class="lev-btn ${sel==='V'?'sel-V':''}" data-pid="${p.id}" data-val="V" onclick="pickLEV('${p.id}','V')">V</button>
+      const clsL = sel === 'L' ? 'sel-L' : '';
+      const clsE = sel === 'E' ? 'sel-E' : '';
+      const clsV = sel === 'V' ? 'sel-V' : '';
+      html += `<div class="partido-card opt-reveal${sel ? ' has-pick' : ''}">
+        <div class="partido-card-meta">
+          <span>Grupo ${g}</span>
+          <span>${p.fecha}</span>
+        </div>
+        <div class="partido-btns-row">
+          <button class="lev-btn-card ${clsL}" data-pid="${p.id}" data-val="L" onclick="pickLEV('${p.id}','L')">
+            <span class="btn-flag">${p.local.flag}</span>
+            <span class="btn-name">${p.local.nombre}</span>
+            <span class="btn-sub">Local</span>
+          </button>
+          <button class="lev-btn-card ${clsE}" data-pid="${p.id}" data-val="E" onclick="pickLEV('${p.id}','E')">
+            <span class="btn-flag">⚖️</span>
+            <span class="btn-name">Empate</span>
+            <span class="btn-sub">&nbsp;</span>
+          </button>
+          <button class="lev-btn-card ${clsV}" data-pid="${p.id}" data-val="V" onclick="pickLEV('${p.id}','V')">
+            <span class="btn-flag">${p.visit.flag}</span>
+            <span class="btn-name">${p.visit.nombre}</span>
+            <span class="btn-sub">Visitante</span>
+          </button>
         </div>
       </div>`;
     });
@@ -1179,15 +1228,14 @@ function setupScrollReveal() {
 
 function pickLEV(id, val) {
   if (STATE.lev[id] === val) delete STATE.lev[id]; else STATE.lev[id] = val;
-  // Actualizar solo los 3 botones del partido tocado (sin re-renderizar toda la lista)
   const newSel = STATE.lev[id] || null;
-  document.querySelectorAll(`.lev-btn[data-pid="${id}"]`).forEach(btn => {
+  document.querySelectorAll(`.lev-btn-card[data-pid="${id}"]`).forEach(btn => {
     const v = btn.dataset.val;
-    btn.className = 'lev-btn' + (newSel === v ? ' sel-' + v : '');
-    btn.blur(); // quitar foco para evitar el recuadro del navegador
+    btn.className = 'lev-btn-card' + (newSel === v ? ' sel-' + v : '');
+    btn.blur();
   });
-  // Diferir los re-renders al siguiente frame para no causar reflow entre mousedown/mouseup
-  // (soluciona el bug de PC donde el click no registraba por el reflow sincrónico)
+  const card = document.querySelector(`.lev-btn-card[data-pid="${id}"]`)?.closest('.partido-card');
+  if (card) card.classList.toggle('has-pick', !!newSel);
   requestAnimationFrame(() => {
     renderPicksLEV();
     renderTabsCategoria('lev');
@@ -1224,9 +1272,8 @@ function renderPicksLEV() {
 
 function quitarLEV(id) {
   delete STATE.lev[id];
-  // Resetear los botones del partido sin re-renderizar toda la lista
-  document.querySelectorAll(`.lev-btn[data-pid="${id}"]`).forEach(btn => {
-    btn.className = 'lev-btn';
+  document.querySelectorAll(`.lev-btn-card[data-pid="${id}"]`).forEach(btn => {
+    btn.className = 'lev-btn-card';
     btn.blur();
   });
   renderPicksLEV();

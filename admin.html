@@ -268,8 +268,48 @@ body { font-family:'Barlow',sans-serif; background:var(--bg); color:var(--text);
 
   </div>
 
+  <!-- TABLA PICKS -->
+  <div class="section-title" style="margin-top:8px;">📋 Picks registrados <span id="picks-total-badge" style="font-size:12px;color:var(--muted);font-family:'Barlow',sans-serif;letter-spacing:0;font-weight:600;"></span></div>
+  <div class="table-card">
+    <div class="table-header" style="flex-wrap:wrap;gap:10px;">
+      <input class="table-search" id="picksSearch" placeholder="🔍  Buscar por usuario o selección..." oninput="filtrarPicks()">
+      <div class="table-filters" id="picks-filters" style="flex-wrap:wrap;">
+        <button class="filter-btn active" onclick="setFiltroPicks('todos',this)">Todos</button>
+        <button class="filter-btn" onclick="setFiltroPicks('killer',this)">⚽ Killer</button>
+        <button class="filter-btn" onclick="setFiltroPicks('carnicero',this)">🔪 Carnicero</button>
+        <button class="filter-btn" onclick="setFiltroPicks('banderin',this)">🚩 Banderín</button>
+        <button class="filter-btn" onclick="setFiltroPicks('virgen',this)">✨ Virgen</button>
+        <button class="filter-btn" onclick="setFiltroPicks('pie_de_nina',this)">👠 Pie de Niña</button>
+        <button class="filter-btn" onclick="setFiltroPicks('mechacorta',this)">💥 Mechacorta</button>
+        <button class="filter-btn" onclick="setFiltroPicks('lev',this)">📊 L/E/V</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Usuario</th>
+            <th>Categoría</th>
+            <th>Selección</th>
+          </tr>
+        </thead>
+        <tbody id="picksBody">
+          <tr><td colspan="4" class="table-empty">Cargando picks...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-footer">
+      <div class="table-count" id="picksCount">—</div>
+      <div class="pagination" id="picksPaginacion"></div>
+    </div>
+  </div>
+
   <!-- TABLA USUARIOS -->
-  <div class="section-title">👤 Usuarios registrados</div>
+  <div class="section-title" style="justify-content:space-between;">
+    <span>👤 Usuarios registrados</span>
+    <button onclick="abrirModalCrearUsuario()" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;padding:7px 18px;border-radius:9px;border:1px solid var(--green);color:var(--green);background:rgba(34,197,94,0.08);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(34,197,94,0.18)'" onmouseout="this.style.background='rgba(34,197,94,0.08)'">➕ Crear usuario</button>
+  </div>
   <div class="table-card">
     <div class="table-header">
       <input class="table-search" id="searchInput" placeholder="🔍  Buscar por nombre, correo o alias..." oninput="filtrarTabla()">
@@ -307,6 +347,55 @@ body { font-family:'Barlow',sans-serif; background:var(--bg); color:var(--text);
   </div>
 
 </div><!-- /main -->
+
+<!-- MODAL CREAR USUARIO -->
+<div class="confirm-overlay" id="modalCrearUsuario" style="z-index:600;">
+  <div class="confirm-box" style="max-width:500px;text-align:left;padding:28px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div class="confirm-title" style="margin:0;font-size:20px;">➕ CREAR USUARIO</div>
+      <button onclick="cerrarModalCrearUsuario()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;padding:0 4px;">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div style="grid-column:1/-1;">
+        <label style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;">Nombre completo *</label>
+        <input id="cu-nombre" type="text" placeholder="Ej: Juan Pérez García" style="width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;">Correo *</label>
+        <input id="cu-correo" type="email" placeholder="correo@ejemplo.com" style="width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;">Celular *</label>
+        <input id="cu-celular" type="text" placeholder="3001234567" style="width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;">Documento *</label>
+        <input id="cu-doc" type="text" placeholder="Cédula o pasaporte" style="width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;">Ciudad</label>
+        <input id="cu-ciudad" type="text" placeholder="Medellín" style="width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;">Contraseña *</label>
+        <div style="display:flex;gap:6px;">
+          <input id="cu-pass" type="text" placeholder="Mín. 8 caracteres" style="flex:1;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;outline:none;font-family:monospace;">
+          <button onclick="generarPassword()" title="Generar contraseña aleatoria" style="padding:9px 11px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:14px;transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--amarillo)'" onmouseout="this.style.borderColor='var(--border)'">🎲</button>
+        </div>
+      </div>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;margin-bottom:16px;cursor:pointer;">
+      <input id="cu-enviar-correo" type="checkbox" checked style="width:16px;height:16px;accent-color:var(--green);cursor:pointer;">
+      <span style="font-size:13px;color:var(--muted);">Enviar correo de bienvenida al participante</span>
+    </label>
+    <div id="cu-error" style="display:none;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:10px 14px;font-size:13px;color:#f87171;margin-bottom:12px;"></div>
+    <div id="cu-exito" style="display:none;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--green);margin-bottom:12px;line-height:1.6;"></div>
+    <div class="confirm-btns">
+      <button class="btn-cancel" onclick="cerrarModalCrearUsuario()">CANCELAR</button>
+      <button class="btn-ok" id="btnCrearUsuario" onclick="crearUsuario()" style="background:linear-gradient(135deg,var(--green),#16a34a);">CREAR USUARIO</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL CONFIRMAR TOGGLE V2 -->
 <div class="confirm-overlay" id="confirmModal">
@@ -366,7 +455,8 @@ async function init() {
     await Promise.all([
       cargarStats(),
       cargarVersiones(),
-      cargarUsuarios()
+      cargarUsuarios(),
+      cargarPicks(),
     ]);
 
   } catch (err) {
@@ -578,6 +668,214 @@ function renderTabla() {
     pg.appendChild(b);
   }
 }
+
+// ─── PICKS ───────────────────────────────────────────────────────────────────
+let todosPicksFlat = [];
+let filtroPicksActual = 'todos';
+let paginaPicksActual = 1;
+const POR_PAGINA_PICKS = 30;
+
+const CAT_LABEL = {
+  killer:      { label: 'Killer',      color: '#FCD116', bg: 'rgba(252,209,22,0.12)' },
+  carnicero:   { label: 'Carnicero',   color: '#ef4444', bg: 'rgba(239,68,68,0.10)'  },
+  banderin:    { label: 'Banderín',    color: '#4a90d9', bg: 'rgba(0,48,135,0.15)'   },
+  virgen:      { label: 'Virgen',      color: '#22c55e', bg: 'rgba(34,197,94,0.10)'  },
+  pie_de_nina: { label: 'Pie de Niña', color: '#f97316', bg: 'rgba(249,115,22,0.12)' },
+  mechacorta:  { label: 'Mechacorta',  color: '#a78bfa', bg: 'rgba(167,139,250,0.12)'},
+  lev:         { label: 'L/E/V',       color: '#38bdf8', bg: 'rgba(56,189,248,0.10)' },
+};
+
+async function cargarPicks() {
+  const [killerRes, equiposRes, predRes] = await Promise.all([
+    supabase.from('picks_killer')
+      .select('id, usuarios(nombre_usuario, nombre_completo), jugadores(nombre)'),
+    supabase.from('picks_equipos')
+      .select('id, categoria, usuarios(nombre_usuario, nombre_completo), equipos(nombre, codigo_fifa)'),
+    supabase.from('predicciones')
+      .select('id, prediccion, usuarios(nombre_usuario, nombre_completo), partidos(numero_partido)'),
+  ]);
+
+  const flat = [];
+
+  (killerRes.data || []).forEach(row => {
+    flat.push({
+      categoriaKey: 'killer',
+      usuario:   row.usuarios?.nombre_usuario || row.usuarios?.nombre_completo || '—',
+      seleccion: row.jugadores?.nombre || '—',
+    });
+  });
+
+  (equiposRes.data || []).forEach(row => {
+    flat.push({
+      categoriaKey: row.categoria || 'desconocido',
+      usuario:   row.usuarios?.nombre_usuario || row.usuarios?.nombre_completo || '—',
+      seleccion: row.equipos?.nombre || row.equipos?.codigo_fifa?.toUpperCase() || '—',
+    });
+  });
+
+  (predRes.data || []).forEach(row => {
+    flat.push({
+      categoriaKey: 'lev',
+      usuario:   row.usuarios?.nombre_usuario || row.usuarios?.nombre_completo || '—',
+      seleccion: `Partido ${row.partidos?.numero_partido || '?'}: ${row.prediccion || '—'}`,
+    });
+  });
+
+  // Ordenar: por categoría, luego por usuario
+  flat.sort((a, b) => {
+    if (a.categoriaKey !== b.categoriaKey) return a.categoriaKey.localeCompare(b.categoriaKey);
+    return a.usuario.localeCompare(b.usuario);
+  });
+
+  todosPicksFlat = flat;
+
+  const badge = document.getElementById('picks-total-badge');
+  if (badge) badge.textContent = `(${flat.length.toLocaleString()} picks en total)`;
+
+  renderPicks();
+}
+
+window.setFiltroPicks = function(f, el) {
+  filtroPicksActual = f;
+  paginaPicksActual = 1;
+  document.querySelectorAll('#picks-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderPicks();
+};
+
+window.filtrarPicks = function() {
+  paginaPicksActual = 1;
+  renderPicks();
+};
+
+function renderPicks() {
+  const q = (document.getElementById('picksSearch').value || '').toLowerCase();
+
+  const lista = todosPicksFlat.filter(p => {
+    const matchQ = !q ||
+      p.usuario.toLowerCase().includes(q) ||
+      p.seleccion.toLowerCase().includes(q);
+    if (!matchQ) return false;
+    if (filtroPicksActual === 'todos') return true;
+    return p.categoriaKey === filtroPicksActual;
+  });
+
+  const total    = lista.length;
+  const totalPag = Math.ceil(total / POR_PAGINA_PICKS);
+  const inicio   = (paginaPicksActual - 1) * POR_PAGINA_PICKS;
+  const pagina   = lista.slice(inicio, inicio + POR_PAGINA_PICKS);
+
+  const tbody = document.getElementById('picksBody');
+  if (pagina.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="table-empty">No hay picks con ese filtro</td></tr>';
+  } else {
+    tbody.innerHTML = pagina.map((p, i) => {
+      const cat = CAT_LABEL[p.categoriaKey] || { label: p.categoriaKey, color: 'var(--muted)', bg: 'var(--card2)' };
+      const catBadge = `<span style="display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;background:${cat.bg};color:${cat.color};border:1px solid ${cat.color}44;">${cat.label}</span>`;
+      return `<tr>
+        <td style="color:var(--muted);font-size:12px;">${inicio + i + 1}</td>
+        <td style="font-weight:600;">${p.usuario}</td>
+        <td>${catBadge}</td>
+        <td style="font-size:13px;">${p.seleccion}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('picksCount').textContent =
+    total === 0 ? 'Sin resultados' :
+    `Mostrando ${Math.min(inicio + 1, total)}–${Math.min(inicio + POR_PAGINA_PICKS, total)} de ${total} picks`;
+
+  const pg = document.getElementById('picksPaginacion');
+  pg.innerHTML = '';
+  for (let p = 1; p <= Math.min(totalPag, 10); p++) {
+    const b = document.createElement('button');
+    b.className = 'pg-btn' + (p === paginaPicksActual ? ' active' : '');
+    b.textContent = p;
+    b.onclick = () => { paginaPicksActual = p; renderPicks(); };
+    pg.appendChild(b);
+  }
+}
+
+// ─── CREAR USUARIO (ADMIN) ───────────────────────────────────────────────────
+window.abrirModalCrearUsuario = function() {
+  ['cu-nombre','cu-correo','cu-celular','cu-doc','cu-ciudad','cu-pass'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('cu-enviar-correo').checked = true;
+  document.getElementById('cu-error').style.display = 'none';
+  document.getElementById('cu-exito').style.display = 'none';
+  const btn = document.getElementById('btnCrearUsuario');
+  btn.disabled = false; btn.textContent = 'CREAR USUARIO';
+  document.getElementById('modalCrearUsuario').classList.add('open');
+};
+
+window.cerrarModalCrearUsuario = function() {
+  document.getElementById('modalCrearUsuario').classList.remove('open');
+};
+
+window.generarPassword = function() {
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#!';
+  let pwd = '';
+  for (let i = 0; i < 10; i++) pwd += chars[Math.floor(Math.random() * chars.length)];
+  document.getElementById('cu-pass').value = pwd;
+};
+
+window.crearUsuario = async function() {
+  const errEl = document.getElementById('cu-error');
+  const okEl  = document.getElementById('cu-exito');
+  const btn   = document.getElementById('btnCrearUsuario');
+  errEl.style.display = 'none';
+  okEl.style.display  = 'none';
+
+  const nombre  = document.getElementById('cu-nombre').value.trim();
+  const correo  = document.getElementById('cu-correo').value.trim();
+  const celular = document.getElementById('cu-celular').value.trim();
+  const doc     = document.getElementById('cu-doc').value.trim();
+  const ciudad  = document.getElementById('cu-ciudad').value.trim();
+  const pass    = document.getElementById('cu-pass').value.trim();
+  const enviaCo = document.getElementById('cu-enviar-correo').checked;
+
+  if (!nombre || !correo || !celular || !doc || !pass) {
+    errEl.textContent = 'Completa todos los campos obligatorios (*)';
+    errEl.style.display = 'block'; return;
+  }
+  if (pass.length < 8) {
+    errEl.textContent = 'La contraseña debe tener mínimo 8 caracteres';
+    errEl.style.display = 'block'; return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Creando...';
+
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+
+    const res = await fetch('/api/crear-usuario-admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ nombre_completo: nombre, correo, celular, documento: doc, password: pass, ciudad, enviar_correo: enviaCo }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      errEl.textContent = data.error || 'Error desconocido';
+      errEl.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'CREAR USUARIO';
+      return;
+    }
+
+    okEl.innerHTML = `✅ <strong>${nombre}</strong> creado correctamente.<br>
+      Alias en rankings: <strong>${data.alias}</strong>${enviaCo ? '<br>📧 Correo de bienvenida enviado.' : ''}`;
+    okEl.style.display = 'block';
+    btn.textContent = '✓ CREADO';
+    await cargarUsuarios();
+
+  } catch (e) {
+    errEl.textContent = 'Error de conexión: ' + e.message;
+    errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'CREAR USUARIO';
+  }
+};
 
 // ─── AUTH ────────────────────────────────────────────────────────────────────
 window.cerrarSesion = async function() {
