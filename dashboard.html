@@ -1706,11 +1706,6 @@
     window.location.href = '/picks.html';
   }
 
-  // DATOS DEL USUARIO — en producción vendrán de Supabase
-  // nombre_completo viene del campo "Nombre completo" del registro
-  const USUARIO_NOMBRE_REAL = 'Samir Florez Calao'; // desde DB: usuarios.nombre_completo
-  const USUARIO_ALIAS_ACTUAL = 'SamirF2026';        // desde DB: usuarios.alias
-
   // MODAL ALIAS
   let tipoSeleccionado = 'real';
 
@@ -1754,8 +1749,8 @@
       optAlias.style.border = '2px solid var(--border)';
       optAlias.style.background = 'transparent';
       optAlias.querySelector('div:nth-child(2)').style.color = 'var(--text)';
-      // Autocompletar con el nombre real del registro
-      input.value = USUARIO_NOMBRE_REAL;
+      // Autocompletar con el nombre real del registro (obtenido de Supabase al cargar)
+      input.value = window._nombreCompleto || '';
       input.placeholder = 'Tu nombre completo del registro';
       input.style.borderColor = 'var(--amarillo)';
       document.getElementById('alias-error').style.display = 'none';
