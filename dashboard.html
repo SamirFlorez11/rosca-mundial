@@ -44,17 +44,21 @@
   body.dia .modal label { color: #4a5568 !important; }
   body.dia #opt-real, body.dia #opt-alias { border-color: #c5d0e0; background: #f0f4f8; }
   body.dia #opt-real.selected, body.dia #opt-alias.selected { border-color: #1e3a8a; background: rgba(30,58,138,0.08); }
-  body.dia .mi-pos-num { color: #1e3a8a; }
-  body.dia .mi-pos-name { color: #1e3a8a; }
-  body.dia .mi-pos-pts { color: #1e3a8a; }
-  body.dia .mi-pos-pts strong { color: #1e3a8a; }
-  body.dia .mini-val { color: #ffffff; }
-  body.dia .mi-pos-title { color: #1e3a8a; }
   .mi-pos-num { color: #FCD116 !important; }
   .mini-val { color: #FCD116 !important; }
+  /* Modo día — MI POSICIÓN: fondo blanco, todo azul oscuro */
+  body.dia .mi-pos-card {
+    background: #ffffff !important;
+    border-color: rgba(30,58,138,0.25) !important;
+  }
+  body.dia .mi-pos-title { color: #1e3a8a !important; }
   body.dia .mi-pos-num { color: #1e3a8a !important; }
-  body.dia .mini-val { color: #ffffff !important; }
-  body.dia .mini-lbl { color: rgba(255,255,255,0.75) !important; }
+  body.dia .mi-pos-name { color: #1e3a8a !important; }
+  body.dia .mi-pos-pts { color: #4a5568 !important; }
+  body.dia .mi-pos-pts strong { color: #1e3a8a !important; }
+  body.dia .mi-mini-stat { background: rgba(30,58,138,0.06) !important; }
+  body.dia .mini-val { color: #1e3a8a !important; }
+  body.dia .mini-lbl { color: #4a5568 !important; }
 
 
   /* Botón modo día/noche */
@@ -203,7 +207,19 @@
     box-shadow: 0 4px 15px rgba(252,209,22,0.4);
     color: #000;
   }
-  /* btn-resultados en día hereda el mismo gradiente que btn-picks — sin override necesario */
+  /* Modo día: botones con gradiente azul marino + texto blanco (contraste legible) */
+  body.dia .btn-resultados,
+  body.dia .btn-resultados:hover {
+    background: linear-gradient(135deg, #0D1B3E, #1a3a6e);
+    color: #fff !important;
+    box-shadow: 0 4px 15px rgba(13,27,62,0.3);
+  }
+  body.dia .btn-picks,
+  body.dia .btn-picks:hover {
+    background: linear-gradient(135deg, #0D1B3E, #1a3a6e);
+    color: #fff !important;
+    box-shadow: 0 4px 15px rgba(13,27,62,0.3);
+  }
 
   /* BTN IR A PICKS (siempre visible en navbar) */
   .btn-picks {
@@ -615,7 +631,6 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    justify-content: space-between;
   }
 
   .epos {
@@ -657,8 +672,9 @@
     font-size: 14px;
     color: var(--text);
     flex-shrink: 0;
-    margin-left: auto;
+    margin-left: auto; /* empuja los pts a la derecha gracias a flex:1 en .ename */
     text-align: right;
+    min-width: 52px;
   }
 
   .especial-tu-pos {
@@ -1007,6 +1023,18 @@
   }
   @media (max-width: 600px) {
     .especiales-grid { grid-template-columns: 1fr; }
+    /* Main: menos padding lateral para aprovechar todo el ancho */
+    .main { padding-left: 8px !important; padding-right: 8px !important; }
+    /* Card header en móvil: más compacto */
+    .card-header { padding: 12px 14px; gap: 8px; flex-wrap: nowrap; }
+    .card-title { font-size: 14px; letter-spacing: 1px; white-space: nowrap; }
+    .btn-ver-mas { font-size: 11px !important; padding: 5px 10px !important; white-space: nowrap; }
+    .card-badge { font-size: 11px; padding: 2px 8px; white-space: nowrap; }
+    /* Ranking principal: anular las columnas ocultas del colgroup para que no reserven espacio */
+    #ranking-principal-table { table-layout: auto !important; }
+    #ranking-principal-table col.col-aciertos,
+    #ranking-principal-table col.col-partidos,
+    #ranking-principal-table col.col-pct { width: 0 !important; display: none !important; }
     /* Navbar móvil */
     .navbar { padding: 0 10px; height: 56px; }
     .nav-logo img { height: 32px !important; width: 32px !important; }
@@ -1079,9 +1107,16 @@
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
+  body.dia #toast {
+    background: #1e3a8a;
+    border-color: rgba(30,58,138,0.5);
+    color: #ffffff !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  }
 </style>
 </head>
 <body>
+<script>(function(){if(localStorage.getItem('rosca-tema')==='dia')document.body.classList.add('dia');})()</script>
 
 <!-- TRICOLOR -->
 <div class="tricolor"></div>
@@ -1123,15 +1158,39 @@
 <!-- DROPDOWN USUARIO -->
 <div class="user-dropdown" id="userDropdown">
   <div style="padding:10px 14px 8px;border-bottom:1px solid var(--border);margin-bottom:4px;">
-    <div style="font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;color:var(--text)">SamirF2026</div>
-    <div style="font-family:'Poppins',sans-serif;font-size:12px;color:var(--muted)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f182909c9883b1839e8292909c849f9598909ddf929e9c">[email&#160;protected]</a></div>
+    <div id="dropdown-nombre-usuario" style="font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;color:var(--text)">—</div>
+    <div id="dropdown-email-usuario" style="font-family:'Poppins',sans-serif;font-size:12px;color:var(--muted)">—</div>
   </div>
   <div class="dropdown-item" onclick="openAliasModal()"><span class="dropdown-item-icon">✏️</span> Editar alias / nombre</div>
   <div class="dropdown-item" onclick="goToPicks()"><span class="dropdown-item-icon">⚡</span> Mis Picks</div>
-  <div class="dropdown-item"><span class="dropdown-item-icon">📄</span> Descargar mis picks (PDF)</div>
-  <div class="dropdown-item"><span class="dropdown-item-icon">🔑</span> Cambiar contraseña</div>
+  <div class="dropdown-item" onclick="irAPicksPDF()"><span class="dropdown-item-icon">📄</span> Descargar mis picks (PDF)</div>
+  <div class="dropdown-item" onclick="abrirCambiarPassword()"><span class="dropdown-item-icon">🔑</span> Cambiar contraseña</div>
   <div class="dropdown-divider"></div>
   <div class="dropdown-item danger" onclick="cerrarSesion()"><span class="dropdown-item-icon">🚪</span> Cerrar sesión</div>
+</div>
+
+<!-- MODAL CAMBIAR PASSWORD -->
+<div class="modal-overlay" id="passModal">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="cerrarPassModal()">✕</button>
+    <div style="margin-bottom:20px">
+      <div style="font-family:'Poppins',sans-serif;font-size:22px;letter-spacing:2px;color:var(--amarillo)">🔑 CAMBIAR CONTRASEÑA</div>
+      <div style="font-family:'Poppins',sans-serif;font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5">Ingresa y confirma tu nueva contraseña. Mínimo 8 caracteres, 1 mayúscula, 1 minúscula, 1 carácter especial.</div>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-family:'Poppins',sans-serif;font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">Nueva contraseña</label>
+      <input id="passNueva" type="password" placeholder="••••••••" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:'Poppins',sans-serif;font-size:15px;outline:none" oninput="validarPassMatch()">
+    </div>
+    <div style="margin-bottom:22px">
+      <label style="font-family:'Poppins',sans-serif;font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">Confirmar contraseña</label>
+      <input id="passConfirm" type="password" placeholder="••••••••" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:'Poppins',sans-serif;font-size:15px;outline:none" oninput="validarPassMatch()">
+      <div id="passMatchMsg" style="font-family:'Poppins',sans-serif;font-size:12px;margin-top:6px;min-height:16px"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button onclick="cerrarPassModal()" style="background:none;border:1px solid var(--border);color:var(--muted);font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;padding:12px;border-radius:10px;cursor:pointer">CANCELAR</button>
+      <button id="btnGuardarPass" onclick="guardarNuevaPassword()" style="background:var(--amarillo);border:none;color:#000;font-family:'Poppins',sans-serif;font-weight:900;font-size:15px;padding:12px;border-radius:10px;cursor:pointer;letter-spacing:1px">GUARDAR</button>
+    </div>
+  </div>
 </div>
 
 <!-- MODAL ALIAS -->
@@ -1187,7 +1246,7 @@
   <!-- RANKING PRINCIPAL — ANCHO COMPLETO -->
   <div class="card" style="margin-bottom:20px;">
     <div class="card-header">
-      <div class="card-title">🏅 Ranking Principal — Local / Empate / Visitante</div>
+      <div class="card-title">🏅 Ranking Principal — L/E/V</div>
       <div style="display:flex;align-items:center;gap:10px">
         <div class="card-badge" id="badge-jugadores">187 jugadores</div>
         <button class="btn-ver-mas" style="padding:6px 16px;font-size:12px" onclick="abrirRankingPrincipal()">Ver ranking completo</button>
@@ -1284,7 +1343,7 @@
                   <div class="especial-desc">15 jugadores · más G+A</div>
                 </div>
               </div>
-              <div class="especial-podio" style="display:flex;align-items:center;justify-content:center;padding:20px 0;color:var(--muted);font-family:'Poppins',sans-serif;font-size:13px;text-align:center;line-height:1.6">
+              <div class="especial-podio" data-placeholder="true" style="color:var(--muted);font-family:'Poppins',sans-serif;font-size:13px;text-align:center;line-height:1.6;padding:20px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
                 🏆<br>Top 3 disponible<br>desde el 11 de junio
               </div>
               <div class="especial-tu-pos">
@@ -1302,7 +1361,7 @@
                   <div class="especial-desc">10 equipos · más tarjetas</div>
                 </div>
               </div>
-              <div class="especial-podio" style="display:flex;align-items:center;justify-content:center;padding:20px 0;color:var(--muted);font-family:'Poppins',sans-serif;font-size:13px;text-align:center;line-height:1.6">
+              <div class="especial-podio" data-placeholder="true" style="color:var(--muted);font-family:'Poppins',sans-serif;font-size:13px;text-align:center;line-height:1.6;padding:20px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
                 🏆<br>Top 3 disponible<br>desde el 11 de junio
               </div>
               <div class="especial-tu-pos">
@@ -1320,7 +1379,7 @@
                   <div class="especial-desc">10 equipos · más corners</div>
                 </div>
               </div>
-              <div class="especial-podio" style="display:flex;align-items:center;justify-content:center;padding:20px 0;color:var(--muted);font-family:'Poppins',sans-serif;font-size:13px;text-align:center;line-height:1.6">
+              <div class="especial-podio" data-placeholder="true" style="color:var(--muted);font-family:'Poppins',sans-serif;font-size:13px;text-align:center;line-height:1.6;padding:20px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
                 🏆<br>Top 3 disponible<br>desde el 11 de junio
               </div>
               <div class="especial-tu-pos">
@@ -1338,7 +1397,7 @@
                   <div class="especial-desc">10 equipos · menos goles</div>
                 </div>
               </div>
-              <div class="especial-podio" style="display:flex;align-items:center;justify-content:center;padding:20px 0;color:var(--muted);font-family:'Poppins',sans-serif;font-size:13px;text-align:center;line-height:1.6">
+              <div class="especial-podio" data-placeholder="true" style="color:var(--muted);font-family:'Poppins',sans-serif;font-size:13px;text-align:center;line-height:1.6;padding:20px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
                 🏆<br>Top 3 disponible<br>desde el 11 de junio
               </div>
               <div class="especial-tu-pos">
@@ -1356,7 +1415,7 @@
                   <div class="especial-desc">10 equipos · menos tarjetas</div>
                 </div>
               </div>
-              <div class="especial-podio" style="display:flex;align-items:center;justify-content:center;padding:20px 0;color:var(--muted);font-family:'Poppins',sans-serif;font-size:13px;text-align:center;line-height:1.6">
+              <div class="especial-podio" data-placeholder="true" style="color:var(--muted);font-family:'Poppins',sans-serif;font-size:13px;text-align:center;line-height:1.6;padding:20px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
                 🏆<br>Top 3 disponible<br>desde el 11 de junio
               </div>
               <div class="especial-tu-pos">
@@ -1374,7 +1433,7 @@
                   <div class="especial-desc">10 equipos · menos corners</div>
                 </div>
               </div>
-              <div class="especial-podio" style="display:flex;align-items:center;justify-content:center;padding:20px 0;color:var(--muted);font-family:'Poppins',sans-serif;font-size:13px;text-align:center;line-height:1.6">
+              <div class="especial-podio" data-placeholder="true" style="color:var(--muted);font-family:'Poppins',sans-serif;font-size:13px;text-align:center;line-height:1.6;padding:20px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
                 🏆<br>Top 3 disponible<br>desde el 11 de junio
               </div>
               <div class="especial-tu-pos">
@@ -1408,11 +1467,11 @@
             <div class="mini-val" id="mini-killer-pos">—</div>
             <div class="mini-lbl">El Killer</div>
           </div>
-          <div class="mini-mini-stat" style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;text-align:center">
+          <div class="mi-mini-stat">
             <div class="mini-val" id="mini-virgen-pos">—</div>
             <div class="mini-lbl">El Virgen</div>
           </div>
-          <div class="mini-mini-stat" style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;text-align:center">
+          <div class="mi-mini-stat">
             <div class="mini-val" id="mini-carnicero-pos">—</div>
             <div class="mini-lbl">Carnicero</div>
           </div>
@@ -1589,6 +1648,60 @@
   });
 
   // PICKS
+  function irAPicksPDF() {
+    document.getElementById('userDropdown').classList.remove('open');
+    window.location.href = '/picks.html#pdf';
+  }
+
+  function abrirCambiarPassword() {
+    document.getElementById('userDropdown').classList.remove('open');
+    document.getElementById('passNueva').value = '';
+    document.getElementById('passConfirm').value = '';
+    document.getElementById('passMatchMsg').textContent = '';
+    document.getElementById('passModal').classList.add('open');
+  }
+
+  function cerrarPassModal() {
+    document.getElementById('passModal').classList.remove('open');
+  }
+
+  function validarPassMatch() {
+    const p1 = document.getElementById('passNueva').value;
+    const p2 = document.getElementById('passConfirm').value;
+    const msg = document.getElementById('passMatchMsg');
+    const btn = document.getElementById('btnGuardarPass');
+    if (!p2) { msg.textContent = ''; btn.disabled = false; return; }
+    if (p1 === p2) {
+      msg.style.color = '#22c55e'; msg.textContent = '✓ Las contraseñas coinciden';
+      btn.disabled = false;
+    } else {
+      msg.style.color = '#ef4444'; msg.textContent = '✗ Las contraseñas no coinciden';
+      btn.disabled = true;
+    }
+  }
+
+  async function guardarNuevaPassword() {
+    const p1 = document.getElementById('passNueva').value.trim();
+    const p2 = document.getElementById('passConfirm').value.trim();
+    if (!p1 || p1.length < 8) {
+      showToast('⚠️ La contraseña debe tener mínimo 8 caracteres', 3000); return;
+    }
+    if (p1 !== p2) {
+      showToast('⚠️ Las contraseñas no coinciden', 3000); return;
+    }
+    const btn = document.getElementById('btnGuardarPass');
+    btn.textContent = 'GUARDANDO...'; btn.disabled = true;
+    try {
+      const { error } = await supabase.auth.updateUser({ password: p1 });
+      if (error) throw error;
+      cerrarPassModal();
+      showToast('✅ Contraseña actualizada correctamente', 4000);
+    } catch(e) {
+      showToast('❌ Error: ' + (e.message || 'No se pudo actualizar'), 4000);
+      btn.textContent = 'GUARDAR'; btn.disabled = false;
+    }
+  }
+
   function goToPicks() {
     window.location.href = '/picks.html';
   }
@@ -2044,7 +2157,7 @@
     if (!usuarios?.length) return;
 
     // En modo invitado, ocultar nombres reales
-    const nombreVisible = (u, i) => esInvitado ? `Participante ${i + 1}` : (u.nombre_usuario || u.nombre_completo);
+    const nombreVisible = (u, i) => esInvitado ? `Participante ${i + 1}` : (u.nombre_usuario || u.nombre_completo || `Jugador ${i + 1}`);
 
     // Tabla ranking principal
     const tbody = document.getElementById('ranking-principal-tbody');
@@ -2070,7 +2183,7 @@
         rows += `<tr><td colspan="6" style="padding:6px 0;text-align:center;color:var(--muted);font-size:18px;letter-spacing:6px">···</td></tr>
         <tr style="background:rgba(252,209,22,0.05)">
           <td style="padding:13px 0 13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><div class="rank-pos other" style="color:var(--amarillo)">${miIdx+1}</div></td>
-          <td style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);vertical-align:middle"><div class="rank-user"><div class="rank-avatar" style="width:38px;height:38px;font-size:18px;border-color:var(--amarillo)">⚽</div><div><div class="rank-name you">${me.nombre}</div><div style="font-size:11px;color:var(--amarillo);font-family:'Poppins',sans-serif;opacity:0.8">← Tu posición actual</div></div></div></td>
+          <td style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);vertical-align:middle"><div class="rank-user"><div class="rank-avatar" style="width:38px;height:38px;font-size:18px;border-color:var(--amarillo)">⚽</div><div><div class="rank-name you">${me.nombre_usuario || me.nombre_completo || '—'}</div><div style="font-size:11px;color:var(--amarillo);font-family:'Poppins',sans-serif;opacity:0.8">← Tu posición actual</div></div></div></td>
           <td class="col-aciertos" style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><span style="font-size:16px;font-weight:700;color:var(--text)">0</span></td>
           <td class="col-partidos" style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><span style="color:var(--muted)">0</span></td>
           <td class="col-pct" style="padding:13px 20px;border-bottom:1px solid rgba(252,209,22,0.15);text-align:center;vertical-align:middle"><span style="color:var(--muted)">—</span></td>
@@ -2083,6 +2196,9 @@
     // Podiums especiales — top 3 alfabético con 0 pts
     const top3 = usuarios.slice(0, 3);
     document.querySelectorAll('.especial-podio').forEach(podio => {
+      // Limpiar estilos del placeholder
+      podio.removeAttribute('style');
+      podio.removeAttribute('data-placeholder');
       podio.innerHTML = top3.map((u, i) => `
         <div class="especial-row">
           <div class="epos ${i===0?'p1':i===1?'p2':'p3'}">${i+1}</div>
@@ -2105,7 +2221,7 @@
     abrirRankingDesdeSupabase('__principal__', {
       titulo:    '🏅 Ranking Principal — L/E/V',
       subtitulo: (window.totalInscritos || '—') + ' participantes · Aciertos totales',
-      premio:    'iPhone 17 Pro Max / Bose S1 Pro / PS5 / AirPods Pro',
+      premio:    'iPhone 17 Pro Max / Bose S1 Pro / PS5 / AirPods Pro 3',
       color:     'var(--amarillo)',
     });
   };
@@ -2138,6 +2254,12 @@
     if (data) {
       window._aliasActual    = data.nombre_usuario || data.nombre_completo || '';
       window._nombreCompleto = data.nombre_completo || '';
+
+      // Actualizar el dropdown del baloncito con datos reales del usuario
+      const elNombre = document.getElementById('dropdown-nombre-usuario');
+      const elEmail  = document.getElementById('dropdown-email-usuario');
+      if (elNombre) elNombre.textContent = data.nombre_usuario || data.nombre_completo || '—';
+      if (elEmail)  elEmail.textContent  = session.user.email || '—';
     }
   })();
 
