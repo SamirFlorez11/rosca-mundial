@@ -434,44 +434,62 @@
     width: 100%;
   }
   .lev-btn-card:last-child { border-right: none; }
-  .lev-btn-card .btn-flag { font-size: 20px; line-height: 1; }
-  .lev-btn-card .btn-name { font-size: 11px; font-weight: 700; text-align: center; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px; }
-  .lev-btn-card .btn-sub  { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.5; }
+  .lev-btn-card .btn-flag { font-size: 22px; line-height: 1; transition: transform 0.15s; }
+  .lev-btn-card .btn-name { font-size: 11px; font-weight: 700; text-align: center; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 96px; transition: color 0.15s; }
+  .lev-btn-card .btn-sub  { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.45; transition: opacity 0.15s, color 0.15s; }
 
+  /* Icono de empate: tres barras horizontales finas (CSS puro, sin emoji) */
+  .empate-icon {
+    display: block;
+    width: 22px; height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    opacity: 0.45;
+    margin: 2px auto;
+    box-shadow: 0 -7px 0 currentColor, 0 7px 0 currentColor;
+    transition: opacity 0.15s, box-shadow 0.15s;
+    flex-shrink: 0;
+  }
+
+  /* ── SELECCIONADO: Local ─────────────────────────── */
   .lev-btn-card.sel-L {
-    background: rgba(56,130,221,0.28);
+    background: rgba(56,130,221,0.22);
     color: #A8CFFF;
-    border-right-color: rgba(56,130,221,0.3);
-    box-shadow: inset 0 -3px 0 #378ADD;
+    border-right-color: rgba(56,130,221,0.25);
+    box-shadow: inset 0 -3px 0 #378ADD, inset 0 0 20px rgba(56,130,221,0.08);
   }
-  .lev-btn-card.sel-L .btn-flag  { filter: drop-shadow(0 0 6px rgba(56,130,221,0.7)); }
-  .lev-btn-card.sel-L .btn-name  { color: #A8CFFF; font-size: 12px; }
-  .lev-btn-card.sel-L .btn-sub   { color: #378ADD; opacity: 1; font-weight: 700; }
+  .lev-btn-card.sel-L .btn-flag { transform: scale(1.18); filter: drop-shadow(0 0 7px rgba(56,130,221,0.75)); }
+  .lev-btn-card.sel-L .btn-name { color: #A8CFFF; font-size: 12px; }
+  .lev-btn-card.sel-L .btn-sub  { color: #6AAEE8; opacity: 1; font-weight: 700; }
 
+  /* ── SELECCIONADO: Empate ────────────────────────── */
   .lev-btn-card.sel-E {
-    background: rgba(252,209,22,0.20);
-    color: var(--amarillo);
-    border-right-color: rgba(252,209,22,0.3);
-    box-shadow: inset 0 -3px 0 var(--amarillo);
+    background: rgba(252,209,22,0.14);
+    color: #E8C900;
+    border-right-color: rgba(252,209,22,0.25);
+    box-shadow: inset 0 -3px 0 #C8A800, inset 0 0 20px rgba(252,209,22,0.06);
   }
-  .lev-btn-card.sel-E .btn-flag  { filter: drop-shadow(0 0 6px rgba(252,209,22,0.7)); }
-  .lev-btn-card.sel-E .btn-name  { color: var(--amarillo); font-size: 12px; }
-  .lev-btn-card.sel-E .btn-sub   { color: var(--amarillo); opacity: 1; font-weight: 700; }
+  .lev-btn-card.sel-E .empate-icon { opacity: 1; box-shadow: 0 -7px 0 #C8A800, 0 7px 0 #C8A800; filter: drop-shadow(0 0 4px rgba(252,209,22,0.5)); }
+  .lev-btn-card.sel-E .btn-name { color: #E8C900; font-size: 12px; letter-spacing: 1px; }
+  .lev-btn-card.sel-E .btn-sub  { color: #C8A800; opacity: 1; font-weight: 700; }
 
+  /* ── SELECCIONADO: Visitante ─────────────────────── */
   .lev-btn-card.sel-V {
-    background: rgba(216,90,48,0.28);
+    background: rgba(216,90,48,0.22);
     color: #FFB49A;
-    border-right-color: rgba(216,90,48,0.3);
-    box-shadow: inset 0 -3px 0 #D85A30;
+    border-right-color: rgba(216,90,48,0.25);
+    box-shadow: inset 0 -3px 0 #D85A30, inset 0 0 20px rgba(216,90,48,0.08);
   }
-  .lev-btn-card.sel-V .btn-flag  { filter: drop-shadow(0 0 6px rgba(216,90,48,0.7)); }
-  .lev-btn-card.sel-V .btn-name  { color: #FFB49A; font-size: 12px; }
-  .lev-btn-card.sel-V .btn-sub   { color: #D85A30; opacity: 1; font-weight: 700; }
+  .lev-btn-card.sel-V .btn-flag { transform: scale(1.18); filter: drop-shadow(0 0 7px rgba(216,90,48,0.75)); }
+  .lev-btn-card.sel-V .btn-name { color: #FFB49A; font-size: 12px; }
+  .lev-btn-card.sel-V .btn-sub  { color: #D87A5A; opacity: 1; font-weight: 700; }
 
   @media (hover: hover) and (pointer: fine) {
-    .lev-btn-card:hover:not(.sel-L):not(.sel-E):not(.sel-V) { background: rgba(255,255,255,0.05); color: var(--text); }
+    .lev-btn-card:hover:not(.sel-L):not(.sel-E):not(.sel-V) { background: rgba(255,255,255,0.04); color: var(--text); }
+    .lev-btn-card:hover:not(.sel-L):not(.sel-E):not(.sel-V) .btn-flag { transform: scale(1.08); }
   }
-  .lev-btn-card:focus, .lev-btn-card:focus-visible { outline: none !important; box-shadow: none !important; }
+  .lev-btn-card:active { transform: scale(0.97); }
+  .lev-btn-card:focus, .lev-btn-card:focus-visible { outline: none !important; }
 
   /* Grupo tabs (para LEV) */
   .grupo-tabs { display: flex; gap: 4px; flex-wrap: wrap; padding: 10px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -1234,9 +1252,9 @@ function renderPartidosTodos() {
             <span class="btn-sub">Local</span>
           </button>
           <button class="lev-btn-card ${clsE}" data-pid="${p.id}" data-val="E" onclick="pickLEV('${p.id}','E')">
-            <span class="btn-flag">⚖️</span>
+            <span class="empate-icon"></span>
             <span class="btn-name">Empate</span>
-            <span class="btn-sub">&nbsp;</span>
+            <span class="btn-sub">X</span>
           </button>
           <button class="lev-btn-card ${clsV}" data-pid="${p.id}" data-val="V" onclick="pickLEV('${p.id}','V')">
             <span class="btn-flag">${p.visit.flag}</span>
