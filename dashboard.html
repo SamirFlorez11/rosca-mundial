@@ -1164,9 +1164,37 @@
   <div class="dropdown-item" onclick="openAliasModal()"><span class="dropdown-item-icon">✏️</span> Editar alias / nombre</div>
   <div class="dropdown-item" onclick="goToPicks()"><span class="dropdown-item-icon">⚡</span> Mis Picks</div>
   <div class="dropdown-item" onclick="irAPicksPDF()"><span class="dropdown-item-icon">📄</span> Descargar mis picks (PDF)</div>
+  <div class="dropdown-item" onclick="abrirModalMisCupos()"><span class="dropdown-item-icon">🎟️</span> Mis cupos <span id="dropdown-cupos-badge" style="margin-left:4px;font-size:10px;background:rgba(252,209,22,0.15);color:#FCD116;border:1px solid rgba(252,209,22,0.3);border-radius:10px;padding:1px 7px;font-weight:700;display:none;"></span></div>
   <div class="dropdown-item" onclick="abrirCambiarPassword()"><span class="dropdown-item-icon">🔑</span> Cambiar contraseña</div>
   <div class="dropdown-divider"></div>
   <div class="dropdown-item danger" onclick="cerrarSesion()"><span class="dropdown-item-icon">🚪</span> Cerrar sesión</div>
+</div>
+
+<!-- MODAL MIS CUPOS -->
+<div class="modal-overlay" id="cuposModal" onclick="if(event.target===this)cerrarModalCupos()">
+  <div class="modal" style="max-width:440px">
+    <button class="modal-close" onclick="cerrarModalCupos()">✕</button>
+    <div style="margin-bottom:20px">
+      <div style="font-family:'Poppins',sans-serif;font-size:20px;font-weight:900;letter-spacing:2px;color:var(--amarillo)">🎟️ MIS CUPOS</div>
+      <div style="font-family:'Poppins',sans-serif;font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5">Cada cupo tiene sus propios picks y posición en el ranking.</div>
+    </div>
+
+    <!-- Lista de cupos actuales -->
+    <div id="cupos-modal-lista" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;"></div>
+
+    <!-- Info de cupo adicional -->
+    <div style="background:rgba(252,209,22,0.06);border:1px solid rgba(252,209,22,0.2);border-radius:12px;padding:14px 16px;margin-bottom:18px;">
+      <div style="font-size:12px;font-weight:700;color:var(--amarillo);margin-bottom:6px;">➕ ¿Quieres un cupo adicional?</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px;">
+        Cada cupo extra cuesta <strong style="color:var(--text);">$60.000 COP</strong> y tiene sus propias predicciones e historial en el ranking. Máximo 5 cupos por cuenta.
+      </div>
+      <button onclick="cerrarModalCupos();abrirModalAgregarCupo()" style="width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-weight:800;font-size:13px;border:none;border-radius:10px;padding:11px;cursor:pointer;letter-spacing:0.5px;">
+        🛒 Agregar cupo adicional — $60.000 COP
+      </button>
+    </div>
+
+    <div style="text-align:center;font-size:11px;color:var(--muted);">El pago activa el cupo automáticamente vía Wompi.</div>
+  </div>
 </div>
 
 <!-- MODAL CAMBIAR PASSWORD -->
@@ -2479,9 +2507,16 @@
         localStorage.setItem(CUPO_KEY, _cuposUsuario[0].id);
       }
 
-      // Mostrar barra solo si hay 2+ cupos activos (o siempre si hay al menos 1)
+      // Mostrar barra solo si hay 2+ cupos activos
       const bar = document.getElementById('cupoBar');
       if (bar) bar.style.display = 'flex';
+
+      // Badge en dropdown
+      const badge = document.getElementById('dropdown-cupos-badge');
+      if (badge) {
+        badge.textContent = _cuposUsuario.length + ((_cuposUsuario.length === 1) ? ' cupo' : ' cupos');
+        badge.style.display = 'inline';
+      }
 
       renderCupoPills();
     } catch(e) {
@@ -2502,8 +2537,42 @@
       </div>`).join('');
   }
 
+  function abrirModalMisCupos() {
+    // Cerrar dropdown
+    const dd = document.getElementById('userDropdown');
+    if (dd) dd.classList.remove('open');
+
+    // Renderizar lista de cupos actuales en el modal
+    const lista = document.getElementById('cupos-modal-lista');
+    if (lista) {
+      if (_cuposUsuario.length === 0) {
+        lista.innerHTML = '<div style="font-size:12px;color:var(--muted);text-align:center;padding:10px 0;">No tienes cupos activos registrados.</div>';
+      } else {
+        const activo = getCupoActivo();
+        lista.innerHTML = _cuposUsuario.map(c => `
+          <div style="display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid ${c.id===activo?'rgba(252,209,22,0.4)':'var(--border)'};border-radius:10px;padding:10px 14px;">
+            <div style="font-size:20px;">${c.id===activo?'✅':'🎟️'}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.alias}</div>
+              <div style="font-size:11px;color:var(--muted);">Cupo #${c.numero} · ${c.picks_completos?'<span style="color:#22c55e;">Picks completos ✓</span>':'<span style="color:#f59e0b;">Picks incompletos ⚠️</span>'}</div>
+            </div>
+            ${c.id!==activo?`<button onclick="setCupoActivo('${c.id}');cerrarModalCupos()" style="font-size:11px;font-weight:700;background:rgba(252,209,22,0.1);color:var(--amarillo);border:1px solid rgba(252,209,22,0.3);border-radius:8px;padding:5px 10px;cursor:pointer;white-space:nowrap;">Activar</button>`:'<span style="font-size:11px;color:var(--amarillo);font-weight:700;">Activo</span>'}
+          </div>`).join('');
+      }
+    }
+
+    const modal = document.getElementById('cuposModal');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  function cerrarModalCupos() {
+    const modal = document.getElementById('cuposModal');
+    if (modal) modal.style.display = 'none';
+  }
+  window.abrirModalMisCupos  = abrirModalMisCupos;
+  window.cerrarModalCupos    = cerrarModalCupos;
+
   function abrirModalAgregarCupo() {
-    // Mostrar un modal informativo + link a index con param ?agregar_cupo=1
     if (confirm('¿Quieres agregar un cupo adicional?\n\nCada cupo cuesta $60.000 COP y tiene sus propias predicciones y posición en el ranking.\n\nSe abrirá la pantalla de pago.')) {
       window.location.href = '/index.html?agregar_cupo=1';
     }
