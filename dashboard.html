@@ -1980,6 +1980,164 @@
         const el = document.getElementById(id); if (el) el.textContent = '--';
       });
     }, 100);
+
+    // Tutorial overlay — flecha hacia PICKS
+    setTimeout(() => {
+      const btnPicks = document.querySelector('.btn-picks');
+      if (!btnPicks) return;
+
+      const rect = btnPicks.getBoundingClientRect();
+      const cx   = rect.left + rect.width  / 2;
+      const cy   = rect.top  + rect.height / 2;
+      const rw   = rect.width  + 20;
+      const rh   = rect.height + 20;
+
+      // Panel: debajo del botón, alineado a su borde derecho
+      const isMobile = window.innerWidth < 600;
+      const panelMaxW = isMobile ? Math.min(window.innerWidth - 24, 280) : 270;
+      const panelRight = Math.max(8, window.innerWidth - rect.right - 2);
+      const panelTop  = rect.bottom + 18;
+
+      const ov = document.createElement('div');
+      ov.id = 'tutorial-invitado';
+      ov.innerHTML = `
+        <style>
+          #tutorial-invitado {
+            position: fixed; inset: 0; z-index: 10000;
+            background: radial-gradient(ellipse ${rw + 18}px ${rh + 18}px at ${cx}px ${cy}px,
+              rgba(252,209,22,0.06) 0%, transparent 55%, rgba(4,7,18,0.87) 78%);
+            pointer-events: all;
+          }
+          #tut-ring {
+            position: fixed;
+            left: ${rect.left - 10}px;
+            top:  ${rect.top  - 10}px;
+            width:  ${rw}px;
+            height: ${rh}px;
+            border-radius: ${(rh) / 2 + 6}px;
+            border: 2.5px solid #FCD116;
+            box-shadow: 0 0 22px rgba(252,209,22,0.75), 0 0 6px rgba(252,209,22,0.4) inset;
+            animation: tutRing 1.3s ease-in-out infinite;
+            pointer-events: none;
+          }
+          #tut-panel {
+            position: fixed;
+            top:   ${panelTop}px;
+            right: ${panelRight}px;
+            width: ${panelMaxW}px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: tutFadeIn 0.45s cubic-bezier(.22,1,.36,1) both;
+          }
+          #tut-arrow {
+            font-size: 30px;
+            line-height: 1;
+            margin-bottom: 2px;
+            filter: drop-shadow(0 0 10px #FCD116);
+            animation: tutArrow 0.65s ease-in-out infinite alternate;
+          }
+          #tut-card {
+            background: linear-gradient(145deg, #141d2f 0%, #0e1623 100%);
+            border: 2px solid #FCD116;
+            border-radius: 20px;
+            padding: 22px 22px 18px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(252,209,22,0.22), 0 16px 48px rgba(0,0,0,0.7);
+            animation: tutGlow 2.2s ease-in-out infinite;
+            width: 100%;
+          }
+          #tut-emoji-row { font-size: 28px; margin-bottom: 10px; letter-spacing: 4px; }
+          #tut-title {
+            font-size: 16px; font-weight: 900; color: #FCD116;
+            letter-spacing: 0.4px; margin-bottom: 10px; line-height: 1.25;
+            text-transform: uppercase;
+          }
+          #tut-body {
+            font-size: 12.5px; color: #c0cbdf; line-height: 1.75; margin-bottom: 16px;
+          }
+          #tut-body .tut-tag {
+            display: inline-block;
+            background: rgba(252,209,22,0.14);
+            color: #FCD116;
+            font-weight: 800;
+            padding: 2px 9px;
+            border-radius: 6px;
+            border: 1px solid rgba(252,209,22,0.35);
+            font-size: 13px;
+          }
+          #tut-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #FCD116 0%, #e5a800 100%);
+            color: #000;
+            font-weight: 900;
+            font-size: 13.5px;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 20px;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 18px rgba(252,209,22,0.4);
+            transition: transform 0.15s, box-shadow 0.15s;
+          }
+          #tut-btn:hover { transform: scale(1.04); box-shadow: 0 6px 26px rgba(252,209,22,0.6); }
+          #tut-dismiss-link {
+            margin-top: 10px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.35);
+            cursor: pointer;
+            text-decoration: underline;
+          }
+          #tut-dismiss-link:hover { color: rgba(255,255,255,0.6); }
+          @keyframes tutRing {
+            0%,100% { opacity: 1;   transform: scale(1);    }
+            50%      { opacity: 0.5; transform: scale(1.08); }
+          }
+          @keyframes tutArrow {
+            from { transform: translateY(0);    }
+            to   { transform: translateY(-13px); }
+          }
+          @keyframes tutGlow {
+            0%,100% { box-shadow: 0 0 35px rgba(252,209,22,0.18), 0 16px 48px rgba(0,0,0,0.7); }
+            50%      { box-shadow: 0 0 60px rgba(252,209,22,0.40), 0 16px 48px rgba(0,0,0,0.7); }
+          }
+          @keyframes tutFadeIn {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0);    }
+          }
+        </style>
+
+        <!-- Anillo pulsante sobre el botón PICKS -->
+        <div id="tut-ring"></div>
+
+        <!-- Panel educativo -->
+        <div id="tut-panel">
+          <div id="tut-arrow">⬆️</div>
+          <div id="tut-card">
+            <div id="tut-emoji-row">⚽ 🏆 ⚡</div>
+            <div id="tut-title">¡Haz tus pronósticos!</div>
+            <div id="tut-body">
+              Clickea en <span class="tut-tag">⚡ PICKS</span> para predecir<br>
+              los partidos del <strong style="color:#fff;">Mundial 2026</strong><br>
+              y entrar a competir en la Rosca.
+            </div>
+            <button id="tut-btn" onclick="document.getElementById('tutorial-invitado').remove();goToPicks()">
+              ⚡ Ir a mis Picks ahora
+            </button>
+            <div id="tut-dismiss-link" onclick="document.getElementById('tutorial-invitado').remove()">
+              Solo estoy explorando
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Click en el fondo oscuro también cierra
+      ov.addEventListener('click', e => {
+        if (e.target === ov) ov.remove();
+      });
+
+      document.body.appendChild(ov);
+    }, 950);
   }
 
   // ── Inscritos ──────────────────────────────────────────────────────────────
