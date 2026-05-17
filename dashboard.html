@@ -1992,11 +1992,15 @@
       const rw   = rect.width  + 20;
       const rh   = rect.height + 20;
 
-      // Panel: debajo del botón, alineado a su borde derecho
-      const isMobile = window.innerWidth < 600;
-      const panelMaxW = isMobile ? Math.min(window.innerWidth - 24, 280) : 270;
-      const panelRight = Math.max(8, window.innerWidth - rect.right - 2);
-      const panelTop  = rect.bottom + 18;
+      // Posiciones independientes: flecha centrada en el botón, panel debajo
+      const isMobile  = window.innerWidth < 600;
+      const panelMaxW = isMobile ? Math.min(window.innerWidth - 24, 270) : 260;
+      // Flecha: centrada horizontalmente en el botón
+      const arrowLeft = Math.round(cx - 18);
+      const arrowTop  = Math.round(rect.bottom + 10);
+      // Panel: centrado en cx, clampeado a pantalla
+      const panelLeft = Math.max(8, Math.min(Math.round(cx - panelMaxW / 2), window.innerWidth - panelMaxW - 8));
+      const panelTop  = arrowTop + 52;
 
       const ov = document.createElement('div');
       ov.id = 'tutorial-invitado';
@@ -2020,22 +2024,25 @@
             animation: tutRing 1.3s ease-in-out infinite;
             pointer-events: none;
           }
+          #tut-arrow {
+            position: fixed;
+            top:  ${arrowTop}px;
+            left: ${arrowLeft}px;
+            font-size: 34px;
+            line-height: 1;
+            filter: drop-shadow(0 0 10px #FCD116);
+            animation: tutArrow 0.65s ease-in-out infinite alternate;
+            pointer-events: none;
+          }
           #tut-panel {
             position: fixed;
-            top:   ${panelTop}px;
-            right: ${panelRight}px;
+            top:  ${panelTop}px;
+            left: ${panelLeft}px;
             width: ${panelMaxW}px;
             display: flex;
             flex-direction: column;
             align-items: center;
             animation: tutFadeIn 0.45s cubic-bezier(.22,1,.36,1) both;
-          }
-          #tut-arrow {
-            font-size: 30px;
-            line-height: 1;
-            margin-bottom: 2px;
-            filter: drop-shadow(0 0 10px #FCD116);
-            animation: tutArrow 0.65s ease-in-out infinite alternate;
           }
           #tut-card {
             background: linear-gradient(145deg, #141d2f 0%, #0e1623 100%);
@@ -2110,9 +2117,11 @@
         <!-- Anillo pulsante sobre el botón PICKS -->
         <div id="tut-ring"></div>
 
-        <!-- Panel educativo -->
+        <!-- Flecha: posicionada fija en el centro del botón -->
+        <div id="tut-arrow">⬆️</div>
+
+        <!-- Panel educativo (centrado en cx, sin la flecha dentro) -->
         <div id="tut-panel">
-          <div id="tut-arrow">⬆️</div>
           <div id="tut-card">
             <div id="tut-emoji-row">⚽ 🏆 ⚡</div>
             <div id="tut-title">¡Haz tus pronósticos!</div>
