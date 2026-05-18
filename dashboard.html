@@ -1983,6 +1983,16 @@
   const esInvitado = new URLSearchParams(window.location.search).get('invitado') === '1';
   window.esInvitado = esInvitado;
 
+  // ── Tracking de visitas (1 vez por sesión de navegador) ────────────────────
+  if (!sessionStorage.getItem('rm_visit_ok')) {
+    sessionStorage.setItem('rm_visit_ok', '1');
+    supabase.from('visitas').insert({
+      pagina: 'dashboard',
+      es_invitado: esInvitado,
+      session_id: Math.random().toString(36).slice(2, 10) + Date.now().toString(36),
+    }).then(() => {}).catch(() => {});
+  }
+
   if (esInvitado) {
     // Banner de invitado
     const banner = document.createElement('div');

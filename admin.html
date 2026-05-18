@@ -200,6 +200,35 @@ body { font-family:'Barlow',sans-serif; background:var(--bg); color:var(--text);
     </div>
   </div>
 
+  <!-- VISITAS -->
+  <div class="section-title" style="margin-top:8px;">👁️ Visitas al sitio <span>Sesiones únicas registradas en el dashboard</span></div>
+  <div class="stats-grid" style="margin-bottom:28px;">
+    <div class="stat-card" style="border-top:3px solid #6366f1;">
+      <div class="stat-icon">📅</div>
+      <div class="stat-value" id="statVisHoy">—</div>
+      <div class="stat-label">Hoy</div>
+      <div class="stat-sub" id="statVisHoyFecha">—</div>
+    </div>
+    <div class="stat-card" style="border-top:3px solid #06b6d4;">
+      <div class="stat-icon">📆</div>
+      <div class="stat-value" id="statVisSemana">—</div>
+      <div class="stat-label">Últimos 7 días</div>
+      <div class="stat-sub" id="statVisSemanaFecha">—</div>
+    </div>
+    <div class="stat-card" style="border-top:3px solid #8b5cf6;">
+      <div class="stat-icon">🗓️</div>
+      <div class="stat-value" id="statVisMes">—</div>
+      <div class="stat-label">Este mes</div>
+      <div class="stat-sub" id="statVisMesFecha">—</div>
+    </div>
+    <div class="stat-card" style="border-top:3px solid var(--gold);">
+      <div class="stat-icon">🌐</div>
+      <div class="stat-value" id="statVisTotal">—</div>
+      <div class="stat-label">Total histórico</div>
+      <div class="stat-sub" id="statVisTotalSub">sesiones registradas</div>
+    </div>
+  </div>
+
   <!-- CONTROL DE VERSIONES -->
   <div class="section-title">🎛️ Control de versiones <span>Gestiona qué versión está activa en el landing</span></div>
   <div class="versiones-grid">
@@ -457,6 +486,7 @@ async function init() {
       cargarVersiones(),
       cargarUsuarios(),
       cargarPicks(),
+      cargarVisitas(),
     ]);
 
   } catch (err) {
@@ -488,6 +518,40 @@ async function cargarStats() {
   document.getElementById('v2Inscritos').textContent = v2;
   document.getElementById('v1Picks').textContent = picksOk;
   document.getElementById('v2Picks').textContent = '—';
+}
+
+// ─── VISITAS ──────────────────────────────────────────────────────────────────
+async function cargarVisitas() {
+  try {
+    // Fechas en UTC (servidor Supabase)
+    const ahora   = new Date();
+    const hoyUTC  = ahora.toISOString().slice(0, 10); // YYYY-MM-DD
+    const semana  = new Date(ahora.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1).toISOString();
+
+    const [resHoy, resSemana, resMes, resTotal] = await Promise.all([
+      supabase.from('visitas').select('id', { count: 'exact', head: true }).gte('created_at', hoyUTC + 'T00:00:00Z'),
+      supabase.from('visitas').select('id', { count: 'exact', head: true }).gte('created_at', semana),
+      supabase.from('visitas').select('id', { count: 'exact', head: true }).gte('created_at', inicioMes),
+      supabase.from('visitas').select('id', { count: 'exact', head: true }),
+    ]);
+
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+    set('statVisHoy',    resHoy.count    ?? '—');
+    set('statVisSemana', resSemana.count ?? '—');
+    set('statVisMes',    resMes.count    ?? '—');
+    set('statVisTotal',  resTotal.count  ?? '—');
+
+    // Subtítulos con fechas legibles
+    const fmt = d => d.toLocaleDateString('es-CO', { day:'numeric', month:'short' });
+    set('statVisHoyFecha',    fmt(ahora));
+    set('statVisSemanaFecha', fmt(new Date(ahora.getTime() - 7*24*60*60*1000)) + ' – hoy');
+    set('statVisMesFecha',    new Date(ahora.getFullYear(), ahora.getMonth(), 1).toLocaleDateString('es-CO', { month:'long', year:'numeric' }));
+    set('statVisTotalSub',    'desde el lanzamiento');
+  } catch(e) {
+    console.warn('Error cargando visitas:', e.message);
+  }
 }
 
 // ─── VERSIONES ────────────────────────────────────────────────────────────────
