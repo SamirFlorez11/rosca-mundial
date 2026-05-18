@@ -497,27 +497,28 @@ async function init() {
 
 // ─── STATS ────────────────────────────────────────────────────────────────────
 async function cargarStats() {
-  const [resV1, resV2, resPicks] = await Promise.all([
-    supabase.from('usuarios').select('id', { count: 'exact' }).eq('activo', true).eq('version', 'v1'),
-    supabase.from('usuarios').select('id', { count: 'exact' }).eq('activo', true).eq('version', 'v2'),
-    supabase.from('usuarios').select('id', { count: 'exact' }).eq('activo', true).eq('version', 'v1').eq('picks_completos', true)
+  // La tabla usuarios no tiene columna "version" — todos los inscritos son V1
+  const [resV1, resPicks] = await Promise.all([
+    supabase.from('usuarios').select('*', { count: 'exact', head: true })
+      .eq('activo', true).eq('es_admin', false),
+    supabase.from('usuarios').select('*', { count: 'exact', head: true })
+      .eq('activo', true).eq('es_admin', false).eq('picks_completos', true),
   ]);
 
-  const v1 = resV1.count || 0;
-  const v2 = resV2.count || 0;
-  const picksOk = resPicks.count || 0;
-  const sinPicks = v1 - picksOk;
+  const v1       = resV1.count    ?? 0;
+  const picksOk  = resPicks.count ?? 0;
+  const sinPicks = Math.max(0, v1 - picksOk);
 
-  document.getElementById('statV1').textContent = v1;
-  document.getElementById('statV2').textContent = v2;
-  document.getElementById('statPicksOk').textContent = picksOk;
-  document.getElementById('statSinPicks').textContent = Math.max(0, sinPicks);
-  document.getElementById('statV1Pct').textContent = Math.round(v1/4) + '% de 400 cupos';
-  document.getElementById('statV2Pct').textContent = Math.round(v2/20) + '% de 2,000 cupos';
-  document.getElementById('v1Inscritos').textContent = v1;
-  document.getElementById('v2Inscritos').textContent = v2;
-  document.getElementById('v1Picks').textContent = picksOk;
-  document.getElementById('v2Picks').textContent = '—';
+  document.getElementById('statV1').textContent       = v1;
+  document.getElementById('statV2').textContent       = '—';        // V2 no activo aún
+  document.getElementById('statPicksOk').textContent  = picksOk;
+  document.getElementById('statSinPicks').textContent = sinPicks;
+  document.getElementById('statV1Pct').textContent    = Math.round(v1 / 4) + '% de 400 cupos';
+  document.getElementById('statV2Pct').textContent    = 'próximamente';
+  document.getElementById('v1Inscritos').textContent  = v1;
+  document.getElementById('v2Inscritos').textContent  = '—';
+  document.getElementById('v1Picks').textContent      = picksOk;
+  document.getElementById('v2Picks').textContent      = '—';
 }
 
 // ─── VISITAS ──────────────────────────────────────────────────────────────────
