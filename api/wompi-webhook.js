@@ -6,6 +6,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@roscamundial.com';
+const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || 'samirleo1195@gmail.com';
 
 async function supabase(endpoint, method = 'GET', body = null) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
@@ -93,6 +94,93 @@ async function enviarCorreoBienvenida(correo, nombre, usuarioId = null) {
   }
 }
 
+async function notificarAdmin({ nombre, correo, monto, wompi_id, reference }) {
+  const ahora = new Date().toLocaleString('es-CO', {
+    timeZone: 'America/Bogota',
+    dateStyle: 'short',
+    timeStyle: 'short',
+  });
+
+  const montoCOP = Number(monto).toLocaleString('es-CO');
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="es">
+    <head><meta charset="UTF-8"></head>
+    <body style="margin:0;padding:0;background:#0a0e1a;font-family:'Arial',sans-serif;">
+      <div style="max-width:520px;margin:0 auto;padding:28px 20px;">
+        <div style="text-align:center;margin-bottom:20px;">
+          <div style="font-size:26px;font-weight:900;letter-spacing:3px;color:#FCD116;">ROSCA MUNDIAL</div>
+          <div style="font-size:11px;color:#6b7a99;letter-spacing:1px;margin-top:2px;">NOTIFICACIÓN DE PAGO</div>
+        </div>
+        <div style="background:#111827;border:1px solid #22c55e;border-radius:16px;padding:24px;">
+          <div style="font-size:32px;text-align:center;margin-bottom:8px;">💰</div>
+          <div style="font-size:20px;font-weight:800;color:#22c55e;text-align:center;margin-bottom:18px;">
+            ¡Nuevo pago confirmado!
+          </div>
+          <table style="width:100%;border-collapse:collapse;">
+            <tr>
+              <td style="padding:8px 0;font-size:12px;color:#6b7a99;text-transform:uppercase;letter-spacing:1px;width:38%;">Participante</td>
+              <td style="padding:8px 0;font-size:14px;font-weight:700;color:#e8eaf0;">${nombre}</td>
+            </tr>
+            <tr style="border-top:1px solid #1e2d45;">
+              <td style="padding:8px 0;font-size:12px;color:#6b7a99;text-transform:uppercase;letter-spacing:1px;">Correo</td>
+              <td style="padding:8px 0;font-size:13px;color:#e8eaf0;">${correo}</td>
+            </tr>
+            <tr style="border-top:1px solid #1e2d45;">
+              <td style="padding:8px 0;font-size:12px;color:#6b7a99;text-transform:uppercase;letter-spacing:1px;">Monto</td>
+              <td style="padding:8px 0;font-size:18px;font-weight:900;color:#FCD116;">$${montoCOP} COP</td>
+            </tr>
+            <tr style="border-top:1px solid #1e2d45;">
+              <td style="padding:8px 0;font-size:12px;color:#6b7a99;text-transform:uppercase;letter-spacing:1px;">Hora COL</td>
+              <td style="padding:8px 0;font-size:13px;color:#e8eaf0;">${ahora}</td>
+            </tr>
+            <tr style="border-top:1px solid #1e2d45;">
+              <td style="padding:8px 0;font-size:12px;color:#6b7a99;text-transform:uppercase;letter-spacing:1px;">Wompi ID</td>
+              <td style="padding:8px 0;font-size:11px;color:#6b7a99;font-family:monospace;">${wompi_id}</td>
+            </tr>
+            <tr style="border-top:1px solid #1e2d45;">
+              <td style="padding:8px 0;font-size:12px;color:#6b7a99;text-transform:uppercase;letter-spacing:1px;">Referencia</td>
+              <td style="padding:8px 0;font-size:11px;color:#6b7a99;font-family:monospace;">${reference || '—'}</td>
+            </tr>
+          </table>
+          <div style="margin-top:18px;text-align:center;">
+            <a href="https://roscamundial.com/admin"
+               style="display:inline-block;background:linear-gradient(135deg,#FCD116,#e5a800);color:#000;font-weight:800;font-size:13px;padding:11px 28px;border-radius:10px;text-decoration:none;letter-spacing:1px;">
+              Ver en Admin →
+            </a>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:14px;font-size:10px;color:#6b7a99;">
+          roscamundial.com · Notificación automática
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const r = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: `Rosca Mundial <${RESEND_FROM_EMAIL}>`,
+      to:   ADMIN_EMAIL,
+      subject: `💰 Nuevo pago — ${nombre} ($${montoCOP} COP)`,
+      html,
+    }),
+  });
+
+  const data = await r.json().catch(() => ({}));
+  if (r.ok) {
+    console.log('✅ Admin notificado. Resend ID:', data.id);
+  } else {
+    console.error('❌ Error notificando admin:', r.status, JSON.stringify(data));
+  }
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -166,8 +254,17 @@ export default async function handler(req, res) {
       estado: 'pendiente',
     });
 
-    // Enviar correo de bienvenida
+    // Enviar correo de bienvenida al usuario
     await enviarCorreoBienvenida(customer_email, usuario.nombre_completo, usuario.id);
+
+    // Notificar al admin
+    await notificarAdmin({
+      nombre:   usuario.nombre_completo,
+      correo:   customer_email,
+      monto:    amount_in_cents / 100,
+      wompi_id,
+      reference,
+    }).catch(e => console.error('❌ Error notificando admin:', e.message));
 
     // Actualizar notificación a enviada
     await supabase(
