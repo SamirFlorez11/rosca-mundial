@@ -495,60 +495,68 @@ async function init() {
   }
 }
 
+// ─── Helper: token de sesión ──────────────────────────────────────────────────
+async function getToken() {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.access_token || '';
+}
+
 // ─── STATS ────────────────────────────────────────────────────────────────────
 async function cargarStats() {
-  // La tabla usuarios no tiene columna "version" — todos los inscritos son V1
-  const [resV1, resPicks] = await Promise.all([
-    supabase.from('usuarios').select('*', { count: 'exact', head: true })
-      .eq('activo', true).eq('es_admin', false),
-    supabase.from('usuarios').select('*', { count: 'exact', head: true })
-      .eq('activo', true).eq('es_admin', false).eq('picks_completos', true),
-  ]);
+  try {
+    const token = await getToken();
+    const r = await fetch('/api/admin-stats?tipo=stats', {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    if (!r.ok) { console.warn('cargarStats error', r.status); return; }
+    const { inscritos: v1, picksOk, sinPicks } = await r.json();
 
-  const v1       = resV1.count    ?? 0;
-  const picksOk  = resPicks.count ?? 0;
-  const sinPicks = Math.max(0, v1 - picksOk);
-
-  document.getElementById('statV1').textContent       = v1;
-  document.getElementById('statV2').textContent       = '—';        // V2 no activo aún
-  document.getElementById('statPicksOk').textContent  = picksOk;
-  document.getElementById('statSinPicks').textContent = sinPicks;
-  document.getElementById('statV1Pct').textContent    = Math.round(v1 / 4) + '% de 400 cupos';
-  document.getElementById('statV2Pct').textContent    = 'próximamente';
-  document.getElementById('v1Inscritos').textContent  = v1;
-  document.getElementById('v2Inscritos').textContent  = '—';
-  document.getElementById('v1Picks').textContent      = picksOk;
-  document.getElementById('v2Picks').textContent      = '—';
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set('statV1',       v1);
+    set('statV2',       '—');
+    set('statPicksOk',  picksOk);
+    set('statSinPicks', sinPicks);
+    set('statV1Pct',    Math.round(v1 / 4) + '% de 400 cupos');
+    set('statV2Pct',    'próximamente');
+    set('v1Inscritos',  v1);
+    set('v2Inscritos',  '—');
+    set('v1Picks',      picksOk);
+    set('v2Picks',      '—');
+  } catch(e) { console.warn('cargarStats excepción:', e.message); }
 }
 
 // ─── VISITAS ──────────────────────────────────────────────────────────────────
 async function cargarVisitas() {
   try {
-    // Fechas en UTC (servidor Supabase)
-    const ahora   = new Date();
-    const hoyUTC  = ahora.toISOString().slice(0, 10); // YYYY-MM-DD
-    const semana  = new Date(ahora.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
-    const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1).toISOString();
-
-    const [resHoy, resSemana, resMes, resTotal] = await Promise.all([
-      supabase.from('visitas').select('id', { count: 'exact', head: true }).gte('created_at', hoyUTC + 'T00:00:00Z'),
-      supabase.from('visitas').select('id', { count: 'exact', head: true }).gte('created_at', semana),
-      supabase.from('visitas').select('id', { count: 'exact', head: true }).gte('created_at', inicioMes),
-      supabase.from('visitas').select('id', { count: 'exact', head: true }),
-    ]);
+    const token = await getToken();
+    const r = await fetch('/api/admin-stats?tipo=visitas', {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    if (!r.ok) { console.warn('cargarVisitas error', r.status); return; }
+    const d = await r.json();
 
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    const ahora = new Date();
+    const fmt   = dt => dt.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
 
-    set('statVisHoy',    resHoy.count    ?? '—');
-    set('statVisSemana', resSemana.count ?? '—');
-    set('statVisMes',    resMes.count    ?? '—');
-    set('statVisTotal',  resTotal.count  ?? '—');
+    if (!d.tablaExiste) {
+      // Tabla visitas aún no creada en Supabase
+      ['statVisHoy','statVisSemana','statVisMes','statVisTotal'].forEach(id => set(id, '—'));
+      set('statVisHoyFecha',    'Tabla no creada');
+      set('statVisSemanaFecha', 'Ejecuta el SQL en Supabase');
+      set('statVisMesFecha',    '');
+      set('statVisTotalSub',    '');
+      return;
+    }
 
-    // Subtítulos con fechas legibles
-    const fmt = d => d.toLocaleDateString('es-CO', { day:'numeric', month:'short' });
+    set('statVisHoy',         d.hoy    ?? '—');
+    set('statVisSemana',      d.semana ?? '—');
+    set('statVisMes',         d.mes    ?? '—');
+    set('statVisTotal',       d.total  ?? '—');
     set('statVisHoyFecha',    fmt(ahora));
     set('statVisSemanaFecha', fmt(new Date(ahora.getTime() - 7*24*60*60*1000)) + ' – hoy');
-    set('statVisMesFecha',    new Date(ahora.getFullYear(), ahora.getMonth(), 1).toLocaleDateString('es-CO', { month:'long', year:'numeric' }));
+    set('statVisMesFecha',    new Date(ahora.getFullYear(), ahora.getMonth(), 1)
+          .toLocaleDateString('es-CO', { month: 'long', year: 'numeric' }));
     set('statVisTotalSub',    'desde el lanzamiento');
   } catch(e) {
     console.warn('Error cargando visitas:', e.message);
@@ -648,10 +656,10 @@ window.ejecutarToggleV2 = async function() {
 async function cargarUsuarios() {
   const { data, error } = await supabase
     .from('usuarios')
-    .select('id, nombre_completo, nombre_usuario, correo, activo, picks_completos, version, created_at')
+    .select('id, nombre_completo, nombre_usuario, correo, activo, picks_completos, created_at')
     .order('created_at', { ascending: true });
 
-  if (error || !data) { return; }
+  if (error || !data) { console.warn('cargarUsuarios error:', error?.message); return; }
 
   todosUsuarios = data;
   renderTabla();
