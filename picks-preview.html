@@ -215,11 +215,12 @@ body{background:var(--bg);color:var(--text);}
   .player-name{ font-size: 14px; }
 
   /* Bottom nav más cómodo */
-  .sec-tab{ padding: 10px 6px 8px; }
-  .sec-tab-icon{ font-size: 20px; }
-  .sec-tab-label{ font-size: 9px; }
+  .sec-tab{ padding: 7px 5px 6px; }
+  .sec-tab-accent{ margin-bottom: 5px; }
+  .sec-tab-label{ font-size: 10px; }
   .save-bar{ padding: 10px 24px 14px; }
   .btn-guardar{ font-size: 16px; padding: 15px; }
+  .btn-tema{ width: 38px; height: 38px; font-size: 18px; }
 }
 
 /* Tablet intermedio */
@@ -228,6 +229,74 @@ body{background:var(--bg);color:var(--text);}
   .partidos-list{ max-width: 600px; margin: 0 auto; }
   .killer-search{ max-width: 600px; margin: 0 auto; }
 }
+
+/* ── TOGGLE TEMA (luna/sol) ── */
+.btn-tema{background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;transition:all 0.2s;flex-shrink:0;line-height:1;padding:0;}
+.btn-tema:hover{background:rgba(255,255,255,0.13);}
+.btn-tema:active{transform:scale(0.93);}
+
+/* ── TABS REDISEÑO — sin emoji, acento de color ── */
+.sec-tab{flex:1;min-width:38px;padding:6px 3px 5px;text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;position:relative;display:flex;flex-direction:column;align-items:center;gap:0;}
+.sec-tab-icon{display:none !important;}
+.sec-tab-accent{width:100%;height:3px;border-radius:2px;margin-bottom:4px;transition:opacity 0.15s,transform 0.15s;opacity:0.25;transform:scaleX(0.55);}
+.sec-tab.activa .sec-tab-accent{opacity:1;transform:scaleX(0.85);}
+.sec-tab-label{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:0.2px;white-space:nowrap;}
+.sec-tab.activa .sec-tab-label{color:var(--amarillo);}
+.sec-tab-dot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--green);display:none;}
+.sec-tab-dot.show{display:block;}
+
+/* ── MODO DÍA ── */
+body.dia{
+  --bg:#f0f4fb;--card:#ffffff;--card2:#e4ecf7;--border:#c8d5ec;
+  --text:#0f172a;--muted:#5a6a88;--green:#16a34a;
+}
+body.dia .header{background:rgba(240,244,251,0.97);}
+body.dia .bottom-nav{background:rgba(240,244,251,0.98);border-top-color:var(--border);}
+body.dia .lev-top-sticky,body.dia .sec-header,body.dia .grupo-tabs,body.dia .killer-search,body.dia .player-group-label{background:var(--bg);}
+body.dia .hdr-brand{color:var(--azul);}
+body.dia .hdr-prog-count{color:var(--azul);}
+body.dia .sec-titulo{color:var(--azul);}
+body.dia .sec-count-num{color:var(--azul);}
+body.dia .gtab{background:var(--card2);border-color:var(--border);color:var(--muted);}
+body.dia .gtab.active{background:rgba(0,48,135,0.1);border-color:var(--azul);color:var(--azul);}
+body.dia .gtab.done{background:rgba(22,163,74,0.1);border-color:rgba(22,163,74,0.4);color:#16a34a;}
+body.dia .partido-card{background:var(--card);border-color:rgba(0,48,135,0.13);}
+body.dia .partido-card.has-pick{border-color:rgba(0,48,135,0.4);box-shadow:0 0 0 1px rgba(0,48,135,0.1);}
+body.dia .partido-card-meta{color:rgba(15,23,42,0.5);border-bottom-color:rgba(0,48,135,0.08);}
+body.dia .lev-btn-card{color:rgba(15,23,42,0.45);}
+body.dia .lev-btn-card:hover:not(.sel-L):not(.sel-E):not(.sel-V){background:rgba(0,0,0,0.04);color:var(--text);}
+body.dia .team-card{background:var(--card);border-color:var(--border);}
+body.dia .team-card.selected{background:rgba(22,163,74,0.08);border-color:#16a34a;}
+body.dia .team-name{color:var(--text);}
+body.dia .killer-input{background:var(--card);border-color:var(--border);color:var(--text);}
+body.dia .killer-input::placeholder{color:var(--muted);}
+body.dia .killer-input:focus{border-color:rgba(0,48,135,0.4);}
+body.dia .player-item{border-bottom-color:var(--border);}
+body.dia .player-item:active{background:rgba(0,0,0,0.04);}
+body.dia .player-item.selected{background:rgba(249,115,22,0.07);}
+body.dia .player-name{color:var(--text);}
+body.dia .player-detail{color:var(--muted);}
+body.dia .player-team-tag{background:var(--card2);color:var(--muted);}
+body.dia .killer-selected-wrap{border-bottom-color:var(--border);}
+body.dia .hdr-skip{color:var(--muted);border-color:var(--border);}
+body.dia .hdr-skip:hover{color:var(--text);border-color:var(--muted);}
+body.dia .btn-tema{background:rgba(0,48,135,0.07);border-color:rgba(0,48,135,0.18);color:var(--azul);}
+body.dia .sec-tab-label{color:var(--muted);}
+body.dia .sec-tab.activa .sec-tab-label{color:var(--azul);}
+body.dia .grupo-header-title{color:var(--azul);}
+body.dia .grupo-header-sub{color:var(--muted);}
+body.dia .hdr-prog-track{background:rgba(0,48,135,0.1);}
+body.dia .sec-bar-track{background:rgba(0,48,135,0.1);}
+body.dia .sec-sub{color:var(--muted);}
+body.dia .sec-sub strong{color:var(--azul) !important;}
+body.dia .sec-count-text{color:var(--text);}
+body.dia .killer-selected-label{color:var(--muted);}
+body.dia .empty-text{color:var(--muted);}
+body.dia .btn-guardar:disabled{background:rgba(0,48,135,0.06);border-color:rgba(0,48,135,0.15);color:rgba(15,23,42,0.3);}
+body.dia .killer-chip{background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.3);}
+body.dia .sec-done-badge{background:rgba(22,163,74,0.1);border-color:rgba(22,163,74,0.25);color:#16a34a;}
+body.dia .sec-tab-dot{background:#16a34a;}
+body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
 </style>
 </head>
 <body>
@@ -245,7 +314,10 @@ body{background:var(--bg);color:var(--text);}
     <div class="hdr-prog-track"><div class="hdr-prog-fill" id="hdrFill"></div></div>
   </div>
   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
-    <button class="hdr-skip" onclick="confirmarSaltar()">Saltar ›</button>
+    <div style="display:flex;align-items:center;gap:7px;">
+      <button class="btn-tema" id="btnTema" onclick="toggleTema()" title="Modo día/noche">🌙</button>
+      <button class="hdr-skip" onclick="confirmarSaltar()">Saltar ›</button>
+    </div>
     <a href="/login.html" style="font-size:11px;font-weight:700;color:var(--muted);text-decoration:none;white-space:nowrap;">¿Ya tienes cuenta? <span style="color:var(--amarillo);text-decoration:underline;">Inicia sesión</span></a>
   </div>
 </header>
@@ -381,37 +453,37 @@ body{background:var(--bg);color:var(--text);}
 <nav class="bottom-nav">
   <div class="sec-tabs" id="secTabs">
     <div class="sec-tab activa" data-sec="lev" onclick="irSeccion('lev')">
-      <span class="sec-tab-icon">⚽</span>
+      <div class="sec-tab-accent" style="background:#3b82f6"></div>
       <span class="sec-tab-label">L/E/V</span>
       <div class="sec-tab-dot" id="dot-lev"></div>
     </div>
     <div class="sec-tab" data-sec="killer" onclick="irSeccion('killer')">
-      <span class="sec-tab-icon">⚔️</span>
+      <div class="sec-tab-accent" style="background:#f97316"></div>
       <span class="sec-tab-label">Killer</span>
       <div class="sec-tab-dot" id="dot-killer"></div>
     </div>
     <div class="sec-tab" data-sec="carnicero" onclick="irSeccion('carnicero')">
-      <span class="sec-tab-icon">🔪</span>
+      <div class="sec-tab-accent" style="background:#ef4444"></div>
       <span class="sec-tab-label">Carnicero</span>
       <div class="sec-tab-dot" id="dot-carnicero"></div>
     </div>
     <div class="sec-tab" data-sec="banderin" onclick="irSeccion('banderin')">
-      <span class="sec-tab-icon">🚩</span>
+      <div class="sec-tab-accent" style="background:#60a5fa"></div>
       <span class="sec-tab-label">Banderín</span>
       <div class="sec-tab-dot" id="dot-banderin"></div>
     </div>
     <div class="sec-tab" data-sec="virgen" onclick="irSeccion('virgen')">
-      <span class="sec-tab-icon">🕊️</span>
+      <div class="sec-tab-accent" style="background:#22c55e"></div>
       <span class="sec-tab-label">Virgen</span>
       <div class="sec-tab-dot" id="dot-virgen"></div>
     </div>
     <div class="sec-tab" data-sec="pied" onclick="irSeccion('pied')">
-      <span class="sec-tab-icon">🎀</span>
+      <div class="sec-tab-accent" style="background:#ec4899"></div>
       <span class="sec-tab-label">Pie de Niña</span>
       <div class="sec-tab-dot" id="dot-pied"></div>
     </div>
     <div class="sec-tab" data-sec="mecha" onclick="irSeccion('mecha')">
-      <span class="sec-tab-icon">✂️</span>
+      <div class="sec-tab-accent" style="background:#a78bfa"></div>
       <span class="sec-tab-label">Mechacorta</span>
       <div class="sec-tab-dot" id="dot-mecha"></div>
     </div>
@@ -437,6 +509,25 @@ body{background:var(--bg);color:var(--text);}
     if (isAuth) { window.location.replace('/dashboard.html'); return; }
   } catch(e){}
 })();
+
+// ─────────────────────────────────────────────
+// MODO DÍA / NOCHE
+// ─────────────────────────────────────────────
+(function(){
+  try {
+    if (localStorage.getItem('rosca_tema') === 'dia') {
+      document.body.classList.add('dia');
+      document.getElementById('btnTema').textContent = '☀️';
+    }
+  } catch(e){}
+})();
+
+function toggleTema() {
+  const esDia = document.body.classList.toggle('dia');
+  const btn = document.getElementById('btnTema');
+  btn.textContent = esDia ? '☀️' : '🌙';
+  try { localStorage.setItem('rosca_tema', esDia ? 'dia' : 'noche'); } catch(e){}
+}
 
 // ─────────────────────────────────────────────
 // DATA
