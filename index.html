@@ -161,12 +161,12 @@
     }
   })();
 
-  // ── Redirigir a picks-preview si es primera visita sin sesión ────────────
+  // ── Redirigir a picks-preview si no viene de él y no tiene sesión ────────
   (function() {
     try {
-      var previewDone = localStorage.getItem('rosca_preview_done');
       var isAuth = Object.keys(localStorage).some(function(k){ return k.includes('auth-token') && k.includes('supabase'); });
-      if (!previewDone && !isAuth) {
+      var vieneDelPreview = new URLSearchParams(window.location.search).get('inscripcion') === '1';
+      if (!isAuth && !vieneDelPreview) {
         window.location.replace('/picks-preview.html');
       }
     } catch(e) {}

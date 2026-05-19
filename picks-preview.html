@@ -771,14 +771,12 @@ function toggleJugador(id) {
 // ─────────────────────────────────────────────
 function guardarYRegistrar() {
   guardarEstado();
-  try { localStorage.setItem('rosca_preview_done', 'true'); } catch(e){}
-  window.location.href = '/';
+  window.location.href = '/?inscripcion=1';
 }
 
 function confirmarSaltar() {
   if (confirm('¿Seguro que quieres saltar la selección de picks? Podrás hacerlos después de registrarte.')) {
-    try { localStorage.setItem('rosca_preview_done', 'true'); } catch(e){}
-    window.location.href = '/';
+    window.location.href = '/?inscripcion=1';
   }
 }
 
