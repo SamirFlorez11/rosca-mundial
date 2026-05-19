@@ -59,7 +59,7 @@ body{background:var(--bg);color:var(--text);}
 .sec-count-text{font-size:13px;font-weight:800;color:var(--text);}
 .sec-count-num{font-size:13px;font-weight:800;color:var(--amarillo);}
 .sec-bar-track{flex:1;height:5px;background:var(--card2);border-radius:99px;overflow:hidden;}
-.sec-bar-fill{height:100%;border-radius:99px;transition:width 0.3s ease;}
+.sec-bar-fill{height:100%;border-radius:99px;transition:width 0.3s ease;background:linear-gradient(90deg,var(--azul),var(--amarillo));}
 .sec-done-badge{font-size:10px;font-weight:800;color:var(--green);background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:99px;white-space:nowrap;display:none;}
 .sec-done-badge.show{display:inline-block;}
 
@@ -132,19 +132,19 @@ body{background:var(--bg);color:var(--text);}
 .killer-selected-wrap{padding:8px 12px 4px;border-bottom:1px solid var(--border);}
 .killer-selected-label{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
 .killer-chips{display:flex;flex-wrap:wrap;gap:5px;}
-.killer-chip{background:rgba(249,115,22,0.15);border:1px solid rgba(249,115,22,0.35);border-radius:99px;padding:3px 10px;font-size:10px;font-weight:700;color:#fb923c;cursor:pointer;display:flex;align-items:center;gap:4px;}
-.killer-chip:hover{background:rgba(249,115,22,0.25);}
+.killer-chip{background:rgba(252,209,22,0.1);border:1px solid rgba(252,209,22,0.3);border-radius:99px;padding:3px 10px;font-size:10px;font-weight:700;color:var(--amarillo);cursor:pointer;display:flex;align-items:center;gap:4px;}
+.killer-chip:hover{background:rgba(252,209,22,0.18);}
 .killer-chip-x{opacity:0.6;font-size:11px;}
 .player-group-label{padding:8px 12px 4px;font-size:9px;font-weight:800;letter-spacing:2px;color:var(--muted);text-transform:uppercase;background:var(--bg);position:sticky;top:0;}
 .player-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.1s;}
 .player-item:active{background:rgba(255,255,255,0.04);}
-.player-item.selected{background:rgba(249,115,22,0.08);}
+.player-item.selected{background:rgba(252,209,22,0.06);}
 .player-item.disabled{opacity:0.35;pointer-events:none;}
 .player-flag{font-size:18px;flex-shrink:0;}
 .player-info{flex:1;}
 .player-name{font-size:13px;font-weight:700;color:var(--text);}
 .player-detail{font-size:10px;color:var(--muted);}
-.player-check{font-size:16px;color:#fb923c;flex-shrink:0;opacity:0;}
+.player-check{font-size:16px;color:var(--amarillo);flex-shrink:0;opacity:0;}
 .player-item.selected .player-check{opacity:1;}
 .player-team-tag{font-size:9px;font-weight:700;color:var(--muted);background:var(--card2);border-radius:4px;padding:1px 5px;margin-left:4px;}
 
@@ -271,7 +271,7 @@ body.dia .nav-cat-btn:hover{color:var(--text);border-color:var(--muted);}
 /* ── TABS REDISEÑO — sin emoji, acento de color ── */
 .sec-tab{flex:1;min-width:0;overflow:hidden;padding:6px 2px 5px;text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;position:relative;display:flex;flex-direction:column;align-items:center;gap:0;}
 .sec-tab-icon{display:none !important;}
-.sec-tab-accent{width:calc(100% - 6px);height:3px;border-radius:2px;margin-bottom:4px;transition:opacity 0.15s,transform 0.15s;opacity:0.25;transform:scaleX(0.5);flex-shrink:0;}
+.sec-tab-accent{width:calc(100% - 6px);height:3px;border-radius:2px;margin-bottom:4px;transition:opacity 0.15s,transform 0.15s;opacity:0.25;transform:scaleX(0.5);flex-shrink:0;background:var(--amarillo);}
 .sec-tab.activa .sec-tab-accent{opacity:1;transform:scaleX(0.9);}
 .sec-tab-label{font-size:8px;font-weight:700;color:var(--muted);letter-spacing:0.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
 .sec-tab.activa .sec-tab-label{color:var(--amarillo);}
@@ -328,7 +328,9 @@ body.dia .sec-count-text{color:var(--text);}
 body.dia .killer-selected-label{color:var(--muted);}
 body.dia .empty-text{color:var(--muted);}
 body.dia .btn-guardar:disabled{background:rgba(0,48,135,0.06);border-color:rgba(0,48,135,0.15);color:rgba(15,23,42,0.3);}
-body.dia .killer-chip{background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.3);}
+body.dia .killer-chip{background:rgba(252,209,22,0.12);border-color:rgba(180,140,0,0.35);color:#7a5f00;}
+body.dia .player-item.selected{background:rgba(252,209,22,0.07);}
+body.dia .player-check{color:#7a5f00;}
 body.dia .sec-done-badge{background:rgba(22,163,74,0.1);border-color:rgba(22,163,74,0.25);color:#16a34a;}
 body.dia .sec-tab-dot{background:#16a34a;}
 body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
@@ -383,11 +385,11 @@ body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
   <section class="seccion" id="sec-killer">
     <div class="sec-header">
       <div class="sec-titulo">El Killer</div>
-      <div class="sec-sub">Elige <strong style="color:var(--amarillo)">15 jugadores</strong> con más Goles + Asistencias. Máx. 3 del mismo equipo.<br><strong style="color:#fb923c">Premio: $1.000.000 COP</strong></div>
+      <div class="sec-sub">Elige <strong style="color:var(--amarillo)">15 jugadores</strong> con más Goles + Asistencias. Máx. 3 del mismo equipo.<br><strong style="color:var(--amarillo)">Premio: $1.000.000 COP</strong></div>
       <div class="sec-counter">
         <span class="sec-count-text">Elegidos:</span>
         <span class="sec-count-num" id="killer-cnt">0 / 15</span>
-        <div class="sec-bar-track"><div class="sec-bar-fill" id="killer-bar" style="background:linear-gradient(90deg,#ea580c,#fb923c);width:0%"></div></div>
+        <div class="sec-bar-track"><div class="sec-bar-fill" id="killer-bar" style="width:0%"></div></div>
         <span class="sec-done-badge" id="killer-done">✓ Listo</span>
       </div>
     </div>
@@ -406,11 +408,11 @@ body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
   <section class="seccion" id="sec-carnicero">
     <div class="sec-header">
       <div class="sec-titulo">El Carnicero</div>
-      <div class="sec-sub">Elige <strong style="color:var(--amarillo)">10 equipos</strong> con más tarjetas. Amarilla = 1pt, Roja = 2pts.<br><strong style="color:#ef4444">Premio: $800.000 COP</strong></div>
+      <div class="sec-sub">Elige <strong style="color:var(--amarillo)">10 equipos</strong> con más tarjetas. Amarilla = 1pt, Roja = 2pts.<br><strong style="color:var(--amarillo)">Premio: $800.000 COP</strong></div>
       <div class="sec-counter">
         <span class="sec-count-text">Elegidos:</span>
         <span class="sec-count-num" id="carnicero-cnt">0 / 10</span>
-        <div class="sec-bar-track"><div class="sec-bar-fill" id="carnicero-bar" style="background:linear-gradient(90deg,#b91c1c,#ef4444);width:0%"></div></div>
+        <div class="sec-bar-track"><div class="sec-bar-fill" id="carnicero-bar" style="width:0%"></div></div>
         <span class="sec-done-badge" id="carnicero-done">✓ Listo</span>
       </div>
     </div>
@@ -422,11 +424,11 @@ body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
   <section class="seccion" id="sec-banderin">
     <div class="sec-header">
       <div class="sec-titulo">El Banderín</div>
-      <div class="sec-sub">Elige <strong style="color:var(--amarillo)">10 equipos</strong> que ejecutarán más corners.<br><strong style="color:#3b82f6">Premio: $500.000 COP</strong></div>
+      <div class="sec-sub">Elige <strong style="color:var(--amarillo)">10 equipos</strong> que ejecutarán más corners.<br><strong style="color:var(--amarillo)">Premio: $500.000 COP</strong></div>
       <div class="sec-counter">
         <span class="sec-count-text">Elegidos:</span>
         <span class="sec-count-num" id="banderin-cnt">0 / 10</span>
-        <div class="sec-bar-track"><div class="sec-bar-fill" id="banderin-bar" style="background:linear-gradient(90deg,#1d4ed8,#3b82f6);width:0%"></div></div>
+        <div class="sec-bar-track"><div class="sec-bar-fill" id="banderin-bar" style="width:0%"></div></div>
         <span class="sec-done-badge" id="banderin-done">✓ Listo</span>
       </div>
     </div>
@@ -438,11 +440,11 @@ body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
   <section class="seccion" id="sec-virgen">
     <div class="sec-header">
       <div class="sec-titulo">El Virgen</div>
-      <div class="sec-sub">Elige <strong style="color:var(--amarillo)">10 equipos</strong> que anotarán menos goles.<br><strong style="color:#22c55e">Premio: $400.000 COP</strong></div>
+      <div class="sec-sub">Elige <strong style="color:var(--amarillo)">10 equipos</strong> que anotarán menos goles.<br><strong style="color:var(--amarillo)">Premio: $400.000 COP</strong></div>
       <div class="sec-counter">
         <span class="sec-count-text">Elegidos:</span>
         <span class="sec-count-num" id="virgen-cnt">0 / 10</span>
-        <div class="sec-bar-track"><div class="sec-bar-fill" id="virgen-bar" style="background:linear-gradient(90deg,#15803d,#22c55e);width:0%"></div></div>
+        <div class="sec-bar-track"><div class="sec-bar-fill" id="virgen-bar" style="width:0%"></div></div>
         <span class="sec-done-badge" id="virgen-done">✓ Listo</span>
       </div>
     </div>
@@ -454,11 +456,11 @@ body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
   <section class="seccion" id="sec-pied">
     <div class="sec-header">
       <div class="sec-titulo">El Pie de Niña</div>
-      <div class="sec-sub">Elige <strong style="color:var(--amarillo)">10 equipos</strong> con menos tarjetas.<br><strong style="color:#ec4899">Premio: $300.000 COP</strong></div>
+      <div class="sec-sub">Elige <strong style="color:var(--amarillo)">10 equipos</strong> con menos tarjetas.<br><strong style="color:var(--amarillo)">Premio: $300.000 COP</strong></div>
       <div class="sec-counter">
         <span class="sec-count-text">Elegidos:</span>
         <span class="sec-count-num" id="pied-cnt">0 / 10</span>
-        <div class="sec-bar-track"><div class="sec-bar-fill" id="pied-bar" style="background:linear-gradient(90deg,#be185d,#ec4899);width:0%"></div></div>
+        <div class="sec-bar-track"><div class="sec-bar-fill" id="pied-bar" style="width:0%"></div></div>
         <span class="sec-done-badge" id="pied-done">✓ Listo</span>
       </div>
     </div>
@@ -470,11 +472,11 @@ body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
   <section class="seccion" id="sec-mecha">
     <div class="sec-header">
       <div class="sec-titulo">El Mechacorta</div>
-      <div class="sec-sub">Elige <strong style="color:var(--amarillo)">10 equipos</strong> que ejecutarán menos corners.<br><strong style="color:#a78bfa">Premio: $300.000 COP</strong></div>
+      <div class="sec-sub">Elige <strong style="color:var(--amarillo)">10 equipos</strong> que ejecutarán menos corners.<br><strong style="color:var(--amarillo)">Premio: $300.000 COP</strong></div>
       <div class="sec-counter">
         <span class="sec-count-text">Elegidos:</span>
         <span class="sec-count-num" id="mecha-cnt">0 / 10</span>
-        <div class="sec-bar-track"><div class="sec-bar-fill" id="mecha-bar" style="background:linear-gradient(90deg,#7c3aed,#a78bfa);width:0%"></div></div>
+        <div class="sec-bar-track"><div class="sec-bar-fill" id="mecha-bar" style="width:0%"></div></div>
         <span class="sec-done-badge" id="mecha-done">✓ Listo</span>
       </div>
     </div>
@@ -488,37 +490,37 @@ body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
 <nav class="bottom-nav">
   <div class="sec-tabs" id="secTabs">
     <div class="sec-tab activa" data-sec="lev" onclick="irSeccion('lev')">
-      <div class="sec-tab-accent" style="background:#3b82f6"></div>
+      <div class="sec-tab-accent"></div>
       <span class="sec-tab-label">L/E/V</span>
       <div class="sec-tab-dot" id="dot-lev"></div>
     </div>
     <div class="sec-tab" data-sec="killer" onclick="irSeccion('killer')">
-      <div class="sec-tab-accent" style="background:#f97316"></div>
+      <div class="sec-tab-accent"></div>
       <span class="sec-tab-label">Killer</span>
       <div class="sec-tab-dot" id="dot-killer"></div>
     </div>
     <div class="sec-tab" data-sec="carnicero" onclick="irSeccion('carnicero')">
-      <div class="sec-tab-accent" style="background:#ef4444"></div>
+      <div class="sec-tab-accent"></div>
       <span class="sec-tab-label">Carnicero</span>
       <div class="sec-tab-dot" id="dot-carnicero"></div>
     </div>
     <div class="sec-tab" data-sec="banderin" onclick="irSeccion('banderin')">
-      <div class="sec-tab-accent" style="background:#60a5fa"></div>
+      <div class="sec-tab-accent"></div>
       <span class="sec-tab-label">Banderín</span>
       <div class="sec-tab-dot" id="dot-banderin"></div>
     </div>
     <div class="sec-tab" data-sec="virgen" onclick="irSeccion('virgen')">
-      <div class="sec-tab-accent" style="background:#22c55e"></div>
+      <div class="sec-tab-accent"></div>
       <span class="sec-tab-label">Virgen</span>
       <div class="sec-tab-dot" id="dot-virgen"></div>
     </div>
     <div class="sec-tab" data-sec="pied" onclick="irSeccion('pied')">
-      <div class="sec-tab-accent" style="background:#ec4899"></div>
+      <div class="sec-tab-accent"></div>
       <span class="sec-tab-label">Pie de Niña</span>
       <div class="sec-tab-dot" id="dot-pied"></div>
     </div>
     <div class="sec-tab" data-sec="mecha" onclick="irSeccion('mecha')">
-      <div class="sec-tab-accent" style="background:#a78bfa"></div>
+      <div class="sec-tab-accent"></div>
       <span class="sec-tab-label">Mechacorta</span>
       <div class="sec-tab-dot" id="dot-mecha"></div>
     </div>
@@ -586,7 +588,7 @@ EQUIPOS.forEach(e => EQ[e.id] = e);
 
 const SECCIONES = ['lev','killer','carnicero','banderin','virgen','pied','mecha'];
 const SEC_NOMBRES  = {lev:'L / E / V', killer:'El Killer', carnicero:'El Carnicero', banderin:'El Banderín', virgen:'El Virgen', pied:'Pie de Niña', mecha:'Mechacorta'};
-const SEC_COLORES  = {lev:'#3b82f6', killer:'#f97316', carnicero:'#ef4444', banderin:'#60a5fa', virgen:'#22c55e', pied:'#ec4899', mecha:'#a78bfa'};
+const SEC_COLORES  = {lev:'#FCD116', killer:'#FCD116', carnicero:'#FCD116', banderin:'#FCD116', virgen:'#FCD116', pied:'#FCD116', mecha:'#FCD116'};
 
 const PARTIDOS_LEV = [
   {id:'p0',  grupo:'A', local:EQ.mex, visit:EQ.rsa, fecha:'Jun 11 14:00'},
@@ -978,7 +980,7 @@ function renderKiller() {
         <span class="player-flag">${eq.flag}</span>
         <div class="player-info">
           <div class="player-name">${j.nombre}<span class="player-team-tag">${j.posicion}</span></div>
-          <div class="player-detail">${eq.nombre}${isSelected ? ' · <strong style="color:#fb923c">Seleccionado</strong>' : ''}</div>
+          <div class="player-detail">${eq.nombre}${isSelected ? ' · <strong style="color:var(--amarillo)">Seleccionado</strong>' : ''}</div>
         </div>
         <span class="player-check">✓</span>
       </div>`;
