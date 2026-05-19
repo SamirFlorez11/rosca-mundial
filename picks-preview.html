@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Rosca Mundial 2026 — Haz tus Picks</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -15,24 +15,37 @@
 html,body{height:100%;overflow:hidden;}
 body{background:var(--bg);color:var(--text);}
 
+/* ── SAFE AREA VARS ── */
+:root{
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --tricolor-h: 4px;
+  --header-h: 54px;
+  --header-top: calc(var(--tricolor-h) + var(--sat));
+  --main-top: calc(var(--tricolor-h) + var(--sat) + var(--header-h));
+}
+
 /* ── TRICOLOR ── */
-.tricolor{height:4px;background:linear-gradient(90deg,var(--amarillo) 33%,var(--azul) 33% 66%,var(--rojo) 66%);position:fixed;top:0;left:0;right:0;z-index:100;}
+.tricolor{height:calc(var(--tricolor-h) + var(--sat));padding-top:var(--sat);background:linear-gradient(90deg,var(--amarillo) 33%,var(--azul) 33% 66%,var(--rojo) 66%);position:fixed;top:0;left:0;right:0;z-index:100;}
 
 /* ── HEADER ── */
-.header{position:fixed;top:4px;left:0;right:0;z-index:99;background:rgba(10,14,26,0.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;gap:12px;}
-.hdr-brand{font-size:17px;font-weight:900;letter-spacing:3px;color:var(--amarillo);white-space:nowrap;line-height:1;}
+.header{position:fixed;top:var(--header-top);left:0;right:0;z-index:99;background:rgba(10,14,26,0.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);height:var(--header-h);display:flex;align-items:center;justify-content:space-between;padding:0 16px;gap:10px;}
+.hdr-brand{font-size:16px;font-weight:900;letter-spacing:2.5px;color:var(--amarillo);white-space:nowrap;line-height:1;flex-shrink:0;}
 .hdr-brand span{display:block;font-size:9px;font-weight:600;color:var(--muted);letter-spacing:1px;margin-top:1px;}
-.hdr-progress{flex:1;display:flex;flex-direction:column;gap:3px;max-width:220px;}
+.hdr-progress{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
 .hdr-prog-labels{display:flex;justify-content:space-between;align-items:center;}
 .hdr-prog-label{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
-.hdr-prog-count{font-size:12px;font-weight:800;color:var(--amarillo);}
+.hdr-prog-count{font-size:11px;font-weight:800;color:var(--amarillo);}
 .hdr-prog-track{height:4px;background:var(--card2);border-radius:99px;overflow:hidden;}
 .hdr-prog-fill{height:100%;background:linear-gradient(90deg,var(--azul),var(--amarillo));border-radius:99px;transition:width 0.4s ease;width:0%;}
-.hdr-skip{font-size:12px;font-weight:700;color:var(--muted);background:none;border:1px solid var(--border);border-radius:8px;padding:7px 14px;cursor:pointer;white-space:nowrap;}
+.hdr-actions{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+.hdr-skip{font-size:11px;font-weight:700;color:var(--muted);background:none;border:1px solid var(--border);border-radius:8px;padding:5px 11px;cursor:pointer;white-space:nowrap;}
 .hdr-skip:hover{color:var(--text);border-color:var(--muted);}
+.hdr-login{font-size:10px;font-weight:700;color:var(--muted);text-decoration:none;white-space:nowrap;}
+.hdr-login span{color:var(--amarillo);text-decoration:underline;}
 
 /* ── MAIN CONTENT ── */
-.main{position:fixed;top:58px;left:0;right:0;bottom:156px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.main{position:fixed;top:var(--main-top);left:0;right:0;bottom:calc(156px + var(--sab));overflow-y:auto;-webkit-overflow-scrolling:touch;}
 
 /* ── SECTION ── */
 .seccion{display:none;min-height:100%;}
@@ -136,23 +149,16 @@ body{background:var(--bg);color:var(--text);}
 .player-team-tag{font-size:9px;font-weight:700;color:var(--muted);background:var(--card2);border-radius:4px;padding:1px 5px;margin-left:4px;}
 
 /* ── BOTTOM NAV ── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:99;background:rgba(10,14,26,0.98);border-top:1px solid var(--border);}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:99;background:rgba(10,14,26,0.98);border-top:1px solid var(--border);padding-bottom:var(--sab);}
 .sec-tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);}
 .sec-tabs::-webkit-scrollbar{display:none;}
-.sec-tab{flex:1;min-width:44px;padding:8px 4px 6px;text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;position:relative;}
-.sec-tab.activa{border-bottom-color:var(--amarillo);}
-.sec-tab-icon{font-size:18px;line-height:1;display:block;}
-.sec-tab-label{font-size:7.5px;font-weight:700;color:var(--muted);letter-spacing:0.3px;margin-top:2px;white-space:nowrap;}
-.sec-tab.activa .sec-tab-label{color:var(--amarillo);}
-.sec-tab-dot{position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--green);display:none;}
-.sec-tab-dot.show{display:block;}
-.save-bar{padding:8px 12px 10px;}
-.btn-guardar{width:100%;padding:13px;border-radius:12px;border:none;font-size:15px;font-weight:900;letter-spacing:2px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.save-bar{padding:7px 12px 9px;}
+.btn-guardar{width:100%;padding:11px;border-radius:12px;border:none;font-size:14px;font-weight:900;letter-spacing:1.5px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
 .btn-guardar:not(:disabled){background:linear-gradient(135deg,var(--amarillo),#e5a800);color:#000;}
 .btn-guardar:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(252,209,22,0.4);}
 .btn-guardar:not(:disabled):active{transform:scale(0.98);}
 .btn-guardar:disabled{background:rgba(255,255,255,0.06);border:1.5px dashed rgba(255,255,255,0.15);color:rgba(255,255,255,0.25);cursor:not-allowed;}
-.btn-guardar-sub{font-size:10px;font-weight:600;color:rgba(0,0,0,0.5);display:block;letter-spacing:0.5px;margin-top:1px;}
+.btn-guardar-sub{font-size:9px;font-weight:600;color:rgba(0,0,0,0.5);display:block;letter-spacing:0.5px;margin-top:1px;}
 
 /* ── EMPTY STATE ── */
 .empty-state{text-align:center;padding:48px 24px;color:var(--muted);}
@@ -214,16 +220,25 @@ body{background:var(--bg);color:var(--text);}
   .player-flag{ font-size: 22px; }
   .player-name{ font-size: 14px; }
 
+  /* Header desktop más espacioso */
+  .header{ height: 60px; gap: 16px; padding: 0 24px; }
+  .hdr-brand{ font-size: 20px; letter-spacing: 3.5px; }
+  .hdr-brand span{ font-size: 10px; }
+  .hdr-prog-count{ font-size: 13px; }
+  .hdr-skip{ font-size: 13px; padding: 7px 16px; }
+  .hdr-login{ font-size: 11px; }
+  .btn-tema{ width: 40px; height: 40px; font-size: 19px; }
+
   /* Bottom nav más cómodo */
-  .sec-tab{ padding: 7px 5px 6px; }
+  .sec-tab{ padding: 8px 6px 7px; min-width: 0; }
   .sec-tab-accent{ margin-bottom: 5px; }
   .sec-tab-label{ font-size: 10px; }
   .save-bar{ padding: 10px 24px 14px; }
-  .btn-guardar{ font-size: 16px; padding: 15px; }
-  .btn-tema{ width: 38px; height: 38px; font-size: 18px; }
-  .main{ bottom: 146px; }
-  .nav-cat-strip{ padding: 5px 16px; gap: 10px; }
-  .nav-cat-btn{ font-size: 12px; padding: 5px 14px; }
+  .btn-guardar{ font-size: 16px; padding: 15px; letter-spacing: 2px; }
+  .btn-guardar-sub{ font-size: 10px; }
+  .main{ bottom: calc(150px + var(--sab)); }
+  .nav-cat-strip{ padding: 6px 20px; gap: 10px; }
+  .nav-cat-btn{ font-size: 12px; padding: 6px 16px; }
   .nav-cat-pos{ font-size: 11px; }
 }
 
@@ -254,13 +269,13 @@ body.dia .nav-cat-btn:hover{color:var(--text);border-color:var(--muted);}
 .btn-tema:active{transform:scale(0.93);}
 
 /* ── TABS REDISEÑO — sin emoji, acento de color ── */
-.sec-tab{flex:1;min-width:38px;padding:6px 3px 5px;text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;position:relative;display:flex;flex-direction:column;align-items:center;gap:0;}
+.sec-tab{flex:1;min-width:0;overflow:hidden;padding:6px 2px 5px;text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;position:relative;display:flex;flex-direction:column;align-items:center;gap:0;}
 .sec-tab-icon{display:none !important;}
-.sec-tab-accent{width:100%;height:3px;border-radius:2px;margin-bottom:4px;transition:opacity 0.15s,transform 0.15s;opacity:0.25;transform:scaleX(0.55);}
-.sec-tab.activa .sec-tab-accent{opacity:1;transform:scaleX(0.85);}
-.sec-tab-label{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:0.2px;white-space:nowrap;}
+.sec-tab-accent{width:calc(100% - 6px);height:3px;border-radius:2px;margin-bottom:4px;transition:opacity 0.15s,transform 0.15s;opacity:0.25;transform:scaleX(0.5);flex-shrink:0;}
+.sec-tab.activa .sec-tab-accent{opacity:1;transform:scaleX(0.9);}
+.sec-tab-label{font-size:8px;font-weight:700;color:var(--muted);letter-spacing:0.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
 .sec-tab.activa .sec-tab-label{color:var(--amarillo);}
-.sec-tab-dot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--green);display:none;}
+.sec-tab-dot{position:absolute;top:4px;right:3px;width:5px;height:5px;border-radius:50%;background:var(--green);display:none;}
 .sec-tab-dot.show{display:block;}
 
 /* ── MODO DÍA ── */
@@ -298,6 +313,8 @@ body.dia .player-team-tag{background:var(--card2);color:var(--muted);}
 body.dia .killer-selected-wrap{border-bottom-color:var(--border);}
 body.dia .hdr-skip{color:var(--muted);border-color:var(--border);}
 body.dia .hdr-skip:hover{color:var(--text);border-color:var(--muted);}
+body.dia .hdr-login{color:var(--muted);}
+body.dia .hdr-login span{color:var(--azul);}
 body.dia .btn-tema{background:rgba(0,48,135,0.07);border-color:rgba(0,48,135,0.18);color:var(--azul);}
 body.dia .sec-tab-label{color:var(--muted);}
 body.dia .sec-tab.activa .sec-tab-label{color:var(--azul);}
@@ -331,12 +348,12 @@ body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
     </div>
     <div class="hdr-prog-track"><div class="hdr-prog-fill" id="hdrFill"></div></div>
   </div>
-  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
-    <div style="display:flex;align-items:center;gap:7px;">
+  <div class="hdr-actions">
+    <div style="display:flex;align-items:center;gap:6px;">
       <button class="btn-tema" id="btnTema" onclick="toggleTema()" title="Modo día/noche">🌙</button>
       <button class="hdr-skip" onclick="confirmarSaltar()">Saltar ›</button>
     </div>
-    <a href="/login.html" style="font-size:11px;font-weight:700;color:var(--muted);text-decoration:none;white-space:nowrap;">¿Ya tienes cuenta? <span style="color:var(--amarillo);text-decoration:underline;">Inicia sesión</span></a>
+    <a href="/login.html" class="hdr-login">¿Ya tienes cuenta? <span>Inicia sesión</span></a>
   </div>
 </header>
 
