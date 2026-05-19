@@ -28,7 +28,7 @@ body{background:var(--bg);color:var(--text);}
 .hdr-prog-count{font-size:12px;font-weight:800;color:var(--amarillo);}
 .hdr-prog-track{height:4px;background:var(--card2);border-radius:99px;overflow:hidden;}
 .hdr-prog-fill{height:100%;background:linear-gradient(90deg,var(--azul),var(--amarillo));border-radius:99px;transition:width 0.4s ease;width:0%;}
-.hdr-skip{font-size:10px;font-weight:700;color:var(--muted);background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;white-space:nowrap;}
+.hdr-skip{font-size:12px;font-weight:700;color:var(--muted);background:none;border:1px solid var(--border);border-radius:8px;padding:7px 14px;cursor:pointer;white-space:nowrap;}
 .hdr-skip:hover{color:var(--text);border-color:var(--muted);}
 
 /* ── MAIN CONTENT ── */
@@ -39,10 +39,9 @@ body{background:var(--bg);color:var(--text);}
 .seccion.activa{display:block;}
 
 /* ── SECTION HEADER ── */
-.sec-header{padding:18px 16px 12px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:10;}
-.sec-emoji{font-size:28px;margin-bottom:4px;}
-.sec-titulo{font-size:20px;font-weight:900;letter-spacing:1px;color:var(--amarillo);line-height:1.2;}
-.sec-sub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5;}
+.sec-header{padding:12px 16px 10px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:10;}
+.sec-titulo{font-size:22px;font-weight:900;letter-spacing:1px;color:var(--amarillo);line-height:1.2;}
+.sec-sub{font-size:13px;color:var(--muted);margin-top:5px;line-height:1.5;}
 .sec-counter{display:flex;align-items:center;gap:8px;margin-top:10px;}
 .sec-count-text{font-size:13px;font-weight:800;color:var(--text);}
 .sec-count-num{font-size:13px;font-weight:800;color:var(--amarillo);}
@@ -54,9 +53,10 @@ body{background:var(--bg);color:var(--text);}
 /* ── LEV STICKY HEADER (sec-header + grupo tabs como bloque) ── */
 .lev-top-sticky{position:sticky;top:0;z-index:10;background:var(--bg);}
 
-/* ── GRUPO TABS (idéntico a picks.html) ── */
-.grupo-tabs{display:flex;gap:4px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--border);background:var(--bg);}
-.gtab{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--card2);color:var(--muted);transition:all 0.15s;}
+/* ── GRUPO TABS — fila única scrolleable ── */
+.grupo-tabs{display:flex;gap:6px;flex-wrap:nowrap;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--bg);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.grupo-tabs::-webkit-scrollbar{display:none;}
+.gtab{flex-shrink:0;padding:5px 13px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--card2);color:var(--muted);transition:all 0.15s;}
 .gtab:hover{border-color:rgba(252,209,22,0.4);}
 .gtab.active{background:rgba(252,209,22,0.12);border-color:var(--amarillo);color:var(--amarillo);}
 .gtab.done{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.4);color:#22c55e;}
@@ -185,7 +185,7 @@ body{background:var(--bg);color:var(--text);}
   </div>
   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
     <button class="hdr-skip" onclick="confirmarSaltar()">Saltar ›</button>
-    <a href="/login.html" style="font-size:9px;font-weight:700;color:var(--muted);text-decoration:none;letter-spacing:0.3px;white-space:nowrap;">¿Ya tienes cuenta? <span style="color:var(--amarillo);text-decoration:underline;">Inicia sesión</span></a>
+    <a href="/login.html" style="font-size:11px;font-weight:700;color:var(--muted);text-decoration:none;white-space:nowrap;">¿Ya tienes cuenta? <span style="color:var(--amarillo);text-decoration:underline;">Inicia sesión</span></a>
   </div>
 </header>
 
@@ -196,7 +196,6 @@ body{background:var(--bg);color:var(--text);}
   <section class="seccion activa" id="sec-lev">
     <div class="lev-top-sticky">
       <div class="sec-header">
-        <div class="sec-emoji">⚽</div>
         <div class="sec-titulo">Predicciones L / E / V</div>
         <div class="sec-sub">¿Quién gana cada partido? Local (L), Empate (E) o Visitante (V).<br>1 punto por acierto — <strong style="color:var(--amarillo)">72 partidos</strong> de fase de grupos.</div>
         <div class="sec-counter">
@@ -215,7 +214,6 @@ body{background:var(--bg);color:var(--text);}
   <!-- ===================== SECCIÓN 2: KILLER ===================== -->
   <section class="seccion" id="sec-killer">
     <div class="sec-header">
-      <div class="sec-emoji">⚔️</div>
       <div class="sec-titulo">El Killer</div>
       <div class="sec-sub">Elige <strong style="color:var(--amarillo)">15 jugadores</strong> con más Goles + Asistencias. Máx. 3 del mismo equipo.<br><strong style="color:#fb923c">Premio: $1.000.000 COP</strong></div>
       <div class="sec-counter">
@@ -239,7 +237,6 @@ body{background:var(--bg);color:var(--text);}
   <!-- ===================== SECCIÓN 3: CARNICERO ===================== -->
   <section class="seccion" id="sec-carnicero">
     <div class="sec-header">
-      <div class="sec-emoji">🔪</div>
       <div class="sec-titulo">El Carnicero</div>
       <div class="sec-sub">Elige <strong style="color:var(--amarillo)">10 equipos</strong> con más tarjetas. Amarilla = 1pt, Roja = 2pts.<br><strong style="color:#ef4444">Premio: $800.000 COP</strong></div>
       <div class="sec-counter">
@@ -256,7 +253,6 @@ body{background:var(--bg);color:var(--text);}
   <!-- ===================== SECCIÓN 4: BANDERÍN ===================== -->
   <section class="seccion" id="sec-banderin">
     <div class="sec-header">
-      <div class="sec-emoji">🚩</div>
       <div class="sec-titulo">El Banderín</div>
       <div class="sec-sub">Elige <strong style="color:var(--amarillo)">10 equipos</strong> que ejecutarán más corners.<br><strong style="color:#3b82f6">Premio: $500.000 COP</strong></div>
       <div class="sec-counter">
@@ -273,7 +269,6 @@ body{background:var(--bg);color:var(--text);}
   <!-- ===================== SECCIÓN 5: VIRGEN ===================== -->
   <section class="seccion" id="sec-virgen">
     <div class="sec-header">
-      <div class="sec-emoji">🕊️</div>
       <div class="sec-titulo">El Virgen</div>
       <div class="sec-sub">Elige <strong style="color:var(--amarillo)">10 equipos</strong> que anotarán menos goles.<br><strong style="color:#22c55e">Premio: $400.000 COP</strong></div>
       <div class="sec-counter">
@@ -290,7 +285,6 @@ body{background:var(--bg);color:var(--text);}
   <!-- ===================== SECCIÓN 6: PIE DE NIÑA ===================== -->
   <section class="seccion" id="sec-pied">
     <div class="sec-header">
-      <div class="sec-emoji">🎀</div>
       <div class="sec-titulo">El Pie de Niña</div>
       <div class="sec-sub">Elige <strong style="color:var(--amarillo)">10 equipos</strong> con menos tarjetas.<br><strong style="color:#ec4899">Premio: $300.000 COP</strong></div>
       <div class="sec-counter">
@@ -307,7 +301,6 @@ body{background:var(--bg);color:var(--text);}
   <!-- ===================== SECCIÓN 7: MECHACORTA ===================== -->
   <section class="seccion" id="sec-mecha">
     <div class="sec-header">
-      <div class="sec-emoji">✂️</div>
       <div class="sec-titulo">El Mechacorta</div>
       <div class="sec-sub">Elige <strong style="color:var(--amarillo)">10 equipos</strong> que ejecutarán menos corners.<br><strong style="color:#a78bfa">Premio: $300.000 COP</strong></div>
       <div class="sec-counter">
