@@ -51,30 +51,54 @@ body{background:var(--bg);color:var(--text);}
 .sec-done-badge{font-size:10px;font-weight:800;color:var(--green);background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:99px;white-space:nowrap;display:none;}
 .sec-done-badge.show{display:inline-block;}
 
-/* ── GRUPO TABS (para LEV) ── */
-.grupo-tabs{display:flex;gap:4px;padding:10px 12px;overflow-x:auto;scrollbar-width:none;background:var(--bg);border-bottom:1px solid var(--border);}
-.grupo-tabs::-webkit-scrollbar{display:none;}
-.grupo-tab{flex-shrink:0;padding:5px 12px;border-radius:6px;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;border:1px solid var(--border);color:var(--muted);background:var(--card);transition:all 0.15s;}
-.grupo-tab.activo{background:var(--azul);border-color:var(--azul);color:#fff;}
-.grupo-tab.completo{border-color:rgba(34,197,94,0.4);color:var(--green);}
-.grupo-tab.activo.completo{background:var(--green);border-color:var(--green);color:#fff;}
+/* ── LEV STICKY HEADER (sec-header + grupo tabs como bloque) ── */
+.lev-top-sticky{position:sticky;top:0;z-index:10;background:var(--bg);}
 
-/* ── MATCH CARDS ── */
-.partidos-list{padding:10px 12px;display:flex;flex-direction:column;gap:8px;}
-.partido-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 14px;transition:border-color 0.2s;}
-.partido-card.has-pick{border-color:rgba(34,197,94,0.3);}
-.partido-teams{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
-.partido-team{display:flex;align-items:center;gap:6px;flex:1;}
-.partido-team.visitante{flex-direction:row-reverse;text-align:right;}
-.partido-flag{font-size:20px;line-height:1;flex-shrink:0;}
-.partido-nombre{font-size:11px;font-weight:700;color:var(--text);line-height:1.2;}
-.partido-vs{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:1px;flex-shrink:0;}
-.partido-fecha{font-size:9px;color:var(--muted);text-align:center;margin-bottom:8px;}
-.lev-btns{display:flex;gap:6px;}
-.lev-btn{flex:1;padding:8px 0;border-radius:8px;border:1.5px solid var(--border);font-size:12px;font-weight:800;letter-spacing:1px;cursor:pointer;background:var(--card2);color:var(--muted);transition:all 0.15s;text-align:center;}
-.lev-btn.sel-L{background:rgba(0,48,135,0.25);border-color:var(--azul);color:#6fa3ff;}
-.lev-btn.sel-E{background:rgba(252,209,22,0.15);border-color:var(--amarillo);color:var(--amarillo);}
-.lev-btn.sel-V{background:rgba(206,17,38,0.2);border-color:var(--rojo);color:#ff6680;}
+/* ── GRUPO TABS (idéntico a picks.html) ── */
+.grupo-tabs{display:flex;gap:4px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--border);background:var(--bg);}
+.gtab{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--card2);color:var(--muted);transition:all 0.15s;}
+.gtab:hover{border-color:rgba(252,209,22,0.4);}
+.gtab.active{background:rgba(252,209,22,0.12);border-color:var(--amarillo);color:var(--amarillo);}
+.gtab.done{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.4);color:#22c55e;}
+
+/* ── GRUPO HEADER ── */
+.grupo-header{padding:14px 14px 10px;border-bottom:1px solid rgba(30,45,69,0.5);margin-bottom:6px;}
+.grupo-header-title{font-size:15px;font-weight:800;letter-spacing:2px;color:var(--amarillo);text-transform:uppercase;line-height:1;}
+.grupo-header-sub{font-size:10px;color:var(--muted);letter-spacing:0.5px;margin-top:3px;font-weight:500;}
+
+/* ── MATCH CARDS (idéntico a picks.html) ── */
+.partidos-list{padding:8px;}
+.partido-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden;transition:border-color 0.15s;}
+.partido-card.has-pick{border-color:rgba(252,209,22,0.3);}
+.partido-card-meta{display:flex;justify-content:space-between;align-items:center;padding:5px 12px;font-size:10px;color:var(--muted);letter-spacing:0.5px;border-bottom:1px solid rgba(30,45,69,0.4);}
+.partido-btns-row{display:grid;grid-template-columns:1fr 1fr 1fr;}
+.lev-btn-card{padding:10px 6px;border:none;border-right:1px solid var(--border);background:transparent;cursor:pointer;font-weight:600;transition:background 0.12s,color 0.12s;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;min-height:62px;justify-content:center;width:100%;}
+.lev-btn-card:last-child{border-right:none;}
+.lev-btn-card .btn-flag{font-size:22px;line-height:1;transition:transform 0.15s;}
+.lev-btn-card .btn-name{font-size:11px;font-weight:700;text-align:center;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:96px;transition:color 0.15s;}
+.lev-btn-card .btn-sub{font-size:9px;text-transform:uppercase;letter-spacing:0.8px;opacity:0.45;transition:opacity 0.15s,color 0.15s;}
+.empate-icon{display:none;}
+.lev-btn-card.sel-L{background:rgba(56,130,221,0.22);color:#A8CFFF;border-right-color:rgba(56,130,221,0.25);box-shadow:inset 0 -3px 0 #378ADD,inset 0 0 20px rgba(56,130,221,0.08);}
+.lev-btn-card.sel-L .btn-flag{transform:scale(1.18);filter:drop-shadow(0 0 7px rgba(56,130,221,0.75));}
+.lev-btn-card.sel-L .btn-name{color:#A8CFFF;font-size:12px;}
+.lev-btn-card.sel-L .btn-sub{color:#6AAEE8;opacity:1;font-weight:700;}
+.lev-btn-card.sel-E{background:rgba(252,209,22,0.14);color:#E8C900;border-right-color:rgba(252,209,22,0.25);box-shadow:inset 0 -3px 0 #C8A800,inset 0 0 20px rgba(252,209,22,0.06);}
+.lev-btn-card.sel-E .btn-name{color:#E8C900;font-size:12px;letter-spacing:1px;}
+.lev-btn-card.sel-E .btn-sub{color:#C8A800;opacity:1;font-weight:700;}
+.lev-btn-card.sel-V{background:rgba(216,90,48,0.22);color:#FFB49A;border-right-color:rgba(216,90,48,0.25);box-shadow:inset 0 -3px 0 #D85A30,inset 0 0 20px rgba(216,90,48,0.08);}
+.lev-btn-card.sel-V .btn-flag{transform:scale(1.18);filter:drop-shadow(0 0 7px rgba(216,90,48,0.75));}
+.lev-btn-card.sel-V .btn-name{color:#FFB49A;font-size:12px;}
+.lev-btn-card.sel-V .btn-sub{color:#D87A5A;opacity:1;font-weight:700;}
+@media(hover:hover) and (pointer:fine){
+  .lev-btn-card:hover:not(.sel-L):not(.sel-E):not(.sel-V){background:rgba(255,255,255,0.04);color:var(--text);}
+  .lev-btn-card:hover:not(.sel-L):not(.sel-E):not(.sel-V) .btn-flag{transform:scale(1.08);}
+}
+.lev-btn-card:active{transform:scale(0.97);}
+.lev-btn-card:focus,.lev-btn-card:focus-visible{outline:none !important;}
+
+/* ── SCROLL REVEAL ── */
+.opt-reveal{opacity:0;transform:translateY(8px);transition:opacity 0.25s ease,transform 0.25s ease;}
+.opt-reveal.visible{opacity:1;transform:translateY(0);}
 
 /* ── TEAM GRID ── */
 .team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px;}
@@ -159,7 +183,10 @@ body{background:var(--bg);color:var(--text);}
     </div>
     <div class="hdr-prog-track"><div class="hdr-prog-fill" id="hdrFill"></div></div>
   </div>
-  <button class="hdr-skip" onclick="confirmarSaltar()">Saltar ›</button>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+    <button class="hdr-skip" onclick="confirmarSaltar()">Saltar ›</button>
+    <a href="/login.html" style="font-size:9px;font-weight:700;color:var(--muted);text-decoration:none;letter-spacing:0.3px;white-space:nowrap;">¿Ya tienes cuenta? <span style="color:var(--amarillo);text-decoration:underline;">Inicia sesión</span></a>
+  </div>
 </header>
 
 <!-- MAIN CONTENT -->
@@ -167,18 +194,20 @@ body{background:var(--bg);color:var(--text);}
 
   <!-- ===================== SECCIÓN 1: L/E/V ===================== -->
   <section class="seccion activa" id="sec-lev">
-    <div class="sec-header">
-      <div class="sec-emoji">⚽</div>
-      <div class="sec-titulo">Predicciones L / E / V</div>
-      <div class="sec-sub">¿Quién gana cada partido? Local (L), Empate (E) o Visitante (V).<br>1 punto por acierto — <strong style="color:var(--amarillo)">72 partidos</strong> de fase de grupos.</div>
-      <div class="sec-counter">
-        <span class="sec-count-text">Predichos:</span>
-        <span class="sec-count-num" id="lev-cnt">0 / 72</span>
-        <div class="sec-bar-track"><div class="sec-bar-fill" id="lev-bar" style="background:linear-gradient(90deg,var(--azul),var(--amarillo));width:0%"></div></div>
-        <span class="sec-done-badge" id="lev-done">✓ Listo</span>
+    <div class="lev-top-sticky">
+      <div class="sec-header">
+        <div class="sec-emoji">⚽</div>
+        <div class="sec-titulo">Predicciones L / E / V</div>
+        <div class="sec-sub">¿Quién gana cada partido? Local (L), Empate (E) o Visitante (V).<br>1 punto por acierto — <strong style="color:var(--amarillo)">72 partidos</strong> de fase de grupos.</div>
+        <div class="sec-counter">
+          <span class="sec-count-text">Predichos:</span>
+          <span class="sec-count-num" id="lev-cnt">0 / 72</span>
+          <div class="sec-bar-track"><div class="sec-bar-fill" id="lev-bar" style="background:linear-gradient(90deg,var(--azul),var(--amarillo));width:0%"></div></div>
+          <span class="sec-done-badge" id="lev-done">✓ Listo</span>
+        </div>
       </div>
+      <div class="grupo-tabs" id="grupoTabs"></div>
     </div>
-    <div class="grupo-tabs" id="grupoTabs"></div>
     <div class="partidos-list" id="partidosList"></div>
     <div class="sec-bottom-pad"></div>
   </section>
@@ -540,26 +569,25 @@ function actualizarUI() {
 }
 
 // ─────────────────────────────────────────────
-// L/E/V — RENDER
+// L/E/V — RENDER (idéntico a picks.html)
 // ─────────────────────────────────────────────
-function actualizarGrupoTabs() {
-  document.querySelectorAll('.grupo-tab').forEach(t => {
-    const g = t.dataset.grupo;
-    const partidos = PARTIDOS_LEV.filter(p => p.grupo === g);
-    const hechos = partidos.filter(p => STATE.lev[p.id]).length;
-    const completo = hechos === partidos.length;
-    t.classList.toggle('completo', completo);
-    t.classList.toggle('activo', g === grupoActivo);
-    t.innerHTML = (completo ? '✓ ' : '') + 'Grupo ' + g;
-  });
-}
-
 function initGrupoTabs() {
   const wrap = document.getElementById('grupoTabs');
   wrap.innerHTML = GRUPOS.map(g =>
-    `<div class="grupo-tab" data-grupo="${g}" onclick="cambiarGrupo('${g}')">${'Grupo ' + g}</div>`
+    `<div class="gtab" data-grupo="${g}" onclick="cambiarGrupo('${g}')">Grupo ${g}</div>`
   ).join('');
   actualizarGrupoTabs();
+}
+
+function actualizarGrupoTabs() {
+  document.querySelectorAll('.gtab').forEach(t => {
+    const g = t.dataset.grupo;
+    const partidos = PARTIDOS_LEV.filter(p => p.grupo === g);
+    const hechos = partidos.filter(p => STATE.lev[p.id]).length;
+    const done = hechos === partidos.length;
+    t.classList.toggle('done', done);
+    t.classList.toggle('active', g === grupoActivo);
+  });
 }
 
 function cambiarGrupo(g) {
@@ -570,30 +598,52 @@ function cambiarGrupo(g) {
 }
 
 function renderPartidos() {
-  const partidos = PARTIDOS_LEV.filter(p => p.grupo === grupoActivo);
-  const html = partidos.map(p => {
-    const sel = STATE.lev[p.id] || null;
-    return `<div class="partido-card${sel ? ' has-pick' : ''}" id="card-${p.id}">
-      <div class="partido-teams">
-        <div class="partido-team">
-          <span class="partido-flag">${p.local.flag}</span>
-          <span class="partido-nombre">${p.local.nombre}</span>
-        </div>
-        <span class="partido-vs">VS</span>
-        <div class="partido-team visitante">
-          <span class="partido-flag">${p.visit.flag}</span>
-          <span class="partido-nombre">${p.visit.nombre}</span>
-        </div>
+  const lista = document.getElementById('partidosList');
+  const ps = PARTIDOS_LEV.filter(p => p.grupo === grupoActivo);
+  let html = `<div class="grupo-header opt-reveal">
+    <div class="grupo-header-title">Grupo ${grupoActivo}</div>
+    <div class="grupo-header-sub">Selecciona tus predicciones</div>
+  </div>`;
+  ps.forEach(p => {
+    const sel = STATE.lev[p.id];
+    const clsL = sel === 'L' ? 'sel-L' : '';
+    const clsE = sel === 'E' ? 'sel-E' : '';
+    const clsV = sel === 'V' ? 'sel-V' : '';
+    html += `<div class="partido-card opt-reveal${sel ? ' has-pick' : ''}">
+      <div class="partido-card-meta">
+        <span>Grupo ${grupoActivo}</span>
+        <span>${p.fecha} · Hora COL</span>
       </div>
-      <div class="partido-fecha">📅 ${p.fecha}</div>
-      <div class="lev-btns">
-        <div class="lev-btn${sel==='L' ? ' sel-L' : ''}" onclick="pickLEV('${p.id}','L')">L</div>
-        <div class="lev-btn${sel==='E' ? ' sel-E' : ''}" onclick="pickLEV('${p.id}','E')">E</div>
-        <div class="lev-btn${sel==='V' ? ' sel-V' : ''}" onclick="pickLEV('${p.id}','V')">V</div>
+      <div class="partido-btns-row">
+        <button class="lev-btn-card ${clsL}" data-pid="${p.id}" data-val="L" onclick="pickLEV('${p.id}','L')">
+          <span class="btn-flag">${p.local.flag}</span>
+          <span class="btn-name">${p.local.nombre}</span>
+          <span class="btn-sub">Local</span>
+        </button>
+        <button class="lev-btn-card ${clsE}" data-pid="${p.id}" data-val="E" onclick="pickLEV('${p.id}','E')">
+          <span class="empate-icon"></span>
+          <span class="btn-name">Empate</span>
+          <span class="btn-sub">X</span>
+        </button>
+        <button class="lev-btn-card ${clsV}" data-pid="${p.id}" data-val="V" onclick="pickLEV('${p.id}','V')">
+          <span class="btn-flag">${p.visit.flag}</span>
+          <span class="btn-name">${p.visit.nombre}</span>
+          <span class="btn-sub">Visitante</span>
+        </button>
       </div>
     </div>`;
-  }).join('');
-  document.getElementById('partidosList').innerHTML = html;
+  });
+  lista.innerHTML = html;
+  setupScrollReveal();
+}
+
+function setupScrollReveal() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.01, rootMargin: '0px 0px 80px 0px' });
+  document.querySelectorAll('.opt-reveal:not(.visible)').forEach(el => obs.observe(el));
 }
 
 let _levLock = false;
@@ -602,13 +652,13 @@ function pickLEV(id, val) {
   _levLock = true;
   setTimeout(() => { _levLock = false; }, 300);
   if (STATE.lev[id] === val) delete STATE.lev[id]; else STATE.lev[id] = val;
-  const sel = STATE.lev[id] || null;
-  document.querySelectorAll(`#card-${id} .lev-btn`).forEach(btn => {
-    const v = btn.textContent.trim();
-    btn.className = 'lev-btn' + (sel === v ? ' sel-' + v : '');
+  const newSel = STATE.lev[id] || null;
+  document.querySelectorAll(`.lev-btn-card[data-pid="${id}"]`).forEach(btn => {
+    const v = btn.dataset.val;
+    btn.className = 'lev-btn-card' + (newSel === v ? ' sel-' + v : '');
   });
-  const card = document.getElementById('card-' + id);
-  if (card) card.classList.toggle('has-pick', !!sel);
+  const card = document.querySelector(`.lev-btn-card[data-pid="${id}"]`)?.closest('.partido-card');
+  if (card) card.classList.toggle('has-pick', !!newSel);
   requestAnimationFrame(() => actualizarUI());
 }
 
