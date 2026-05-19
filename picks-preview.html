@@ -75,21 +75,21 @@ body{background:var(--bg);color:var(--text);}
 .gtab.done{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.4);color:#22c55e;}
 
 /* ── GRUPO HEADER ── */
-.grupo-header{padding:14px 14px 10px;border-bottom:1px solid rgba(30,45,69,0.5);margin-bottom:6px;}
-.grupo-header-title{font-size:15px;font-weight:800;letter-spacing:2px;color:var(--amarillo);text-transform:uppercase;line-height:1;}
-.grupo-header-sub{font-size:10px;color:var(--muted);letter-spacing:0.5px;margin-top:3px;font-weight:500;}
+.grupo-header{padding:12px 14px 8px;border-bottom:1px solid rgba(30,45,69,0.5);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.grupo-header-title{font-size:12px;font-weight:800;letter-spacing:2px;color:var(--amarillo);text-transform:uppercase;line-height:1;}
+.grupo-header-sub{font-size:10px;color:var(--muted);letter-spacing:0.3px;font-weight:500;}
 
-/* ── MATCH CARDS (idéntico a picks.html) ── */
-.partidos-list{padding:8px;}
-.partido-card{background:var(--card2);border:1px solid rgba(80,110,180,0.2);border-radius:12px;margin-bottom:8px;overflow:hidden;transition:border-color 0.15s,box-shadow 0.15s;}
-.partido-card.has-pick{border-color:rgba(252,209,22,0.4);}
-.partido-card-meta{display:flex;justify-content:space-between;align-items:center;padding:5px 12px;font-size:10px;color:rgba(160,180,210,0.9);letter-spacing:0.5px;border-bottom:1px solid rgba(80,110,180,0.15);}
+/* ── MATCH CARDS ── */
+.partidos-list{padding:8px 8px 4px;}
+.partido-card{background:var(--card2);border:1px solid rgba(80,110,180,0.18);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:border-color 0.15s,box-shadow 0.15s;}
+.partido-card.has-pick{border-color:rgba(252,209,22,0.45);box-shadow:0 0 0 1px rgba(252,209,22,0.1);}
+.partido-card-meta{display:flex;justify-content:flex-end;align-items:center;padding:4px 12px;font-size:9.5px;color:rgba(140,165,210,0.7);letter-spacing:0.4px;border-bottom:1px solid rgba(80,110,180,0.12);}
 .partido-btns-row{display:grid;grid-template-columns:1fr 1fr 1fr;}
-.lev-btn-card{padding:10px 6px;border:none;border-right:1px solid rgba(80,110,180,0.2);background:transparent;cursor:pointer;font-weight:600;transition:background 0.12s,color 0.12s;display:flex;flex-direction:column;align-items:center;gap:2px;color:rgba(160,180,220,0.75);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;min-height:62px;justify-content:center;width:100%;}
+.lev-btn-card{padding:12px 6px 10px;border:none;border-right:1px solid rgba(80,110,180,0.18);background:transparent;cursor:pointer;font-weight:600;transition:background 0.12s,color 0.12s;display:flex;flex-direction:column;align-items:center;gap:3px;color:rgba(160,180,220,0.65);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;min-height:72px;justify-content:center;width:100%;}
 .lev-btn-card:last-child{border-right:none;}
-.lev-btn-card .btn-flag{font-size:22px;line-height:1;transition:transform 0.15s;}
-.lev-btn-card .btn-name{font-size:11px;font-weight:700;text-align:center;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:96px;transition:color 0.15s;}
-.lev-btn-card .btn-sub{font-size:9px;text-transform:uppercase;letter-spacing:0.8px;opacity:0.45;transition:opacity 0.15s,color 0.15s;}
+.lev-btn-card .btn-flag{font-size:26px;line-height:1;transition:transform 0.15s;}
+.lev-btn-card .btn-name{font-size:11.5px;font-weight:800;text-align:center;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:96px;transition:color 0.15s;}
+.lev-btn-card .btn-sub{font-size:9px;text-transform:uppercase;letter-spacing:1px;opacity:0.4;font-weight:600;transition:opacity 0.15s,color 0.15s;}
 .empate-icon{display:none;}
 .lev-btn-card.sel-L{background:rgba(56,130,221,0.22);color:#A8CFFF;border-right-color:rgba(56,130,221,0.25);box-shadow:inset 0 -3px 0 #378ADD,inset 0 0 20px rgba(56,130,221,0.08);}
 .lev-btn-card.sel-L .btn-flag{transform:scale(1.18);filter:drop-shadow(0 0 7px rgba(56,130,221,0.75));}
@@ -152,13 +152,13 @@ body{background:var(--bg);color:var(--text);}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:99;background:rgba(10,14,26,0.98);border-top:1px solid var(--border);padding-bottom:var(--sab);}
 .sec-tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);}
 .sec-tabs::-webkit-scrollbar{display:none;}
-.save-bar{padding:7px 12px 9px;}
-.btn-guardar{width:100%;padding:11px;border-radius:12px;border:none;font-size:14px;font-weight:900;letter-spacing:1.5px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.save-bar{padding:6px 12px 8px;}
+.btn-guardar{width:100%;padding:9px 12px;border-radius:10px;border:none;font-size:13px;font-weight:900;letter-spacing:1.5px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
 .btn-guardar:not(:disabled){background:linear-gradient(135deg,var(--amarillo),#e5a800);color:#000;}
 .btn-guardar:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(252,209,22,0.4);}
 .btn-guardar:not(:disabled):active{transform:scale(0.98);}
 .btn-guardar:disabled{background:rgba(255,255,255,0.06);border:1.5px dashed rgba(255,255,255,0.15);color:rgba(255,255,255,0.25);cursor:not-allowed;}
-.btn-guardar-sub{font-size:9px;font-weight:600;color:rgba(0,0,0,0.5);display:block;letter-spacing:0.5px;margin-top:1px;}
+.btn-guardar-sub{font-size:8.5px;font-weight:600;color:rgba(0,0,0,0.5);display:block;letter-spacing:0.3px;margin-top:0;}
 
 /* ── EMPTY STATE ── */
 .empty-state{text-align:center;padding:48px 24px;color:var(--muted);}
@@ -233,9 +233,14 @@ body{background:var(--bg);color:var(--text);}
   .sec-tab{ padding: 8px 6px 7px; min-width: 0; }
   .sec-tab-accent{ margin-bottom: 5px; }
   .sec-tab-label{ font-size: 10px; }
-  .save-bar{ padding: 10px 24px 14px; }
-  .btn-guardar{ font-size: 16px; padding: 15px; letter-spacing: 2px; }
+  .save-bar{ padding: 8px 24px 12px; }
+  .btn-guardar{ font-size: 15px; padding: 11px; letter-spacing: 2px; }
   .btn-guardar-sub{ font-size: 10px; }
+  .lev-btn-card{ min-height: 92px; padding: 16px 8px; }
+  .lev-btn-card .btn-flag{ font-size: 36px; }
+  .lev-btn-card .btn-name{ font-size: 14px; max-width: 150px; }
+  .partido-card{ border-radius: 16px; margin-bottom: 12px; }
+  .grupo-header{ padding: 14px 20px 10px; }
   .main{ bottom: calc(150px + var(--sab)); }
   .nav-cat-strip{ padding: 6px 20px; gap: 10px; }
   .nav-cat-btn{ font-size: 12px; padding: 6px 16px; }
@@ -318,6 +323,9 @@ body.dia .hdr-login span{color:var(--azul);}
 body.dia .btn-tema{background:rgba(0,48,135,0.07);border-color:rgba(0,48,135,0.18);color:var(--azul);}
 body.dia .sec-tab-label{color:var(--muted);}
 body.dia .sec-tab.activa .sec-tab-label{color:var(--azul);}
+body.dia .sec-tab-accent{background:var(--azul);}
+body.dia .sec-bar-fill{background:linear-gradient(90deg,var(--azul),#1a5fb4);}
+body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#1a5fb4) !important;}
 body.dia .grupo-header-title{color:var(--azul);}
 body.dia .grupo-header-sub{color:var(--muted);}
 body.dia .hdr-prog-track{background:rgba(0,48,135,0.1);}
@@ -371,11 +379,10 @@ body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
         <div class="sec-counter">
           <span class="sec-count-text">Predichos:</span>
           <span class="sec-count-num" id="lev-cnt">0 / 72</span>
-          <div class="sec-bar-track"><div class="sec-bar-fill" id="lev-bar" style="background:linear-gradient(90deg,var(--azul),var(--amarillo));width:0%"></div></div>
+          <div class="sec-bar-track"><div class="sec-bar-fill" id="lev-bar" style="width:0%"></div></div>
           <span class="sec-done-badge" id="lev-done">✓ Listo</span>
         </div>
       </div>
-      <div class="grupo-tabs" id="grupoTabs"></div>
     </div>
     <div class="partidos-list" id="partidosList"></div>
     <div class="sec-bottom-pad"></div>
@@ -394,7 +401,7 @@ body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
       </div>
     </div>
     <div class="killer-search">
-      <input class="killer-input" id="killerSearch" placeholder="🔍 Buscar jugador o selección..." oninput="renderKiller()">
+      <input class="killer-input" id="killerSearch" placeholder="🔍 Buscar jugador o selección..." oninput="debouncedKiller()">
     </div>
     <div class="killer-selected-wrap" id="killerChipsWrap" style="display:none">
       <div class="killer-selected-label">Mis 15 jugadores seleccionados</div>
@@ -696,7 +703,13 @@ try {
 // SECCIÓN ACTIVA
 // ─────────────────────────────────────────────
 let secActiva = 'lev';
-let grupoActivo = 'A';
+
+// Debounce para búsqueda del Killer
+let _killerTimer = null;
+function debouncedKiller() {
+  clearTimeout(_killerTimer);
+  _killerTimer = setTimeout(renderKiller, 180);
+}
 
 function irSeccion(sec) {
   document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
@@ -770,7 +783,6 @@ function actualizarUI() {
   const levDone = levCompleto();
   document.getElementById('lev-done').classList.toggle('show', levDone);
   document.getElementById('dot-lev').classList.toggle('show', levDone);
-  actualizarGrupoTabs();
 
   // Categorías
   ['killer','carnicero','banderin','virgen','pied','mecha'].forEach(c => {
@@ -802,69 +814,42 @@ function actualizarUI() {
 }
 
 // ─────────────────────────────────────────────
-// L/E/V — RENDER (idéntico a picks.html)
+// L/E/V — RENDER — todos los grupos, scroll continuo
 // ─────────────────────────────────────────────
-function initGrupoTabs() {
-  const wrap = document.getElementById('grupoTabs');
-  wrap.innerHTML = GRUPOS.map(g =>
-    `<div class="gtab" data-grupo="${g}" onclick="cambiarGrupo('${g}')">Grupo ${g}</div>`
-  ).join('');
-  actualizarGrupoTabs();
-}
-
-function actualizarGrupoTabs() {
-  document.querySelectorAll('.gtab').forEach(t => {
-    const g = t.dataset.grupo;
-    const partidos = PARTIDOS_LEV.filter(p => p.grupo === g);
-    const hechos = partidos.filter(p => STATE.lev[p.id]).length;
-    const done = hechos === partidos.length;
-    t.classList.toggle('done', done);
-    t.classList.toggle('active', g === grupoActivo);
-  });
-}
-
-function cambiarGrupo(g) {
-  grupoActivo = g;
-  actualizarGrupoTabs();
-  renderPartidos();
-  document.getElementById('mainScroll').scrollTop = 0;
-}
-
 function renderPartidos() {
   const lista = document.getElementById('partidosList');
-  const ps = PARTIDOS_LEV.filter(p => p.grupo === grupoActivo);
-  let html = `<div class="grupo-header opt-reveal">
-    <div class="grupo-header-title">Grupo ${grupoActivo}</div>
-    <div class="grupo-header-sub">Selecciona tus predicciones</div>
-  </div>`;
-  ps.forEach(p => {
-    const sel = STATE.lev[p.id];
-    const clsL = sel === 'L' ? 'sel-L' : '';
-    const clsE = sel === 'E' ? 'sel-E' : '';
-    const clsV = sel === 'V' ? 'sel-V' : '';
-    html += `<div class="partido-card opt-reveal${sel ? ' has-pick' : ''}">
-      <div class="partido-card-meta">
-        <span>Grupo ${grupoActivo}</span>
-        <span>${p.fecha} · Hora COL</span>
-      </div>
-      <div class="partido-btns-row">
-        <button class="lev-btn-card ${clsL}" data-pid="${p.id}" data-val="L" onclick="pickLEV('${p.id}','L')">
-          <span class="btn-flag">${p.local.flag}</span>
-          <span class="btn-name">${p.local.nombre}</span>
-          <span class="btn-sub">Local</span>
-        </button>
-        <button class="lev-btn-card ${clsE}" data-pid="${p.id}" data-val="E" onclick="pickLEV('${p.id}','E')">
-          <span class="empate-icon"></span>
-          <span class="btn-name">Empate</span>
-          <span class="btn-sub">X</span>
-        </button>
-        <button class="lev-btn-card ${clsV}" data-pid="${p.id}" data-val="V" onclick="pickLEV('${p.id}','V')">
-          <span class="btn-flag">${p.visit.flag}</span>
-          <span class="btn-name">${p.visit.nombre}</span>
-          <span class="btn-sub">Visitante</span>
-        </button>
-      </div>
+  let html = '';
+  GRUPOS.forEach(g => {
+    const ps = PARTIDOS_LEV.filter(p => p.grupo === g);
+    if (!ps.length) return;
+    const hechos = ps.filter(p => STATE.lev[p.id]).length;
+    html += `<div class="grupo-header opt-reveal">
+      <div class="grupo-header-title">Grupo ${g}</div>
+      <div class="grupo-header-sub">${hechos}/${ps.length} predichos</div>
     </div>`;
+    ps.forEach(p => {
+      const sel = STATE.lev[p.id];
+      html += `<div class="partido-card opt-reveal${sel ? ' has-pick' : ''}">
+        <div class="partido-card-meta"><span>${p.fecha} · Col</span></div>
+        <div class="partido-btns-row">
+          <button class="lev-btn-card ${sel==='L'?'sel-L':''}" data-pid="${p.id}" data-val="L" onclick="pickLEV('${p.id}','L')">
+            <span class="btn-flag">${p.local.flag}</span>
+            <span class="btn-name">${p.local.nombre}</span>
+            <span class="btn-sub">Local</span>
+          </button>
+          <button class="lev-btn-card ${sel==='E'?'sel-E':''}" data-pid="${p.id}" data-val="E" onclick="pickLEV('${p.id}','E')">
+            <span class="btn-flag" style="font-size:18px;opacity:0.4">—</span>
+            <span class="btn-name">Empate</span>
+            <span class="btn-sub">X</span>
+          </button>
+          <button class="lev-btn-card ${sel==='V'?'sel-V':''}" data-pid="${p.id}" data-val="V" onclick="pickLEV('${p.id}','V')">
+            <span class="btn-flag">${p.visit.flag}</span>
+            <span class="btn-name">${p.visit.nombre}</span>
+            <span class="btn-sub">Visitante</span>
+          </button>
+        </div>
+      </div>`;
+    });
   });
   lista.innerHTML = html;
   setupScrollReveal();
@@ -975,11 +960,12 @@ function renderKiller() {
       const isSelected = sel.includes(j.id);
       const teamCount = contPorEquipo(j.equipo);
       const isDisabled = !isSelected && (sel.length >= max || teamCount >= 3);
-      const pos = j.posicion === 'POR' ? 'Portero' : j.posicion === 'DEF' ? 'Defensa' : j.posicion === 'MED' ? 'Mediocampista' : 'Delantero';
+      const posMap = {POR:'Portero',DEF:'Defensa',MED:'Mediocampista',DEL:'Delantero'};
+      const pos = posMap[j.pos] || j.pos || '—';
       html += `<div class="player-item${isSelected ? ' selected' : ''}${isDisabled ? ' disabled' : ''}" onclick="toggleJugador('${j.id}')">
-        <span class="player-flag">${eq.flag}</span>
+        <span class="player-flag">${j.flag || eq.flag}</span>
         <div class="player-info">
-          <div class="player-name">${j.nombre}<span class="player-team-tag">${j.posicion}</span></div>
+          <div class="player-name">${j.nombre}<span class="player-team-tag">${pos}</span></div>
           <div class="player-detail">${eq.nombre}${isSelected ? ' · <strong style="color:var(--amarillo)">Seleccionado</strong>' : ''}</div>
         </div>
         <span class="player-check">✓</span>
@@ -1023,7 +1009,6 @@ function confirmarSaltar() {
 // ─────────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────────
-initGrupoTabs();
 renderPartidos();
 actualizarUI();
 actualizarNavStrip();
