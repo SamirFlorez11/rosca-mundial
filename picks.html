@@ -1271,13 +1271,18 @@ function setupScrollReveal() {
   document.querySelectorAll('.opt-reveal:not(.visible)').forEach(el => obs.observe(el));
 }
 
+let _levLock = false;
 function pickLEV(id, val) {
+  if (_levLock) return;
+  _levLock = true;
+  setTimeout(() => { _levLock = false; }, 300);
+
   if (STATE.lev[id] === val) delete STATE.lev[id]; else STATE.lev[id] = val;
   const newSel = STATE.lev[id] || null;
   document.querySelectorAll(`.lev-btn-card[data-pid="${id}"]`).forEach(btn => {
     const v = btn.dataset.val;
     btn.className = 'lev-btn-card' + (newSel === v ? ' sel-' + v : '');
-    btn.blur();
+    // NO llamar blur() — causa revert visual en iOS/Android Safari
   });
   const card = document.querySelector(`.lev-btn-card[data-pid="${id}"]`)?.closest('.partido-card');
   if (card) card.classList.toggle('has-pick', !!newSel);
