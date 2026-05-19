@@ -68,11 +68,11 @@ body{background:var(--bg);color:var(--text);}
 
 /* ── MATCH CARDS (idéntico a picks.html) ── */
 .partidos-list{padding:8px;}
-.partido-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden;transition:border-color 0.15s;}
-.partido-card.has-pick{border-color:rgba(252,209,22,0.3);}
-.partido-card-meta{display:flex;justify-content:space-between;align-items:center;padding:5px 12px;font-size:10px;color:var(--muted);letter-spacing:0.5px;border-bottom:1px solid rgba(30,45,69,0.4);}
+.partido-card{background:var(--card2);border:1px solid rgba(80,110,180,0.2);border-radius:12px;margin-bottom:8px;overflow:hidden;transition:border-color 0.15s,box-shadow 0.15s;}
+.partido-card.has-pick{border-color:rgba(252,209,22,0.4);}
+.partido-card-meta{display:flex;justify-content:space-between;align-items:center;padding:5px 12px;font-size:10px;color:rgba(160,180,210,0.9);letter-spacing:0.5px;border-bottom:1px solid rgba(80,110,180,0.15);}
 .partido-btns-row{display:grid;grid-template-columns:1fr 1fr 1fr;}
-.lev-btn-card{padding:10px 6px;border:none;border-right:1px solid var(--border);background:transparent;cursor:pointer;font-weight:600;transition:background 0.12s,color 0.12s;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;min-height:62px;justify-content:center;width:100%;}
+.lev-btn-card{padding:10px 6px;border:none;border-right:1px solid rgba(80,110,180,0.2);background:transparent;cursor:pointer;font-weight:600;transition:background 0.12s,color 0.12s;display:flex;flex-direction:column;align-items:center;gap:2px;color:rgba(160,180,220,0.75);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;min-height:62px;justify-content:center;width:100%;}
 .lev-btn-card:last-child{border-right:none;}
 .lev-btn-card .btn-flag{font-size:22px;line-height:1;transition:transform 0.15s;}
 .lev-btn-card .btn-name{font-size:11px;font-weight:700;text-align:center;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:96px;transition:color 0.15s;}
@@ -162,10 +162,71 @@ body{background:var(--bg);color:var(--text);}
 /* ── SCROLL SAFE AREA ── */
 .sec-bottom-pad{height:20px;}
 
-@media(min-width:600px){
-  .team-grid{grid-template-columns:repeat(4,1fr);}
-  .partidos-list{max-width:600px;margin:0 auto;}
-  .killer-search{max-width:600px;margin:0 auto;}
+/* ── DESKTOP — más visual, flags más grandes, 2 columnas ── */
+@media(min-width:768px){
+  /* Layout general */
+  .main{ bottom: 110px; }
+  .sec-header{ padding: 18px 28px 14px; }
+  .sec-titulo{ font-size: 26px; letter-spacing: 2px; }
+  .sec-sub{ font-size: 14px; }
+  .sec-counter{ margin-top: 12px; }
+  .sec-count-text,.sec-count-num{ font-size: 15px; }
+
+  /* Grupo tabs más generosas */
+  .grupo-tabs{ padding: 10px 24px; gap: 8px; }
+  .gtab{ font-size: 13px; padding: 6px 16px; }
+
+  /* Partidos: 2 columnas + más ancho */
+  .partidos-list{
+    max-width: 1100px; margin: 0 auto; padding: 16px 24px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .grupo-header{ grid-column: 1 / -1; }
+
+  /* Cards de partidos más grandes y vívidas */
+  .partido-card{ border-color: rgba(100,140,220,0.25); }
+  .partido-card.has-pick{ border-color: rgba(252,209,22,0.55); box-shadow: 0 0 0 1px rgba(252,209,22,0.15); }
+  .partido-card-meta{ padding: 7px 16px; font-size: 11px; }
+
+  /* Botones L/E/V: flags enormes, texto legible */
+  .lev-btn-card{ min-height: 88px; padding: 14px 8px; }
+  .lev-btn-card .btn-flag{ font-size: 32px; }
+  .lev-btn-card .btn-name{ font-size: 13px; max-width: 140px; font-weight: 800; }
+  .lev-btn-card .btn-sub{ font-size: 10px; opacity: 0.6; }
+
+  /* Estados seleccionados más saturados en desktop */
+  .lev-btn-card.sel-L{ background: rgba(56,130,221,0.32); box-shadow: inset 0 -4px 0 #378ADD, inset 0 0 30px rgba(56,130,221,0.12); }
+  .lev-btn-card.sel-E{ background: rgba(252,209,22,0.22); box-shadow: inset 0 -4px 0 #C8A800, inset 0 0 30px rgba(252,209,22,0.10); }
+  .lev-btn-card.sel-V{ background: rgba(216,90,48,0.32); box-shadow: inset 0 -4px 0 #D85A30, inset 0 0 30px rgba(216,90,48,0.12); }
+
+  /* Team grid: 6 columnas en desktop */
+  .team-grid{ grid-template-columns: repeat(6,1fr); padding: 16px 24px; gap: 10px; max-width: 1100px; margin: 0 auto; }
+  .team-card{ padding: 14px 8px; border-color: rgba(100,140,220,0.2); }
+  .team-card.selected{ box-shadow: 0 0 0 1px rgba(34,197,94,0.4); }
+  .team-flag{ font-size: 32px; }
+  .team-name{ font-size: 10px; }
+
+  /* Killer más cómodo */
+  .killer-search{ max-width: 1100px; margin: 0 auto; padding: 14px 24px; }
+  .killer-selected-wrap{ max-width: 1100px; margin: 0 auto; padding: 10px 24px; }
+  #killerList{ max-width: 1100px; margin: 0 auto; }
+  .player-item{ padding: 11px 24px; }
+  .player-flag{ font-size: 22px; }
+  .player-name{ font-size: 14px; }
+
+  /* Bottom nav más cómodo */
+  .sec-tab{ padding: 10px 6px 8px; }
+  .sec-tab-icon{ font-size: 20px; }
+  .sec-tab-label{ font-size: 9px; }
+  .save-bar{ padding: 10px 24px 14px; }
+  .btn-guardar{ font-size: 16px; padding: 15px; }
+}
+
+/* Tablet intermedio */
+@media(min-width:600px) and (max-width:767px){
+  .team-grid{ grid-template-columns: repeat(4,1fr); }
+  .partidos-list{ max-width: 600px; margin: 0 auto; }
+  .killer-search{ max-width: 600px; margin: 0 auto; }
 }
 </style>
 </head>
