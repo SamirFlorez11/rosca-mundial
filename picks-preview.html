@@ -32,7 +32,7 @@ body{background:var(--bg);color:var(--text);}
 .hdr-skip:hover{color:var(--text);border-color:var(--muted);}
 
 /* ── MAIN CONTENT ── */
-.main{position:fixed;top:58px;left:0;right:0;bottom:120px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.main{position:fixed;top:58px;left:0;right:0;bottom:156px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 
 /* ── SECTION ── */
 .seccion{display:none;min-height:100%;}
@@ -221,6 +221,10 @@ body{background:var(--bg);color:var(--text);}
   .save-bar{ padding: 10px 24px 14px; }
   .btn-guardar{ font-size: 16px; padding: 15px; }
   .btn-tema{ width: 38px; height: 38px; font-size: 18px; }
+  .main{ bottom: 146px; }
+  .nav-cat-strip{ padding: 5px 16px; gap: 10px; }
+  .nav-cat-btn{ font-size: 12px; padding: 5px 14px; }
+  .nav-cat-pos{ font-size: 11px; }
 }
 
 /* Tablet intermedio */
@@ -229,6 +233,20 @@ body{background:var(--bg);color:var(--text);}
   .partidos-list{ max-width: 600px; margin: 0 auto; }
   .killer-search{ max-width: 600px; margin: 0 auto; }
 }
+
+/* ── NAV ANTERIOR / SIGUIENTE ── */
+.nav-cat-strip{display:flex;align-items:center;justify-content:space-between;padding:5px 12px;border-bottom:1px solid var(--border);gap:8px;}
+.nav-cat-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all 0.15s;white-space:nowrap;font-family:'Poppins',sans-serif;}
+.nav-cat-btn:hover{color:var(--text);border-color:var(--muted);}
+.nav-cat-btn:active{transform:scale(0.96);}
+.nav-cat-btn.invisible{visibility:hidden;pointer-events:none;}
+.nav-cat-btn .nav-arrow{font-size:14px;line-height:1;}
+.nav-cat-btn .nav-label{max-width:90px;overflow:hidden;text-overflow:ellipsis;}
+.nav-cat-accent{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.nav-cat-pos{font-size:10px;font-weight:800;color:var(--muted);white-space:nowrap;text-align:center;letter-spacing:0.5px;}
+.nav-cat-pos strong{color:var(--text);}
+body.dia .nav-cat-btn{border-color:var(--border);color:var(--muted);}
+body.dia .nav-cat-btn:hover{color:var(--text);border-color:var(--muted);}
 
 /* ── TOGGLE TEMA (luna/sol) ── */
 .btn-tema{background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;transition:all 0.2s;flex-shrink:0;line-height:1;padding:0;}
@@ -488,6 +506,19 @@ body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
       <div class="sec-tab-dot" id="dot-mecha"></div>
     </div>
   </div>
+  <div class="nav-cat-strip" id="navCatStrip">
+    <button class="nav-cat-btn" id="btnPrev" onclick="navCategoria(-1)">
+      <span class="nav-arrow">←</span>
+      <span class="nav-cat-accent" id="prevAccent"></span>
+      <span class="nav-label" id="prevLabel">Anterior</span>
+    </button>
+    <span class="nav-cat-pos" id="navPos"><strong>1</strong> de 7 categorías</span>
+    <button class="nav-cat-btn" id="btnNext" onclick="navCategoria(1)">
+      <span class="nav-label" id="nextLabel">Siguiente</span>
+      <span class="nav-cat-accent" id="nextAccent"></span>
+      <span class="nav-arrow">→</span>
+    </button>
+  </div>
   <div class="save-bar">
     <button class="btn-guardar" id="btnGuardar" disabled onclick="guardarYRegistrar()">
       <div>
@@ -535,6 +566,10 @@ function toggleTema() {
 const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 const EQ = {};
 EQUIPOS.forEach(e => EQ[e.id] = e);
+
+const SECCIONES = ['lev','killer','carnicero','banderin','virgen','pied','mecha'];
+const SEC_NOMBRES  = {lev:'L / E / V', killer:'El Killer', carnicero:'El Carnicero', banderin:'El Banderín', virgen:'El Virgen', pied:'Pie de Niña', mecha:'Mechacorta'};
+const SEC_COLORES  = {lev:'#3b82f6', killer:'#f97316', carnicero:'#ef4444', banderin:'#60a5fa', virgen:'#22c55e', pied:'#ec4899', mecha:'#a78bfa'};
 
 const PARTIDOS_LEV = [
   {id:'p0',  grupo:'A', local:EQ.mex, visit:EQ.rsa, fecha:'Jun 11 14:00'},
@@ -654,6 +689,40 @@ function irSeccion(sec) {
   if (sec === 'lev') renderPartidos();
   else if (sec === 'killer') renderKiller();
   else renderTeamGrid(sec);
+  actualizarNavStrip();
+}
+
+function navCategoria(dir) {
+  const idx = SECCIONES.indexOf(secActiva);
+  const nuevo = idx + dir;
+  if (nuevo >= 0 && nuevo < SECCIONES.length) irSeccion(SECCIONES[nuevo]);
+}
+
+function actualizarNavStrip() {
+  const idx = SECCIONES.indexOf(secActiva);
+  const prevSec = SECCIONES[idx - 1];
+  const nextSec = SECCIONES[idx + 1];
+
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+
+  if (prevSec) {
+    btnPrev.classList.remove('invisible');
+    document.getElementById('prevLabel').textContent = SEC_NOMBRES[prevSec];
+    document.getElementById('prevAccent').style.background = SEC_COLORES[prevSec];
+  } else {
+    btnPrev.classList.add('invisible');
+  }
+
+  if (nextSec) {
+    btnNext.classList.remove('invisible');
+    document.getElementById('nextLabel').textContent = SEC_NOMBRES[nextSec];
+    document.getElementById('nextAccent').style.background = SEC_COLORES[nextSec];
+  } else {
+    btnNext.classList.add('invisible');
+  }
+
+  document.getElementById('navPos').innerHTML = '<strong>' + (idx + 1) + '</strong> de 7 categorías';
 }
 
 // ─────────────────────────────────────────────
@@ -938,6 +1007,7 @@ function confirmarSaltar() {
 initGrupoTabs();
 renderPartidos();
 actualizarUI();
+actualizarNavStrip();
 </script>
 </body>
 </html>
