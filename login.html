@@ -289,12 +289,21 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; /* center + overflow = top inaccessible; flex-start + margin:auto centra igual */
     padding: 48px 40px;
     position: relative;
     overflow-y: auto;
-    height: 100vh;      /* da contexto de altura para que overflow-y funcione en PC */
+    height: 100vh;
     max-height: 100vh;
+  }
+
+  .form-container {
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    z-index: 1;
+    animation: slideUp 0.6s ease forwards;
+    margin: auto 0; /* centra verticalmente cuando hay espacio, sin bloquear scroll */
   }
 
   /* Acento diagonal tricolor arriba */
@@ -308,14 +317,6 @@
       var(--azul) 50%, var(--azul) 75%,
       var(--rojo) 75%, var(--rojo) 100%
     );
-  }
-
-  .form-container {
-    width: 100%;
-    max-width: 400px;
-    position: relative;
-    z-index: 1;
-    animation: slideUp 0.6s ease forwards;
   }
 
   @keyframes slideUp {
