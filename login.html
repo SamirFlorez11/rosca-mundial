@@ -24,8 +24,10 @@
   body {
     font-family:'Poppins',sans-serif;
     min-height: 100vh;
+    height: 100vh;
     display: flex;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: hidden; /* PC: cada panel scrollea por dentro */
   }
 
   /* ===== PANEL IZQUIERDO ===== */
@@ -291,6 +293,8 @@
     padding: 48px 40px;
     position: relative;
     overflow-y: auto;
+    height: 100vh;      /* da contexto de altura para que overflow-y funcione en PC */
+    max-height: 100vh;
   }
 
   /* Acento diagonal tricolor arriba */
@@ -551,11 +555,32 @@
   .btn-enviar:hover { background: var(--azul-light); }
 
   @media (max-width: 768px) {
-    body { flex-direction: column; }
-    .brand-panel { width: 100%; padding: 32px 24px; min-height: 340px; }
-    .logo-img { width: 120px; height: 120px; }
-    .brand-title { font-size: 40px; }
-    .form-panel { padding: 32px 24px; }
+    body {
+      flex-direction: column;
+      height: auto;           /* no forzar 100vh, que el contenido dicte la altura */
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;       /* el BODY scrollea en móvil */
+    }
+    .brand-panel {
+      width: 100%;
+      padding: 24px 20px;
+      min-height: unset;
+      flex-shrink: 0;
+    }
+    .logo-img { width: 90px; height: 90px; }
+    .brand-title { font-size: 34px; }
+    .brand-subtitle { font-size: 11px; }
+    .nav-buttons, .nav-buttons-secondary { display: none; }
+    /* En móvil el form-panel NO scrollea por dentro — lo hace el body */
+    .form-panel {
+      height: auto;
+      max-height: none;
+      overflow: visible;
+      padding: 28px 20px 60px;
+      justify-content: flex-start;
+      min-height: unset;
+    }
   }
 
   /* Modo día/noche */
@@ -597,6 +622,7 @@
 </style>
 </head>
 <body>
+<script>(function(){if(localStorage.getItem('rosca-tema')==='dia')document.body.classList.add('dia');})()</script>
 <button class="btn-tema-fixed" id="btnTema" onclick="toggleTema()" title="Cambiar modo">🌙</button>
 
 <!-- PANEL IZQUIERDO -->
@@ -732,7 +758,7 @@
           <li>🥇 1er lugar — iPhone 17 Pro Max 256 GB</li>
           <li>🥈 2do lugar — Bose S1 Pro+</li>
           <li>🥉 3er lugar — PlayStation 5</li>
-          <li>🏅 4to lugar — AirPods Pro</li>
+          <li>🏅 4to lugar — AirPods Pro 3</li>
           <li>⚽ El Killer — $1.000.000 COP</li>
           <li>🟨 El Carnicero — $800.000 COP</li>
           <li>📐 El Banderín — $500.000 COP</li>
