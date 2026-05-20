@@ -195,6 +195,15 @@ input:checked+.slider::before{transform:translateX(18px);}
 .section-title{font-family:'Poppins',sans-serif;font-size:22px;letter-spacing:3px;color:var(--white);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
 .section-title span{font-size:13px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:1px;font-family:'Poppins',sans-serif;}
 
+/* ───── CONVOCATORIAS ───── */
+.conv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-bottom:32px;}
+.conv-card{border-radius:10px;padding:10px 6px 8px;text-align:center;border:2px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.04);transition:transform 0.15s;}
+.conv-card.ok{border-color:#4ADE80;background:rgba(74,222,128,0.08);}
+.conv-card.pending{opacity:0.45;}
+.conv-flag{font-size:26px;line-height:1;}
+.conv-name{font-size:9px;font-weight:800;color:rgba(255,255,255,0.6);letter-spacing:0.5px;margin-top:4px;text-transform:uppercase;}
+.conv-status{font-size:10px;margin-top:3px;}
+
 /* ───── PICKS DETAIL ───── */
 .picks-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:10px;}
 .pick-cat{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:8px 10px;font-size:11px;}
@@ -280,6 +289,9 @@ input:checked+.slider::before{transform:translateX(18px);}
       </div>
       <div class="nav-item" onclick="goTo('ranking')">
         <span class="ni-icon">🏆</span><span class="ni-label">Rankings live</span>
+      </div>
+      <div class="nav-item" onclick="goTo('convocatorias')">
+        <span class="ni-icon">📋</span><span class="ni-label">Convocatorias</span>
       </div>
 
       <div class="nav-section-label">Sistema</div>
@@ -928,6 +940,12 @@ input:checked+.slider::before{transform:translateX(18px);}
             <button class="btn btn-navy" onclick="copiarSQL()">📋 Copiar SQL</button>
           </div>
         </div>
+      </div>
+
+      <!-- ══════ PAGE: CONVOCATORIAS ══════ -->
+      <div class="page" id="page-convocatorias">
+        <div class="section-title">📋 Convocatorias oficiales <span id="conv-badge"></span></div>
+        <div id="convGrid" class="conv-grid"></div>
       </div>
 
     </div><!-- /content -->
@@ -1909,4 +1927,82 @@ async function crearCupoManual() {
     cargarCupos();
   } catch(e) { showToast("Error: "+e.message,"error"); }
 }
+
+// ── CONVOCATORIAS OFICIALES ────────────────────────────────────────────────
+const CONV_OFICIALES = new Set([
+  // 03/05/2026
+  'arg','bel','bih','hai','svn','fra','ger','uru',
+  // 18/05/2026
+  'aut','cpv','cro','cur','cod',
+  // 19/05/2026
+  'bra','por',
+  // 20/05/2026
+  'kor','sco',
+]);
+const CONV_EQUIPOS = [
+  {id:'mex',flag:'🇲🇽',nombre:'México'},
+  {id:'rsa',flag:'🇿🇦',nombre:'Sudáfrica'},
+  {id:'kor',flag:'🇰🇷',nombre:'Corea del Sur'},
+  {id:'cze',flag:'🇨🇿',nombre:'Rep. Checa'},
+  {id:'can',flag:'🇨🇦',nombre:'Canadá'},
+  {id:'bih',flag:'🇧🇦',nombre:'Bosnia'},
+  {id:'usa',flag:'🇺🇸',nombre:'EE.UU.'},
+  {id:'par',flag:'🇵🇾',nombre:'Paraguay'},
+  {id:'qat',flag:'🇶🇦',nombre:'Qatar'},
+  {id:'sui',flag:'🇨🇭',nombre:'Suiza'},
+  {id:'bra',flag:'🇧🇷',nombre:'Brasil'},
+  {id:'mar',flag:'🇲🇦',nombre:'Marruecos'},
+  {id:'hai',flag:'🇭🇹',nombre:'Haití'},
+  {id:'sco',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',nombre:'Escocia'},
+  {id:'aus',flag:'🇦🇺',nombre:'Australia'},
+  {id:'tur',flag:'🇹🇷',nombre:'Turquía'},
+  {id:'ger',flag:'🇩🇪',nombre:'Alemania'},
+  {id:'cur',flag:'🇨🇼',nombre:'Curazao'},
+  {id:'ned',flag:'🇳🇱',nombre:'P. Bajos'},
+  {id:'jpn',flag:'🇯🇵',nombre:'Japón'},
+  {id:'civ',flag:'🇨🇮',nombre:'C. Marfil'},
+  {id:'ecu',flag:'🇪🇨',nombre:'Ecuador'},
+  {id:'swe',flag:'🇸🇪',nombre:'Suecia'},
+  {id:'tun',flag:'🇹🇳',nombre:'Túnez'},
+  {id:'esp',flag:'🇪🇸',nombre:'España'},
+  {id:'cpv',flag:'🇨🇻',nombre:'Cabo Verde'},
+  {id:'bel',flag:'🇧🇪',nombre:'Bélgica'},
+  {id:'egy',flag:'🇪🇬',nombre:'Egipto'},
+  {id:'ksa',flag:'🇸🇦',nombre:'Arabia S.'},
+  {id:'uru',flag:'🇺🇾',nombre:'Uruguay'},
+  {id:'irn',flag:'🇮🇷',nombre:'Irán'},
+  {id:'nzl',flag:'🇳🇿',nombre:'Nueva Zelanda'},
+  {id:'fra',flag:'🇫🇷',nombre:'Francia'},
+  {id:'sen',flag:'🇸🇳',nombre:'Senegal'},
+  {id:'irq',flag:'🇮🇶',nombre:'Iraq'},
+  {id:'nor',flag:'🇳🇴',nombre:'Noruega'},
+  {id:'arg',flag:'🇦🇷',nombre:'Argentina'},
+  {id:'alg',flag:'🇩🇿',nombre:'Argelia'},
+  {id:'aut',flag:'🇦🇹',nombre:'Austria'},
+  {id:'jor',flag:'🇯🇴',nombre:'Jordania'},
+  {id:'por',flag:'🇵🇹',nombre:'Portugal'},
+  {id:'cod',flag:'🇨🇩',nombre:'DR Congo'},
+  {id:'eng',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',nombre:'Inglaterra'},
+  {id:'cro',flag:'🇭🇷',nombre:'Croacia'},
+  {id:'gha',flag:'🇬🇭',nombre:'Ghana'},
+  {id:'pan',flag:'🇵🇦',nombre:'Panamá'},
+  {id:'uzb',flag:'🇺🇿',nombre:'Uzbekistán'},
+  {id:'col',flag:'🇨🇴',nombre:'Colombia'},
+  {id:'svn',flag:'🇸🇮',nombre:'Eslovenia'},
+];
+(function renderConvocatorias() {
+  const grid = document.getElementById('convGrid');
+  const badge = document.getElementById('conv-badge');
+  if (!grid) return;
+  const confirmados = CONV_EQUIPOS.filter(e => CONV_OFICIALES.has(e.id)).length;
+  if (badge) badge.textContent = confirmados + ' de ' + CONV_EQUIPOS.length + ' confirmadas';
+  grid.innerHTML = CONV_EQUIPOS.map(e => {
+    const ok = CONV_OFICIALES.has(e.id);
+    return `<div class="conv-card ${ok ? 'ok' : 'pending'}" title="${e.nombre}">
+      <div class="conv-flag">${e.flag}</div>
+      <div class="conv-name">${e.nombre}</div>
+      <div class="conv-status">${ok ? '✅' : '⏳'}</div>
+    </div>`;
+  }).join('');
+})();
 </script>
