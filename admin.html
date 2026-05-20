@@ -109,6 +109,16 @@ body { font-family:'Barlow',sans-serif; background:var(--bg); color:var(--text);
 .pg-btn:hover, .pg-btn.active { border-color:var(--amarillo); color:var(--amarillo); }
 
 /* MODAL CONFIRMAR */
+/* CONVOCATORIAS GRID */
+.conv-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:8px 6px 7px; text-align:center; cursor:default; transition:border-color 0.15s; }
+.conv-card.ok { border-color:rgba(34,197,94,0.45); background:rgba(34,197,94,0.05); }
+.conv-card.pending { opacity:0.55; }
+.conv-flag { font-size:22px; line-height:1; margin-bottom:3px; }
+.conv-name { font-size:8.5px; font-weight:700; color:var(--text); line-height:1.2; margin-bottom:3px; }
+.conv-status { font-size:9px; font-weight:800; letter-spacing:0.5px; }
+.conv-card.ok .conv-status { color:#22c55e; }
+.conv-card.pending .conv-status { color:var(--muted); }
+
 .confirm-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:500; align-items:center; justify-content:center; }
 .confirm-overlay.open { display:flex; }
 .confirm-box { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:32px; max-width:400px; width:100%; text-align:center; }
@@ -374,6 +384,10 @@ body { font-family:'Barlow',sans-serif; background:var(--bg); color:var(--text);
       <div class="pagination" id="paginacion"></div>
     </div>
   </div>
+
+  <!-- CONVOCATORIAS OFICIALES -->
+  <div class="section-title" style="margin-top:8px;">📋 Convocatorias oficiales <span id="conv-badge"></span></div>
+  <div id="convGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin-bottom:32px;"></div>
 
 </div><!-- /main -->
 
@@ -980,6 +994,83 @@ window.showToast = function(msg, tipo = 'success') {
 };
 
 init();
+
+// ── CONVOCATORIAS OFICIALES ──────────────────────────────────────────────────
+// Actualiza este Set cada vez que cargues una lista oficial en datos.js
+const CONV_OFICIALES = new Set([
+  'bra', // 19/05/2026
+  'por', // 19/05/2026
+  'kor', // 20/05/2026
+  'sco', // 20/05/2026
+]);
+
+const CONV_EQUIPOS = [
+  {id:'mex', flag:'🇲🇽', nombre:'México'},
+  {id:'rsa', flag:'🇿🇦', nombre:'Sudáfrica'},
+  {id:'kor', flag:'🇰🇷', nombre:'Corea del Sur'},
+  {id:'cze', flag:'🇨🇿', nombre:'República Checa'},
+  {id:'can', flag:'🇨🇦', nombre:'Canadá'},
+  {id:'bih', flag:'🇧🇦', nombre:'Bosnia'},
+  {id:'usa', flag:'🇺🇸', nombre:'Estados Unidos'},
+  {id:'par', flag:'🇵🇾', nombre:'Paraguay'},
+  {id:'qat', flag:'🇶🇦', nombre:'Qatar'},
+  {id:'sui', flag:'🇨🇭', nombre:'Suiza'},
+  {id:'bra', flag:'🇧🇷', nombre:'Brasil'},
+  {id:'mar', flag:'🇲🇦', nombre:'Marruecos'},
+  {id:'hai', flag:'🇭🇹', nombre:'Haití'},
+  {id:'sco', flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', nombre:'Escocia'},
+  {id:'aus', flag:'🇦🇺', nombre:'Australia'},
+  {id:'tur', flag:'🇹🇷', nombre:'Turquía'},
+  {id:'ger', flag:'🇩🇪', nombre:'Alemania'},
+  {id:'cur', flag:'🇨🇼', nombre:'Curazao'},
+  {id:'ned', flag:'🇳🇱', nombre:'Países Bajos'},
+  {id:'jpn', flag:'🇯🇵', nombre:'Japón'},
+  {id:'civ', flag:'🇨🇮', nombre:'Costa de Marfil'},
+  {id:'ecu', flag:'🇪🇨', nombre:'Ecuador'},
+  {id:'swe', flag:'🇸🇪', nombre:'Suecia'},
+  {id:'tun', flag:'🇹🇳', nombre:'Túnez'},
+  {id:'esp', flag:'🇪🇸', nombre:'España'},
+  {id:'cpv', flag:'🇨🇻', nombre:'Cabo Verde'},
+  {id:'bel', flag:'🇧🇪', nombre:'Bélgica'},
+  {id:'egy', flag:'🇪🇬', nombre:'Egipto'},
+  {id:'ksa', flag:'🇸🇦', nombre:'Arabia Saudita'},
+  {id:'uru', flag:'🇺🇾', nombre:'Uruguay'},
+  {id:'irn', flag:'🇮🇷', nombre:'Irán'},
+  {id:'nzl', flag:'🇳🇿', nombre:'Nueva Zelanda'},
+  {id:'fra', flag:'🇫🇷', nombre:'Francia'},
+  {id:'sen', flag:'🇸🇳', nombre:'Senegal'},
+  {id:'irq', flag:'🇮🇶', nombre:'Iraq'},
+  {id:'nor', flag:'🇳🇴', nombre:'Noruega'},
+  {id:'arg', flag:'🇦🇷', nombre:'Argentina'},
+  {id:'alg', flag:'🇩🇿', nombre:'Argelia'},
+  {id:'aut', flag:'🇦🇹', nombre:'Austria'},
+  {id:'jor', flag:'🇯🇴', nombre:'Jordania'},
+  {id:'por', flag:'🇵🇹', nombre:'Portugal'},
+  {id:'cod', flag:'🇨🇩', nombre:'DR Congo'},
+  {id:'eng', flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', nombre:'Inglaterra'},
+  {id:'cro', flag:'🇭🇷', nombre:'Croacia'},
+  {id:'gha', flag:'🇬🇭', nombre:'Ghana'},
+  {id:'pan', flag:'🇵🇦', nombre:'Panamá'},
+  {id:'uzb', flag:'🇺🇿', nombre:'Uzbekistán'},
+  {id:'col', flag:'🇨🇴', nombre:'Colombia'},
+];
+
+(function renderConvocatorias() {
+  const grid = document.getElementById('convGrid');
+  const badge = document.getElementById('conv-badge');
+  if (!grid) return;
+  const total = CONV_EQUIPOS.length;
+  const confirmados = CONV_EQUIPOS.filter(e => CONV_OFICIALES.has(e.id)).length;
+  badge.textContent = confirmados + ' de ' + total + ' confirmadas';
+  grid.innerHTML = CONV_EQUIPOS.map(e => {
+    const ok = CONV_OFICIALES.has(e.id);
+    return `<div class="conv-card ${ok ? 'ok' : 'pending'}" title="${e.nombre}">
+      <div class="conv-flag">${e.flag}</div>
+      <div class="conv-name">${e.nombre}</div>
+      <div class="conv-status">${ok ? '✓ Oficial' : '⏳ Pendiente'}</div>
+    </div>`;
+  }).join('');
+})();
 </script>
 </body>
 </html>
