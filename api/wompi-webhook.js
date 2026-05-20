@@ -2,11 +2,41 @@
 // Webhook que Wompi llama cuando confirma un pago
 // Activa al usuario y dispara correo de confirmación
 
+import crypto from 'crypto';
+
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@roscamundial.com';
 const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || 'samirleo1195@gmail.com';
+const WOMPI_EVENTS_KEY = process.env.WOMPI_EVENTS_KEY; // Llave de eventos de Wompi (distinta a la de integridad)
+
+// ── Verifica la firma del evento Wompi ──────────────────────────────────────
+// Wompi envía evento.signature.checksum = SHA256(prop1+prop2+...+events_key)
+// donde las propiedades a concatenar vienen en evento.signature.properties
+function verificarFirmaWompi(evento) {
+  if (!WOMPI_EVENTS_KEY) {
+    console.warn('⚠️  WOMPI_EVENTS_KEY no configurada — saltando verificación de firma');
+    return true; // en desarrollo sin key configurada, dejar pasar con warning
+  }
+  const checksum  = evento?.signature?.checksum;
+  const propNames = evento?.signature?.properties;
+  if (!checksum || !Array.isArray(propNames)) {
+    console.error('❌ Evento sin campo signature válido');
+    return false;
+  }
+  // Construir cadena: valores de cada propiedad concatenados + events_key
+  const cadena = propNames.map(prop => {
+    // prop es tipo "transaction.id" → navegar evento.data.transaction.id
+    const partes = prop.split('.');
+    let val = evento.data;
+    for (const p of partes) val = val?.[p];
+    return val ?? '';
+  }).join('') + WOMPI_EVENTS_KEY;
+
+  const esperado = crypto.createHash('sha256').update(cadena).digest('hex');
+  return checksum === esperado;
+}
 
 async function supabase(endpoint, method = 'GET', body = null) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
@@ -189,40 +219,57 @@ export default async function handler(req, res) {
   try {
     const evento = req.body;
 
+    // ── 1. Verificar firma Wompi (seguridad) ──────────────────────────────────
+    if (!verificarFirmaWompi(evento)) {
+      console.error('❌ Firma Wompi inválida — rechazando evento');
+      return res.status(401).json({ error: 'Firma inválida' });
+    }
+
     // Wompi envía el evento dentro de "data.transaction"
     const transaccion = evento?.data?.transaction;
     if (!transaccion) return res.status(400).json({ error: 'Payload inválido' });
 
     const { id: wompi_id, status, amount_in_cents, reference, customer_email } = transaccion;
 
-    // Solo procesamos transacciones APPROVED
+    // ── 2. Solo procesamos transacciones APPROVED ─────────────────────────────
     if (status !== 'APPROVED') {
       return res.status(200).json({ ok: true, mensaje: `Estado ${status} ignorado` });
     }
 
-    // Verificar monto: debe ser exactamente $60.000 COP = 6000000 centavos
+    // ── 3. Verificar monto exacto: $60.000 COP = 6.000.000 centavos ──────────
     if (amount_in_cents !== 6000000) {
-      console.warn(`Monto inesperado: ${amount_in_cents}`);
+      console.error(`❌ Monto incorrecto: ${amount_in_cents} centavos. Se esperaban 6000000.`);
+      await supabase('logs', 'POST', {
+        usuario_id: null,
+        accion: 'webhook_monto_incorrecto',
+        detalle: { wompi_id, amount_in_cents, customer_email, reference },
+      }).catch(() => {});
+      return res.status(200).json({ ok: false, mensaje: 'Monto incorrecto — pago no procesado' });
     }
 
-    // Buscar usuario por correo
+    // ── 4. Buscar usuario por correo ──────────────────────────────────────────
     const usuarioResult = await supabase(
       `usuarios?correo=eq.${encodeURIComponent(customer_email)}&select=id,nombre_completo,activo`
     );
 
     if (!usuarioResult.ok || !usuarioResult.data?.length) {
       console.error('Usuario no encontrado para correo:', customer_email);
-      return res.status(404).json({ error: 'Usuario no encontrado' });
+      // Retornar 200 para que Wompi no reintente — registrar en logs
+      await supabase('logs', 'POST', {
+        usuario_id: null,
+        accion: 'webhook_usuario_no_encontrado',
+        detalle: { wompi_id, customer_email, reference },
+      }).catch(() => {});
+      return res.status(200).json({ ok: false, mensaje: 'Usuario no encontrado' });
     }
 
     const usuario = usuarioResult.data[0];
 
-    // Verificar que no esté ya activo (idempotencia)
+    // ── 5. Idempotencia: ya activo o pago ya procesado ────────────────────────
     if (usuario.activo) {
       return res.status(200).json({ ok: true, mensaje: 'Usuario ya estaba activo' });
     }
 
-    // Verificar que el wompi_id no esté ya registrado
     const pagoExiste = await supabase(
       `pagos?wompi_transaction_id=eq.${wompi_id}&select=id`
     );
@@ -230,7 +277,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true, mensaje: 'Pago ya procesado' });
     }
 
-    // Registrar el pago
+    // ── 6. Registrar el pago ──────────────────────────────────────────────────
     await supabase('pagos', 'POST', {
       usuario_id: usuario.id,
       wompi_transaction_id: wompi_id,
@@ -240,8 +287,14 @@ export default async function handler(req, res) {
       metodo_pago: transaccion.payment_method_type || 'WOMPI',
     });
 
-    // Activar usuario
+    // ── 7. Activar usuario Y cupo #1 ──────────────────────────────────────────
     await supabase(`usuarios?id=eq.${usuario.id}`, 'PATCH', {
+      activo: true,
+      updated_at: new Date().toISOString(),
+    });
+
+    // Activar cupo #1 (creado con activo:false en el registro)
+    await supabase(`cupos?usuario_id=eq.${usuario.id}&numero=eq.1`, 'PATCH', {
       activo: true,
       updated_at: new Date().toISOString(),
     });
