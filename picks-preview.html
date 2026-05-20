@@ -178,6 +178,12 @@ body{background:var(--bg);color:var(--text);}
   .sec-counter{ margin-top: 12px; }
   .sec-count-text,.sec-count-num{ font-size: 15px; }
 
+  /* LEV header compacto en desktop: una sola fila */
+  #sec-lev .sec-header{ padding: 7px 28px 6px; display:flex; align-items:center; flex-wrap:wrap; gap: 0 20px; }
+  #sec-lev .sec-titulo{ font-size: 15px; letter-spacing: 1px; white-space:nowrap; }
+  #sec-lev .sec-sub{ font-size: 11px; margin-top: 0; line-height: 1.3; opacity: 0.7; }
+  #sec-lev .sec-counter{ margin-top: 0; flex: 1; min-width: 220px; justify-content: flex-end; }
+
   /* Grupo tabs más generosas */
   .grupo-tabs{ padding: 10px 24px; gap: 8px; }
   .gtab{ font-size: 13px; padding: 6px 16px; }
@@ -252,6 +258,25 @@ body{background:var(--bg);color:var(--text);}
   .team-grid{ grid-template-columns: repeat(4,1fr); }
   .partidos-list{ max-width: 600px; margin: 0 auto; }
   .killer-search{ max-width: 600px; margin: 0 auto; }
+}
+
+/* Desktop medio: 3 columnas de partidos */
+@media(min-width:1100px){
+  .partidos-list{
+    max-width: 1400px;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .lev-btn-card{ min-height: 78px; padding: 10px 8px; }
+  .lev-btn-card .btn-flag{ font-size: 28px; }
+  .lev-btn-card .btn-name{ font-size: 12px; }
+}
+
+/* Desktop amplio: 4 columnas */
+@media(min-width:1500px){
+  .partidos-list{
+    max-width: 1800px;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
 }
 
 /* ── NAV ANTERIOR / SIGUIENTE ── */
