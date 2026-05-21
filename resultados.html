@@ -748,10 +748,10 @@ const RK_CONFIG = {
 
 // Las 4 columnas de desempate en orden de prioridad
 const DESEMP_COLS = [
-  { id: 'lev',       label: 'L/E/V',          title: 'Puntos L/E/V (partidos fase de grupos)' },
-  { id: 'killer',    label: 'Killer',          title: 'Goles + Asistencias (El Killer)' },
-  { id: 'carnicero', label: 'Carnicero',       title: 'Tarjetas (El Carnicero)' },
-  { id: 'fecha',     label: 'Fecha registro',  title: 'Fecha de inscripción — el más antiguo gana el desempate' },
+  { id: 'lev',       label: 'Posición L/E/V',    title: 'Posición en ranking L/E/V (partidos fase de grupos)' },
+  { id: 'killer',    label: 'Posición Killer',    title: 'Posición en ranking El Killer (Goles + Asistencias)' },
+  { id: 'carnicero', label: 'Posición Carnicero', title: 'Posición en ranking El Carnicero (Tarjetas)' },
+  { id: 'fecha',     label: 'Fecha registro',     title: 'Fecha de inscripción — el más antiguo gana el desempate' },
 ];
 
 let _rkUsuarios = null;
@@ -796,14 +796,16 @@ async function renderRanking(rkId) {
 
   // Cabecera
   let thHtml = `<th class="col-main" style="text-align:center;width:48px;">#</th>
-                <th class="col-main">Alias</th>`;
+                <th class="col-main">Alias</th>
+                <th class="col-main" title="Puntos en este ranking">Puntos</th>`;
   cols.forEach(c => { thHtml += `<th title="${c.title}">${c.label}</th>`; });
 
   // Filas
   const rowsHtml = usuarios.map((u, i) => {
     const alias = u.nombre_usuario || (u.nombre_completo || '').split(' ')[0] || '—';
     let tds = `<td class="rk-pos">${i + 1}</td>
-               <td class="rk-alias">${alias}</td>`;
+               <td class="rk-alias">${alias}</td>
+               <td class="rk-pts">—</td>`;
     cols.forEach(c => {
       if (c.id === 'fecha') {
         tds += `<td class="rk-fecha">${fmtFechaCorta(u.created_at)}</td>`;
