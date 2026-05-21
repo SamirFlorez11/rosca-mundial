@@ -273,22 +273,38 @@ body.dia .data-banner strong { color:#003087; }
   letter-spacing:1.2px; text-transform:uppercase; color:var(--muted);
   background:var(--card2); border-bottom:1px solid var(--border); white-space:nowrap;
 }
-.rk-table th.col-main { color:var(--amarillo); }
+.rk-table th.col-main { color:var(--amarillo); font-size:11px; letter-spacing:1.5px; }
+.rk-table th.col-pts  { border-right:2px solid var(--border); }
 .rk-table td {
-  padding:11px 14px; border-bottom:1px solid rgba(30,45,69,0.5);
-  color:var(--text); font-weight:600; white-space:nowrap;
+  padding:12px 14px; border-bottom:1px solid rgba(30,45,69,0.5);
+  color:var(--text); font-weight:600; white-space:nowrap; vertical-align:middle;
 }
 .rk-table tr:last-child td { border-bottom:none; }
-.rk-table tr:hover td { background:rgba(255,255,255,0.02); }
-.rk-pos { font-size:14px; font-weight:900; color:var(--amarillo); min-width:32px; display:inline-block; text-align:center; }
-.rk-pos.top1 { color:#FFD700; }
-.rk-pos.top2 { color:#C0C0C0; }
-.rk-pos.top3 { color:#CD7F32; }
-.rk-alias { font-weight:800; font-size:13px; }
-.rk-pts { font-size:13px; font-weight:800; color:var(--amarillo); }
-.rk-desemp { font-size:12px; color:var(--muted); font-weight:600; text-align:center; }
-.rk-desemp b { color:var(--text); }
-.rk-fecha { font-size:11px; color:var(--muted); font-weight:600; }
+.rk-table tr:hover td { background:rgba(255,255,255,0.03); }
+
+/* ── Columnas principales (# / Alias / Puntos) ── */
+.rk-pos {
+  font-size:18px; font-weight:900; text-align:center;
+  color:var(--amarillo); letter-spacing:-0.5px;
+}
+.rk-pos.top1 { color:#FFD700; text-shadow:0 0 14px rgba(255,215,0,0.45); }
+.rk-pos.top2 { color:#C0C0C0; text-shadow:0 0 10px rgba(192,192,192,0.3); }
+.rk-pos.top3 { color:#CD7F32; text-shadow:0 0 10px rgba(205,127,50,0.3); }
+.rk-alias {
+  font-size:15px; font-weight:800; color:var(--text); letter-spacing:0.2px;
+}
+.rk-pts {
+  font-size:17px; font-weight:900; color:var(--amarillo);
+  letter-spacing:-0.5px; border-right:2px solid var(--border);
+  padding-right:18px !important;
+}
+
+/* ── Columnas de desempate (secundarias) ── */
+.rk-desemp {
+  font-size:12px; color:var(--muted); font-weight:600;
+  text-align:center; opacity:0.7;
+}
+.rk-fecha { font-size:11px; color:var(--muted); font-weight:500; opacity:0.65; }
 .rk-empty { padding:50px 20px; text-align:center; color:var(--muted); font-size:13px; }
 .rk-banner {
   background:rgba(252,209,22,0.06); border:1px solid rgba(252,209,22,0.15);
@@ -300,6 +316,11 @@ body.dia .rk-select { background-color:var(--card); }
 body.dia .rk-table th.col-main { color:#1e3a8a; }
 body.dia .rk-pts { color:#1e3a8a; }
 body.dia .rk-pos { color:#1e3a8a; }
+body.dia .rk-pos.top1 { color:#b8860b; text-shadow:none; }
+body.dia .rk-pos.top2 { color:#777; text-shadow:none; }
+body.dia .rk-pos.top3 { color:#8b4513; text-shadow:none; }
+body.dia .rk-table th.col-pts { border-right-color:#cbd5e1; }
+body.dia .rk-pts { border-right-color:#cbd5e1; }
 body.dia .rk-banner { background:rgba(30,58,138,0.06); border-color:rgba(30,58,138,0.15); color:rgba(15,23,42,0.6); }
 body.dia .rk-banner strong { color:#1e3a8a; }
 
@@ -797,13 +818,15 @@ async function renderRanking(rkId) {
   // Cabecera
   let thHtml = `<th class="col-main" style="text-align:center;width:48px;">#</th>
                 <th class="col-main">Alias</th>
-                <th class="col-main" title="Puntos en este ranking">Puntos</th>`;
+                <th class="col-main col-pts" title="Puntos en este ranking">Puntos</th>`;
   cols.forEach(c => { thHtml += `<th title="${c.title}">${c.label}</th>`; });
 
   // Filas
   const rowsHtml = usuarios.map((u, i) => {
     const alias = u.nombre_usuario || (u.nombre_completo || '').split(' ')[0] || '—';
-    let tds = `<td class="rk-pos">${i + 1}</td>
+    const posClass = i === 0 ? 'rk-pos top1' : i === 1 ? 'rk-pos top2' : i === 2 ? 'rk-pos top3' : 'rk-pos';
+    const posLabel = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : String(i + 1);
+    let tds = `<td class="${posClass}">${posLabel}</td>
                <td class="rk-alias">${alias}</td>
                <td class="rk-pts">—</td>`;
     cols.forEach(c => {
