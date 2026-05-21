@@ -37,7 +37,7 @@ body{background:var(--bg);color:var(--text);}
 .hdr-prog-label{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
 .hdr-prog-count{font-size:11px;font-weight:800;color:var(--amarillo);}
 .hdr-prog-track{height:4px;background:var(--card2);border-radius:99px;overflow:hidden;}
-.hdr-prog-fill{height:100%;background:linear-gradient(90deg,var(--azul),var(--amarillo));border-radius:99px;transition:width 0.4s ease;width:0%;}
+.hdr-prog-fill{height:100%;background:linear-gradient(90deg,#16a34a,#22c55e);border-radius:99px;transition:width 0.4s ease;width:0%;}
 .hdr-actions{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
 .hdr-skip{font-size:11px;font-weight:700;color:var(--muted);background:none;border:1px solid var(--border);border-radius:8px;padding:5px 11px;cursor:pointer;white-space:nowrap;}
 .hdr-skip:hover{color:var(--text);border-color:var(--muted);}
@@ -59,7 +59,7 @@ body{background:var(--bg);color:var(--text);}
 .sec-count-text{font-size:13px;font-weight:800;color:var(--text);}
 .sec-count-num{font-size:13px;font-weight:800;color:var(--amarillo);}
 .sec-bar-track{flex:1;height:5px;background:var(--card2);border-radius:99px;overflow:hidden;}
-.sec-bar-fill{height:100%;border-radius:99px;transition:width 0.3s ease;background:linear-gradient(90deg,var(--azul),var(--amarillo));}
+.sec-bar-fill{height:100%;border-radius:99px;transition:width 0.3s ease;background:linear-gradient(90deg,#16a34a,#22c55e);}
 .sec-done-badge{font-size:10px;font-weight:800;color:var(--green);background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:99px;white-space:nowrap;display:none;}
 .sec-done-badge.show{display:inline-block;}
 
@@ -349,8 +349,8 @@ body.dia .btn-tema{background:rgba(0,48,135,0.07);border-color:rgba(0,48,135,0.1
 body.dia .sec-tab-label{color:var(--muted);}
 body.dia .sec-tab.activa .sec-tab-label{color:var(--azul);}
 body.dia .sec-tab-accent{background:var(--azul);}
-body.dia .sec-bar-fill{background:linear-gradient(90deg,var(--azul),#1a5fb4);}
-body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#1a5fb4) !important;}
+body.dia .sec-bar-fill{background:linear-gradient(90deg,#15803d,#16a34a);}
+body.dia .hdr-prog-fill{background:linear-gradient(90deg,#15803d,#16a34a) !important;}
 body.dia .grupo-header-title{color:var(--azul);}
 body.dia .grupo-header-sub{color:var(--muted);}
 body.dia .hdr-prog-track{background:rgba(0,48,135,0.1);}
@@ -366,7 +366,7 @@ body.dia .player-item.selected{background:rgba(252,209,22,0.07);}
 body.dia .player-check{color:#7a5f00;}
 body.dia .sec-done-badge{background:rgba(22,163,74,0.1);border-color:rgba(22,163,74,0.25);color:#16a34a;}
 body.dia .sec-tab-dot{background:#16a34a;}
-body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
+body.dia .hdr-prog-fill{background:linear-gradient(90deg,#15803d,#16a34a) !important;}
 </style>
 </head>
 <body>
@@ -378,7 +378,7 @@ body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
   <div class="hdr-brand">ROSCA<br><span>MUNDIAL 2026</span></div>
   <div class="hdr-progress">
     <div class="hdr-prog-labels">
-      <span class="hdr-prog-label">Progreso</span>
+      <span class="hdr-prog-label">Categorías completadas</span>
       <span class="hdr-prog-count" id="hdrCount">0 / 7</span>
     </div>
     <div class="hdr-prog-track"><div class="hdr-prog-fill" id="hdrFill"></div></div>
@@ -402,7 +402,7 @@ body.dia .hdr-prog-fill{background:linear-gradient(90deg,var(--azul),#2563eb);}
         <div class="sec-titulo">Predicciones L / E / V</div>
         <div class="sec-sub">¿Quién gana cada partido? Local (L), Empate (E) o Visitante (V).<br>1 punto por acierto — <strong style="color:var(--amarillo)">72 partidos</strong> de fase de grupos.</div>
         <div class="sec-counter">
-          <span class="sec-count-text">Predichos:</span>
+          <span class="sec-count-text">Escogidos:</span>
           <span class="sec-count-num" id="lev-cnt">0 / 72</span>
           <div class="sec-bar-track"><div class="sec-bar-fill" id="lev-bar" style="width:0%"></div></div>
           <span class="sec-done-badge" id="lev-done">✓ Listo</span>
