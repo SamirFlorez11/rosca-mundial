@@ -33,9 +33,9 @@ body{background:var(--bg);color:var(--text);}
 .hdr-brand{font-size:16px;font-weight:900;letter-spacing:2.5px;color:var(--amarillo);white-space:nowrap;line-height:1;flex-shrink:0;}
 .hdr-brand span{display:block;font-size:9px;font-weight:600;color:var(--muted);letter-spacing:1px;margin-top:1px;}
 .hdr-progress{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
-.hdr-prog-labels{display:flex;justify-content:space-between;align-items:center;}
-.hdr-prog-label{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
-.hdr-prog-count{font-size:11px;font-weight:800;color:var(--amarillo);}
+.hdr-prog-labels{display:flex;justify-content:space-between;align-items:center;gap:6px;min-width:0;}
+.hdr-prog-label{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1;}
+.hdr-prog-count{font-size:11px;font-weight:800;color:var(--amarillo);white-space:nowrap;flex-shrink:0;}
 .hdr-prog-track{height:4px;background:var(--card2);border-radius:99px;overflow:hidden;}
 .hdr-prog-fill{height:100%;background:linear-gradient(90deg,#16a34a,#22c55e);border-radius:99px;transition:width 0.4s ease;width:0%;}
 .hdr-actions{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
