@@ -91,7 +91,7 @@ body.dia .tab-bar { background:rgba(240,244,248,0.97); }
 .tab-btn:hover:not(.active) { color:var(--text); }
 
 /* ── MAIN ── */
-.main { padding-top:120px; max-width:900px; margin:0 auto; padding-left:16px; padding-right:16px; padding-bottom:40px; }
+.main { padding-top:120px; padding-left:20px; padding-right:20px; padding-bottom:40px; }
 
 /* ── BANNER ── */
 .data-banner {
@@ -257,16 +257,24 @@ body.dia .data-banner strong { color:#003087; }
   .nav-brand span { display:none; }
   .nav-title { font-size:11px; letter-spacing:1px; }
   .btn-back .back-label { display:none; }
-  .tab-btn { padding:12px 14px; font-size:11px; }
+  .tab-btn { padding:12px 10px; font-size:10px; letter-spacing:0.5px; }
   .main { padding-top:115px; padding-left:10px; padding-right:10px; }
   .row-stats { display:none; } /* chips hidden on mobile — visible in expanded */
   .detail-stats-grid.jugador-grid { grid-template-columns:repeat(3,1fr); }
   .detail-stats-grid.equipo-grid  { grid-template-columns:repeat(2,1fr); }
   .detail-stat-val { font-size:22px; }
+  /* Registro table mobile: ocultar alias, solo nombre + fecha */
+  #secRegistro [style*="grid-template-columns:52px 1fr 1fr 160px"] {
+    grid-template-columns: 40px 1fr 120px !important;
+  }
+  #secRegistro [style*="grid-template-columns:52px 1fr 1fr 160px"] > div:nth-child(3) {
+    display: none;
+  }
 }
 </style>
 </head>
 <body>
+<script>(function(){if(localStorage.getItem('rosca-tema')==='dia')document.body.classList.add('dia');})()</script>
 
 <div class="tricolor"></div>
 
@@ -287,6 +295,7 @@ body.dia .data-banner strong { color:#003087; }
 <div class="tab-bar">
   <button class="tab-btn active" id="tabJug" onclick="switchTab('jugadores')">⚽ JUGADORES</button>
   <button class="tab-btn"        id="tabEq"  onclick="switchTab('equipos')">🛡️ EQUIPOS</button>
+  <button class="tab-btn"        id="tabReg" onclick="switchTab('registro')">📅 REGISTRO</button>
 </div>
 
 <!-- MAIN -->
@@ -372,6 +381,27 @@ body.dia .data-banner strong { color:#003087; }
     </div>
 
     <div id="listaEquipos"></div>
+  </section>
+
+  <!-- ===== REGISTRO DE USUARIOS ===== -->
+  <section id="secRegistro" style="display:none">
+
+    <div style="background:rgba(252,209,22,0.06);border:1px solid rgba(252,209,22,0.15);border-radius:12px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:rgba(255,255,255,0.65);line-height:1.6;">
+      ⚖️ <strong style="color:var(--amarillo);">Criterio de desempate:</strong> En caso de empate en puntos al final del torneo, se favorece a quien se registró <strong>primero</strong>. El orden de esta lista es de más reciente a más antiguo.
+    </div>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+      <div style="display:grid;grid-template-columns:52px 1fr 1fr 160px;padding:12px 20px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;">
+        <div>#</div>
+        <div>Participante</div>
+        <div>Alias</div>
+        <div>Fecha de registro</div>
+      </div>
+      <div id="listaRegistro">
+        <div style="text-align:center;padding:40px;color:var(--muted);font-size:14px;">Cargando...</div>
+      </div>
+    </div>
+
   </section>
 
 </main>
@@ -575,8 +605,55 @@ function setGrupoFilter(btn) {
 function switchTab(tab) {
   document.getElementById('secJugadores').style.display = tab === 'jugadores' ? '' : 'none';
   document.getElementById('secEquipos').style.display   = tab === 'equipos'   ? '' : 'none';
+  document.getElementById('secRegistro').style.display  = tab === 'registro'  ? '' : 'none';
   document.getElementById('tabJug').classList.toggle('active', tab === 'jugadores');
   document.getElementById('tabEq').classList.toggle('active',  tab === 'equipos');
+  document.getElementById('tabReg').classList.toggle('active', tab === 'registro');
+  if (tab === 'registro') cargarRegistroUsuarios();
+}
+
+// ── REGISTRO DE USUARIOS ──────────────────────────────────────────────────
+let _registroCargado = false;
+async function cargarRegistroUsuarios() {
+  if (_registroCargado) return;
+  const el = document.getElementById('listaRegistro');
+  try {
+    const res = await fetch('/api/registro-usuarios');
+    const data = await res.json();
+    const usuarios = data.usuarios || [];
+
+    if (!usuarios.length) {
+      el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);">Sin participantes registrados aún.</div>';
+      return;
+    }
+
+    const fmtFecha = iso => {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return '—';
+      return d.toLocaleDateString('es-CO', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    };
+
+    const total = usuarios.length;
+    el.innerHTML = usuarios.map((u, i) => {
+      const esPrimero = i === total - 1; // el último en la lista (más antiguo) gana el desempate
+      return `
+        <div style="display:grid;grid-template-columns:52px 1fr 1fr 160px;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;${esPrimero ? 'background:rgba(252,209,22,0.04)' : ''}">
+          <div style="font-size:13px;font-weight:700;color:var(--muted);">${i + 1}</div>
+          <div>
+            <div style="font-weight:700;font-size:14px;color:var(--text);">${(u.nombre_completo || '').split(' ')[0] || '—'}</div>
+            ${esPrimero ? '<div style="font-size:10px;color:var(--amarillo);font-weight:700;letter-spacing:1px;">⭐ PRIMER REGISTRADO</div>' : ''}
+          </div>
+          <div style="font-size:13px;color:var(--amarillo);font-weight:600;">@${u.nombre_usuario || '—'}</div>
+          <div style="font-size:12px;color:var(--muted);">${fmtFecha(u.created_at)}</div>
+        </div>`;
+    }).join('');
+
+    _registroCargado = true;
+  } catch(e) {
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);">Error cargando datos.</div>`;
+    console.error(e);
+  }
 }
 
 // ── TEMA ─────────────────────────────────────────────────────────────────
