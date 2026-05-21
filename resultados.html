@@ -470,12 +470,12 @@ body.dia .rk-banner strong { color:#1e3a8a; }
     <div class="rk-select-wrap">
       <select class="rk-select" id="rkSelector" onchange="renderRanking(this.value)">
         <option value="">— Selecciona un ranking —</option>
-        <option value="lev">⚽ L / E / V — Partidos fase de grupos</option>
-        <option value="killer">⚔️ El Killer — Goles + Asistencias</option>
-        <option value="carnicero">🟡 El Carnicero — Tarjetas</option>
-        <option value="banderin">🚩 El Banderín — Corners</option>
-        <option value="virgen">🤍 El Virgen — Menos goles</option>
-        <option value="piena">👠 El Pie de Niña — Menos tarjetas</option>
+        <option value="lev">L / E / V — Partidos fase de grupos</option>
+        <option value="killer">El Killer — Goles + Asistencias</option>
+        <option value="carnicero">El Carnicero — Tarjetas</option>
+        <option value="banderin">El Banderín — Corners</option>
+        <option value="virgen">El Virgen — Menos goles</option>
+        <option value="piena">El Pie de Niña — Menos tarjetas</option>
       </select>
     </div>
 
@@ -804,7 +804,7 @@ async function renderRanking(rkId) {
   const rowsHtml = usuarios.map((u, i) => {
     const alias = u.nombre_usuario || (u.nombre_completo || '').split(' ')[0] || '—';
     let tds = `<td class="rk-pos">${i + 1}</td>
-               <td class="rk-alias">@${alias}</td>`;
+               <td class="rk-alias">${alias}</td>`;
     cols.forEach(c => {
       if (c.id === 'fecha') {
         tds += `<td class="rk-fecha">${fmtFechaCorta(u.created_at)}</td>`;
