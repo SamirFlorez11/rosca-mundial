@@ -1842,17 +1842,33 @@ async function getCupoInfo(userId) {
 }
 
 function mostrarCupoIndicador(cupo) {
-  if (!cupo || cupo.numero === 1) return;
+  if (!cupo) return;
   let ind = document.getElementById('cupo-indicator');
   if (!ind) {
     ind = document.createElement('div');
     ind.id = 'cupo-indicator';
-    ind.style.cssText = 'background:rgba(252,209,22,0.12);border-bottom:1px solid rgba(252,209,22,0.25);padding:7px 20px;text-align:center;font-size:12px;font-weight:700;color:#FCD116;position:sticky;top:62px;z-index:90;';
+    ind.style.cssText = [
+      'background:rgba(252,209,22,0.13)',
+      'border-bottom:1px solid rgba(252,209,22,0.3)',
+      'padding:7px 20px',
+      'text-align:center',
+      'font-size:12px',
+      'font-weight:700',
+      'color:#FCD116',
+      'position:sticky',
+      'top:62px',
+      'z-index:90',
+      'display:flex',
+      'align-items:center',
+      'justify-content:center',
+      'gap:8px',
+    ].join(';');
     const nav = document.querySelector('nav');
     if (nav && nav.nextSibling) nav.parentNode.insertBefore(ind, nav.nextSibling);
     else document.body.prepend(ind);
   }
-  ind.textContent = 'Editando: ' + cupo.alias + ' (Cupo #' + cupo.numero + ') — Vuelve al Dashboard para cambiar de cupo';
+  const emoji = cupo.numero === 1 ? '🎟️' : '🎟️'.repeat(cupo.numero > 9 ? 2 : 1);
+  ind.innerHTML = `<span>${emoji} Editando: <strong>${cupo.alias || ('Cupo #' + cupo.numero)}</strong> — Cupo #${cupo.numero}</span><a href="/dashboard.html" style="font-size:10px;opacity:0.75;color:#FCD116;text-decoration:underline;font-weight:500;">Cambiar cupo ›</a>`;
 }
 
 // ── Guardar picks via API (usa SERVICE_KEY server-side, bypasses RLS) ────────
@@ -1881,13 +1897,15 @@ window.guardarPicksSupabase = async function(cat) {
       lev: STATE.lev, killer: STATE.killer, carnicero: STATE.carnicero,
       banderin: STATE.banderin, virgen: STATE.virgen, pied: STATE.pied, mecha: STATE.mecha
     };
+    // Pasar cupo_id activo para guardar en el cupo correcto
+    const cupo_id = localStorage.getItem(CUPO_KEY) || undefined;
     const res = await fetch('/api/picks', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${session.access_token}`
       },
-      body: JSON.stringify({ cat, state })
+      body: JSON.stringify({ cat, state, cupo_id })
     });
     const data = await res.json();
     if (!res.ok) {
@@ -1942,26 +1960,35 @@ function tienePicks(data) {
       sessionStorage.removeItem(LS_KEY); // limpiar aunque falle la migración
     }
 
-    // 1. Intentar cargar desde API (servidor con SERVICE_KEY)
+    // 1. Determinar cupo activo y cargar desde API con cupo_id
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        const r = await fetch('/api/picks', {
+        // Obtener cupo activo primero
+        const cupo_id = await getCupoIdActivo(perfil.id);
+        const url = cupo_id ? `/api/picks?cupo_id=${cupo_id}` : '/api/picks';
+        const r = await fetch(url, {
           headers: { Authorization: `Bearer ${session.access_token}` }
         });
         if (r.ok) {
-          const { picks_data } = await r.json();
-          if (tienePicks(picks_data)) {
-            cargarPicksEnState(picks_data);
-            // Sincronizar localStorage con Supabase para evitar datos obsoletos
-            localStorage.setItem(LS_KEY, JSON.stringify(picks_data));
+          const data = await r.json();
+          // Mostrar indicador con info del cupo (si la API la devuelve)
+          if (data.cupo_numero !== undefined) {
+            mostrarCupoIndicador({ numero: data.cupo_numero, alias: data.cupo_alias });
+          } else if (cupo_id) {
+            // Sin info del cupo en respuesta, intentar mostrar indicador por separado
+            getCupoInfo(perfil.id).then(c => { if (c) mostrarCupoIndicador(c); });
+          }
+          if (tienePicks(data.picks_data)) {
+            cargarPicksEnState(data.picks_data);
+            localStorage.setItem(LS_KEY, JSON.stringify(data.picks_data));
             return;
           }
         }
       }
     } catch (e) { console.warn('No se pudo cargar picks desde API:', e); }
 
-    // 2. Fallback: cupo activo
+    // 2. Fallback: cupo activo directo via Supabase
     const cupo = await getCupoInfo(perfil.id);
     if (cupo) mostrarCupoIndicador(cupo);
     if (tienePicks(cupo?.picks_data)) { cargarPicksEnState(cupo.picks_data); return; }

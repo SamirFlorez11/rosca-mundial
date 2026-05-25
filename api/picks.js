@@ -166,6 +166,19 @@ export default async function handler(req, res) {
 
   // ── GET: cargar picks ──────────────────────────────────────────────────────
   if (req.method === 'GET') {
+    const cupo_id = req.query.cupo_id;
+
+    if (cupo_id) {
+      // Cargar desde cupo específico (verificando que pertenece al usuario)
+      try {
+        const cupos = await sbGet('cupos', { 'id': `eq.${cupo_id}`, 'usuario_id': `eq.${userId}`, select: 'id,numero,alias,picks_data,picks_completos' });
+        const cupo = Array.isArray(cupos) ? cupos[0] : null;
+        if (!cupo) return res.status(404).json({ error: 'Cupo no encontrado' });
+        return res.json({ picks_data: cupo.picks_data || {}, picks_completos: cupo.picks_completos || false, cupo_numero: cupo.numero, cupo_alias: cupo.alias });
+      } catch (_) { /* tabla cupos puede no existir, fallback a usuarios */ }
+    }
+
+    // Sin cupo_id: cargar desde usuarios (cupo principal / backward compat)
     const rows = await sbGet('usuarios', { 'id': `eq.${userId}`, select: 'picks_data,picks_completos' });
     const row = Array.isArray(rows) ? rows[0] : null;
     return res.json({ picks_data: row?.picks_data || {}, picks_completos: row?.picks_completos || false });
@@ -173,10 +186,47 @@ export default async function handler(req, res) {
 
   // ── POST: guardar picks ────────────────────────────────────────────────────
   if (req.method === 'POST') {
-    const { cat, state } = req.body || {};
+    const { cat, state, cupo_id } = req.body || {};
     if (!state) return res.status(400).json({ error: 'Falta state' });
 
-    // Leer picks actuales del usuario
+    if (cupo_id) {
+      // ── Guardar en cupo específico ─────────────────────────────────────────
+      // Verificar que el cupo pertenece al usuario
+      let cupoActual = null;
+      try {
+        const cupos = await sbGet('cupos', { 'id': `eq.${cupo_id}`, 'usuario_id': `eq.${userId}`, select: 'id,numero,picks_data' });
+        cupoActual = Array.isArray(cupos) ? cupos[0] : null;
+      } catch (_) {}
+      if (!cupoActual) return res.status(404).json({ error: 'Cupo no encontrado' });
+
+      const base = cupoActual.picks_data || {};
+      const nuevo = { ...base };
+      if (cat === '__todos__' || cat === 'lev')       nuevo.lev       = state.lev       ?? base.lev       ?? {};
+      if (cat === '__todos__' || cat === 'killer')     nuevo.killer    = state.killer    ?? base.killer    ?? [];
+      if (cat === '__todos__' || cat === 'carnicero')  nuevo.carnicero = state.carnicero ?? base.carnicero ?? [];
+      if (cat === '__todos__' || cat === 'banderin')   nuevo.banderin  = state.banderin  ?? base.banderin  ?? [];
+      if (cat === '__todos__' || cat === 'virgen')     nuevo.virgen    = state.virgen    ?? base.virgen    ?? [];
+      if (cat === '__todos__' || cat === 'pied')       nuevo.pied      = state.pied      ?? base.pied      ?? [];
+      if (cat === '__todos__' || cat === 'mecha')      nuevo.mecha     = state.mecha     ?? base.mecha     ?? [];
+
+      const picks_completos =
+        Object.keys(nuevo.lev || {}).length >= 72 &&
+        (nuevo.killer || []).length >= 15 &&
+        (nuevo.carnicero || []).length >= 10;
+
+      const ok = await sbPatch('cupos', { 'id': `eq.${cupo_id}`, 'usuario_id': `eq.${userId}` }, { picks_data: nuevo, picks_completos });
+      if (!ok) return res.status(500).json({ error: 'Error guardando cupo en base de datos' });
+
+      // Si es cupo #1, también actualizar usuarios.picks_data (backward compat para rankings/PDF)
+      if (cupoActual.numero === 1) {
+        await sbPatch('usuarios', { 'id': `eq.${userId}` }, { picks_data: nuevo, picks_completos }).catch(() => {});
+        try { await sincronizarRelacional(userId, nuevo, cat); } catch (_) {}
+      }
+
+      return res.json({ ok: true, picks_completos });
+    }
+
+    // ── Sin cupo_id: guardar en usuarios (flujo original / backward compat) ──
     const rows = await sbGet('usuarios', { 'id': `eq.${userId}`, select: 'picks_data,picks_completos' });
     const row = Array.isArray(rows) ? rows[0] : null;
     const base = row?.picks_data || {};
@@ -201,7 +251,7 @@ export default async function handler(req, res) {
     const ok = await sbPatch('usuarios', { 'id': `eq.${userId}` }, { picks_data: nuevo, picks_completos });
     if (!ok) return res.status(500).json({ error: 'Error guardando en base de datos' });
 
-    // Intentar guardar también en cupo activo (si existe la tabla)
+    // Espejo en cupo #1 (si existe la tabla)
     try {
       const cupos = await sbGet('cupos', { 'usuario_id': `eq.${userId}`, 'numero': 'eq.1', select: 'id' });
       const cupo = Array.isArray(cupos) && cupos[0];
