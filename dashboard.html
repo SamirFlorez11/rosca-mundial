@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ROSCA MUNDIAL — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Pre-conectar a Wompi para reducir latencia al pagar -->
+<link rel="preconnect" href="https://checkout.wompi.co">
+<link rel="dns-prefetch" href="https://checkout.wompi.co">
 <style>
   :root {
     --amarillo: #FCD116;
@@ -2666,20 +2669,17 @@
       if (!r2.ok) throw new Error('Error generando firma de pago');
       const firma = d2.firma;
 
-      // 3. Mostrar widget Wompi
-      btn.style.display = 'none';
-      const container = document.getElementById('cupoAgregarWompiContainer');
-      container.innerHTML = '';
-      const script = document.createElement('script');
-      script.src = 'https://checkout.wompi.co/widget.js';
-      script.setAttribute('data-render', 'button');
-      script.setAttribute('data-public-key', 'pub_prod_dcEpPgbY0uKrMGVD6X3GEcsQGMeW686d');
-      script.setAttribute('data-currency', 'COP');
-      script.setAttribute('data-amount-in-cents', '6000000');
-      script.setAttribute('data-reference', referencia);
-      script.setAttribute('data-signature:integrity', firma);
-      script.setAttribute('data-redirect-url', `https://roscamundial.com/dashboard.html?cupo_activado=${cupo_num}`);
-      container.appendChild(script);
+      // 3. Redirect directo al checkout de Wompi (sin widget.js — más rápido)
+      btn.textContent = '💳 Redirigiendo a pago...';
+      const wParams = new URLSearchParams({
+        'public-key':       'pub_prod_dcEpPgbY0uKrMGVD6X3GEcsQGMeW686d',
+        'currency':         'COP',
+        'amount-in-cents':  '6000000',
+        'reference':        referencia,
+        'redirect-url':     `https://roscamundial.com/dashboard.html?cupo_activado=${cupo_num}`,
+      });
+      wParams.set('signature:integrity', firma);
+      window.location.href = 'https://checkout.wompi.co/p/?' + wParams.toString();
 
     } catch(e) {
       btn.disabled = false;

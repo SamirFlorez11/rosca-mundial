@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rosca Mundial — Registro</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Pre-conectar a Wompi para reducir latencia al pagar -->
+<link rel="preconnect" href="https://checkout.wompi.co">
+<link rel="dns-prefetch" href="https://checkout.wompi.co">
 <style>
   :root{--gold:#E8A020;--gold-dark:#C07A18;--navy:#0D1B3E;--navy-light:#1A2F5E;--red:#CE1126;--cream:#FDF6E8;--white:#ffffff;--gray:#6B7280;--border:#E5E7EB;}
   *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
@@ -692,34 +695,26 @@
         return;
       }
 
-      // Registro exitoso — lanzar Wompi
+      // Registro exitoso — redirigir directo a Wompi (sin widget, más rápido)
       const usuarioId = data.usuario_id;
       document.getElementById("successEmail").textContent = payload.correo;
 
-      // Crear el widget de Wompi dinámicamente
-      const wompiContainer = document.getElementById("wompi-container") || (() => {
-        const div = document.createElement("div");
-        div.id = "wompi-container";
-        div.style.cssText = "margin-top:20px;display:flex;justify-content:center;";
-        document.querySelector(".btn-submit").parentNode.insertBefore(div, document.querySelector(".btn-submit"));
-        return div;
-      })();
+      btn.innerHTML = '<span>⏳ Preparando pago...</span>';
+      btn.disabled = true;
 
-      wompiContainer.innerHTML = "";
-      const script = document.createElement("script");
-      script.src = "https://checkout.wompi.co/widget.js";
-      script.setAttribute("data-render", "button");
-      script.setAttribute("data-public-key", "pub_prod_dcEpPgbY0uKrMGVD6X3GEcsQGMeW686d"); // ← reemplazar con tu key real
-      script.setAttribute("data-currency", "COP");
-      script.setAttribute("data-amount-in-cents", "6000000");
-      script.setAttribute("data-reference", usuarioId);
       const firma = await generarFirma(usuarioId);
-      script.setAttribute("data-signature:integrity", firma);
-      script.setAttribute("data-redirect-url", "https://roscamundial.com/dashboard.html");
-      wompiContainer.appendChild(script);
 
-      btn.style.display = "none";
-      document.querySelector(".login-link").style.display = "none";
+      // Redirect directo al checkout de Wompi — no requiere descargar widget.js
+      const wParams = new URLSearchParams({
+        'public-key':        'pub_prod_dcEpPgbY0uKrMGVD6X3GEcsQGMeW686d',
+        'currency':          'COP',
+        'amount-in-cents':   '6000000',
+        'reference':         usuarioId,
+        'redirect-url':      'https://roscamundial.com/dashboard.html',
+      });
+      wParams.set('signature:integrity', firma);
+      btn.innerHTML = '<span>💳 Redirigiendo a pago...</span>';
+      window.location.href = 'https://checkout.wompi.co/p/?' + wParams.toString();
 
     } catch(err) {
       btn.disabled = false;
