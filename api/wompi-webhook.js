@@ -53,6 +53,54 @@ async function supabase(endpoint, method = 'GET', body = null) {
   return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : null };
 }
 
+async function enviarCorreoCupo(correo, nombre, numero, alias) {
+  const primerNombre = nombre.trim().split(/\s+/)[0];
+  const html = `
+    <!DOCTYPE html>
+    <html lang="es">
+    <head><meta charset="UTF-8"></head>
+    <body style="margin:0;padding:0;background:#0a0e1a;font-family:'Arial',sans-serif;">
+      <div style="max-width:560px;margin:0 auto;padding:32px 24px;">
+        <div style="text-align:center;margin-bottom:28px;">
+          <div style="font-size:32px;font-weight:900;letter-spacing:4px;color:#FCD116;">ROSCA MUNDIAL</div>
+          <div style="font-size:13px;color:#6b7a99;letter-spacing:1px;margin-top:4px;">MUNDIAL USA · MÉXICO · CANADÁ 2026</div>
+        </div>
+        <div style="background:#111827;border:1px solid #1e2d45;border-radius:16px;padding:32px;">
+          <div style="font-size:22px;font-weight:700;color:#FCD116;margin-bottom:8px;">🎟️ ¡Cupo #${numero} activado!</div>
+          <div style="font-size:15px;color:#e8eaf0;line-height:1.7;margin-bottom:20px;">
+            Hola <strong>${primerNombre}</strong>,<br><br>
+            Tu cupo adicional <strong style="color:#22c55e;">"${alias}"</strong> fue pagado y activado exitosamente.<br>
+            Ingresa a la plataforma para hacer los picks de este cupo.
+          </div>
+          <div style="background:#1a2235;border-radius:10px;padding:16px 20px;margin-bottom:24px;">
+            <div style="font-size:12px;color:#6b7a99;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Recordatorio</div>
+            <div style="font-size:13px;color:#e8eaf0;line-height:2;">
+              🔒 <strong>Cierre de picks:</strong> 11 de junio 2026, 5:30 PM<br>
+              ⚽ <strong>Inicio del Mundial:</strong> 11 de junio 2026, 6:00 PM
+            </div>
+          </div>
+          <a href="https://roscamundial.com/dashboard.html"
+             style="display:block;text-align:center;background:linear-gradient(135deg,#FCD116,#e5a800);color:#000;font-weight:700;font-size:15px;padding:14px;border-radius:10px;text-decoration:none;letter-spacing:1px;">
+            ⚡ IR A MIS PICKS
+          </a>
+        </div>
+        <div style="text-align:center;margin-top:20px;font-size:11px;color:#6b7a99;">roscamundial.com · Montería, Colombia · 2026</div>
+      </div>
+    </body>
+    </html>
+  `;
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: `Rosca Mundial <${RESEND_FROM_EMAIL}>`,
+      to: correo,
+      subject: `🎟️ Cupo #${numero} activado — Rosca Mundial 2026`,
+      html,
+    }),
+  }).catch(e => console.error('Error correo cupo:', e.message));
+}
+
 async function enviarCorreoBienvenida(correo, nombre, usuarioId = null) {
   const html = `
     <!DOCTYPE html>
@@ -247,7 +295,63 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: false, mensaje: 'Monto incorrecto — pago no procesado' });
     }
 
-    // ── 4. Buscar usuario por correo ──────────────────────────────────────────
+    // ── 4a. Pago de cupo adicional (referencia empieza con "CUPO-") ───────────
+    if (reference?.startsWith('CUPO-')) {
+      const cupo_id = reference.replace('CUPO-', '');
+
+      const cupoResult = await supabase(`cupos?id=eq.${cupo_id}&select=id,usuario_id,numero,alias,activo`);
+      if (!cupoResult.ok || !cupoResult.data?.length) {
+        await supabase('logs', 'POST', { usuario_id: null, accion: 'webhook_cupo_no_encontrado', detalle: { cupo_id, wompi_id } }).catch(() => {});
+        return res.status(200).json({ ok: false, mensaje: 'Cupo no encontrado' });
+      }
+
+      const cupo = cupoResult.data[0];
+
+      // Idempotencia
+      if (cupo.activo) return res.status(200).json({ ok: true, mensaje: 'Cupo ya estaba activo' });
+      const pagoYaExiste = await supabase(`pagos?wompi_transaction_id=eq.${wompi_id}&select=id`);
+      if (pagoYaExiste.ok && pagoYaExiste.data?.length > 0) return res.status(200).json({ ok: true, mensaje: 'Pago ya procesado' });
+
+      // Buscar usuario (para correo y notificación admin)
+      const uRes = await supabase(`usuarios?id=eq.${cupo.usuario_id}&select=id,nombre_completo,correo`);
+      const usuario = uRes.data?.[0];
+
+      // Registrar pago
+      await supabase('pagos', 'POST', {
+        usuario_id: cupo.usuario_id,
+        wompi_transaction_id: wompi_id,
+        monto: Math.round(amount_in_cents / 100),
+        moneda: 'COP',
+        estado: 'APPROVED',
+        metodo_pago: transaccion.payment_method_type || 'WOMPI',
+      });
+
+      // Activar cupo
+      await supabase(`cupos?id=eq.${cupo_id}`, 'PATCH', { activo: true });
+
+      // Correos
+      if (usuario) {
+        await enviarCorreoCupo(usuario.correo, usuario.nombre_completo, cupo.numero, cupo.alias);
+        await notificarAdmin({
+          nombre:   `${usuario.nombre_completo} — Cupo adicional #${cupo.numero}`,
+          correo:   usuario.correo,
+          monto:    amount_in_cents / 100,
+          wompi_id,
+          reference,
+        }).catch(() => {});
+      }
+
+      // Log
+      await supabase('logs', 'POST', {
+        usuario_id: cupo.usuario_id,
+        accion: 'cupo_adicional_activado',
+        detalle: { cupo_id, numero: cupo.numero, alias: cupo.alias, wompi_id },
+      }).catch(() => {});
+
+      return res.status(200).json({ ok: true, mensaje: `Cupo #${cupo.numero} activado` });
+    }
+
+    // ── 4b. Pago de inscripción normal ────────────────────────────────────────
     const usuarioResult = await supabase(
       `usuarios?correo=eq.${encodeURIComponent(customer_email)}&select=id,nombre_completo,activo`
     );

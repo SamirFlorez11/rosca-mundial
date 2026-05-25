@@ -1197,6 +1197,41 @@
   </div>
 </div>
 
+<!-- MODAL AGREGAR CUPO ADICIONAL -->
+<div class="modal-overlay" id="cupoAgregarModal" onclick="if(event.target===this)cerrarModalAgregarCupo()" style="display:none">
+  <div class="modal" style="max-width:440px">
+    <button class="modal-close" onclick="cerrarModalAgregarCupo()">✕</button>
+    <div style="margin-bottom:20px">
+      <div style="font-family:'Poppins',sans-serif;font-size:20px;font-weight:900;letter-spacing:2px;color:var(--amarillo)">🎟️ AGREGAR CUPO</div>
+      <div style="font-family:'Poppins',sans-serif;font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5">Cada cupo tiene sus propios picks e historial en el ranking independiente.</div>
+    </div>
+
+    <!-- Alias -->
+    <div style="margin-bottom:16px">
+      <label style="font-family:'Poppins',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">Nombre del cupo <span style="opacity:0.5">(opcional)</span></label>
+      <input id="cupoAgregarAlias" type="text" placeholder="Ej: Mi segundo cupo" maxlength="40"
+        style="width:100%;padding:11px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:'Poppins',sans-serif;font-size:14px;outline:none;box-sizing:border-box">
+    </div>
+
+    <!-- Info precio -->
+    <div style="background:rgba(252,209,22,0.06);border:1px solid rgba(252,209,22,0.2);border-radius:10px;padding:12px 14px;margin-bottom:18px;font-size:12px;color:var(--muted);line-height:1.6">
+      💰 Costo: <strong style="color:var(--text)">$60.000 COP</strong> · Pago único por cupo<br>
+      ⚡ Se activa automáticamente al confirmar el pago
+    </div>
+
+    <!-- Botón pagar -->
+    <button id="cupoAgregarBtn" onclick="iniciarPagoCupo()"
+      style="width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-weight:800;font-size:14px;border:none;border-radius:10px;padding:13px;cursor:pointer;letter-spacing:0.5px;font-family:'Poppins',sans-serif">
+      💳 Pagar $60.000 con Wompi
+    </button>
+
+    <!-- Contenedor widget Wompi -->
+    <div id="cupoAgregarWompiContainer" style="margin-top:14px;display:flex;justify-content:center"></div>
+
+    <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:12px">Máximo 5 cupos por cuenta</div>
+  </div>
+</div>
+
 <!-- MODAL CAMBIAR PASSWORD -->
 <div class="modal-overlay" id="passModal">
   <div class="modal" style="max-width:420px">
@@ -2583,13 +2618,90 @@
   window.cerrarModalCupos    = cerrarModalCupos;
 
   function abrirModalAgregarCupo() {
-    if (confirm('¿Quieres agregar un cupo adicional?\n\nCada cupo cuesta $60.000 COP y tiene sus propias predicciones y posición en el ranking.\n\nSe abrirá la pantalla de pago.')) {
-      window.location.href = '/index.html?agregar_cupo=1';
+    // Reset estado del modal
+    document.getElementById('cupoAgregarAlias').value = '';
+    document.getElementById('cupoAgregarWompiContainer').innerHTML = '';
+    const btn = document.getElementById('cupoAgregarBtn');
+    btn.style.display = '';
+    btn.disabled = false;
+    btn.textContent = '💳 Pagar $60.000 con Wompi';
+    document.getElementById('cupoAgregarModal').style.display = 'flex';
+  }
+
+  function cerrarModalAgregarCupo() {
+    document.getElementById('cupoAgregarModal').style.display = 'none';
+  }
+  window.cerrarModalAgregarCupo = cerrarModalAgregarCupo;
+
+  async function iniciarPagoCupo() {
+    const btn = document.getElementById('cupoAgregarBtn');
+    const alias = document.getElementById('cupoAgregarAlias').value.trim();
+    btn.disabled = true;
+    btn.textContent = '⏳ Creando cupo...';
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Sesión expirada. Recarga la página.');
+      const token = session.access_token;
+
+      // 1. Crear cupo (inactivo) en Supabase
+      const r1 = await fetch('/api/cupos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ alias: alias || undefined }),
+      });
+      const d1 = await r1.json();
+      if (!r1.ok) throw new Error(d1.error || 'Error creando cupo');
+      const cupo_id = d1.cupo.id;
+      const cupo_num = d1.cupo.numero;
+
+      // 2. Obtener firma Wompi
+      const referencia = `CUPO-${cupo_id}`;
+      const r2 = await fetch('/api/firma', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ referencia }),
+      });
+      const d2 = await r2.json();
+      if (!r2.ok) throw new Error('Error generando firma de pago');
+      const firma = d2.firma;
+
+      // 3. Mostrar widget Wompi
+      btn.style.display = 'none';
+      const container = document.getElementById('cupoAgregarWompiContainer');
+      container.innerHTML = '';
+      const script = document.createElement('script');
+      script.src = 'https://checkout.wompi.co/widget.js';
+      script.setAttribute('data-render', 'button');
+      script.setAttribute('data-public-key', 'pub_prod_dcEpPgbY0uKrMGVD6X3GEcsQGMeW686d');
+      script.setAttribute('data-currency', 'COP');
+      script.setAttribute('data-amount-in-cents', '6000000');
+      script.setAttribute('data-reference', referencia);
+      script.setAttribute('data-signature:integrity', firma);
+      script.setAttribute('data-redirect-url', `https://roscamundial.com/dashboard.html?cupo_activado=${cupo_num}`);
+      container.appendChild(script);
+
+    } catch(e) {
+      btn.disabled = false;
+      btn.textContent = '💳 Pagar $60.000 con Wompi';
+      mostrarToast('Error: ' + e.message, 'error');
     }
   }
+  window.iniciarPagoCupo = iniciarPagoCupo;
 
   // Cargar cupos al iniciar
   cargarCuposUsuario();
+
+  // Toast de éxito si volvió de pago de cupo
+  (function() {
+    const params = new URLSearchParams(window.location.search);
+    const cupoActivado = params.get('cupo_activado');
+    if (cupoActivado) {
+      setTimeout(() => mostrarToast(`🎟️ ¡Cupo #${cupoActivado} activado! Ya puedes hacer tus picks.`, 'success'), 800);
+      // Limpiar URL sin recargar
+      history.replaceState({}, '', window.location.pathname);
+    }
+  })();
 </script>
 <div id="toast"></div>
 </body>
