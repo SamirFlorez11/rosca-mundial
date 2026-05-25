@@ -50,7 +50,8 @@ async function supabase(endpoint, method = 'GET', body = null) {
     body: body ? JSON.stringify(body) : null,
   });
   const text = await res.text();
-  return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : null };
+  try { return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : null }; }
+  catch { return { ok: res.ok, status: res.status, data: null }; }
 }
 
 async function enviarCorreoCupo(correo, nombre, numero, alias) {

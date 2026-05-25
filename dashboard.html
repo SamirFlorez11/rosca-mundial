@@ -2557,7 +2557,7 @@
 
       // Mostrar barra solo si hay 2+ cupos activos
       const bar = document.getElementById('cupoBar');
-      if (bar) bar.style.display = 'flex';
+      if (bar && _cuposUsuario.length >= 2) bar.style.display = 'flex';
 
       // Badge en dropdown
       const badge = document.getElementById('dropdown-cupos-badge');
