@@ -353,13 +353,22 @@ export default async function handler(req, res) {
     }
 
     // ── 4b. Pago de inscripción normal ────────────────────────────────────────
-    const usuarioResult = await supabase(
-      `usuarios?correo=eq.${encodeURIComponent(customer_email)}&select=id,nombre_completo,activo`
-    );
+    // La referencia que pasamos a Wompi ES el usuario_id → búsqueda directa y confiable.
+    // Fallback por correo por si se usó una referencia antigua.
+    let usuarioResult = reference
+      ? await supabase(`usuarios?id=eq.${reference}&select=id,nombre_completo,correo,activo`)
+      : null;
 
-    if (!usuarioResult.ok || !usuarioResult.data?.length) {
-      console.error('Usuario no encontrado para correo:', customer_email);
-      // Retornar 200 para que Wompi no reintente — registrar en logs
+    // Fallback: buscar por correo (menos fiable — el usuario puede escribir otro email en Wompi)
+    if (!usuarioResult?.ok || !usuarioResult?.data?.length) {
+      console.warn(`⚠️  Referencia '${reference}' no encontró usuario — buscando por correo: ${customer_email}`);
+      usuarioResult = await supabase(
+        `usuarios?correo=eq.${encodeURIComponent(customer_email)}&select=id,nombre_completo,correo,activo`
+      );
+    }
+
+    if (!usuarioResult?.ok || !usuarioResult?.data?.length) {
+      console.error('Usuario no encontrado. reference:', reference, '| email:', customer_email);
       await supabase('logs', 'POST', {
         usuario_id: null,
         accion: 'webhook_usuario_no_encontrado',
