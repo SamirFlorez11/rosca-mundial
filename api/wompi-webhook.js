@@ -421,13 +421,13 @@ export default async function handler(req, res) {
       estado: 'pendiente',
     });
 
-    // Enviar correo de bienvenida al usuario
-    await enviarCorreoBienvenida(customer_email, usuario.nombre_completo, usuario.id);
+    // Enviar correo de bienvenida al usuario (usar correo de la DB, no el de Wompi — puede diferir)
+    await enviarCorreoBienvenida(usuario.correo, usuario.nombre_completo, usuario.id);
 
     // Notificar al admin
     await notificarAdmin({
       nombre:   usuario.nombre_completo,
-      correo:   customer_email,
+      correo:   usuario.correo,
       monto:    amount_in_cents / 100,
       wompi_id,
       reference,
