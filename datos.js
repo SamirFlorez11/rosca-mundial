@@ -158,6 +158,7 @@ const JUGADORES_PRELISTA = [
   {id:'col-29',nombre:'Marino Hinestroza',      equipo:'col', pos:'DEL', flag:'🇨🇴'},
   {id:'col-30',nombre:'Miguel Borja',           equipo:'col', pos:'DEL', flag:'🇨🇴'},
   {id:'col-31',nombre:'Jaminton Campaz',        equipo:'col', pos:'DEL', flag:'🇨🇴'},
+  {id:'col-32',nombre:'Luis Javier Suárez',    equipo:'col', pos:'DEL', flag:'🇨🇴'},
 
   // ── ECUADOR 🇪🇨 ────────────────────────────────────────────────────────────
   {id:'ecu-1', nombre:'Hernán Galíndez',        equipo:'ecu', pos:'POR', flag:'🇪🇨'},
