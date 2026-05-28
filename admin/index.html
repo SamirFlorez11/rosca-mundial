@@ -1323,7 +1323,7 @@ async function cargarUsuarios() {
           <button class="btn btn-sm btn-blue" onclick="verPicks('${u.id}','${u.nombre}')">Picks</button>
           <button class="btn btn-sm btn-navy" onclick="editarAliasDirecto('${u.nombre}','${u.alias||""}','${u.id}','${(u.correo||"").replace(/'/g,"\\'")}','${u.celular||""}','${u.ciudad||""}','${u.pais||""}')" title="Editar usuario">✏️</button>
           <button class="btn btn-sm btn-navy" onclick="enviarResetPassword('${(u.correo||"").replace(/'/g,"\\'")}','${u.nombre}')" title="Enviar reset de contraseña">🔑</button>
-          ${!u.tiene_pago_registrado ? `<button class="btn btn-sm btn-green" onclick="registrarPagoManual('${u.id}','${u.nombre}')" title="Registrar pago ($60k)">💳 Pago</button>` : ""}
+          ${(!u.tiene_pago_registrado && !u.activo) ? `<button class="btn btn-sm btn-green" onclick="registrarPagoManual('${u.id}','${u.nombre}')" title="Registrar pago ($60k)">💳 Pago</button>` : ""}
         </td>
       </tr>`).join("");
     const totalPags = Math.ceil(d.total/20);
