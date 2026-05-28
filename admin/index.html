@@ -1380,15 +1380,22 @@ function registrarPagoManual(id, nombre) {
 }
 async function confirmarPagoManual() {
   if (!_pagoManualId) return;
+  const btn = document.querySelector('#modalPagoManual .btn-green');
+  if (btn?.disabled) return; // ya en proceso
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Registrando...'; }
   const monto = parseInt(document.getElementById("pm-monto").value) || 60000;
   const metodo = document.getElementById("pm-metodo").value;
   const referencia = document.getElementById("pm-ref").value.trim();
   try {
     await api("registrar-pago", {method:"POST", body:{usuario_id: _pagoManualId, monto, metodo_pago: metodo, referencia}});
+    _pagoManualId = null;
     closeModal("modalPagoManual");
     showToast(`✓ Pago registrado (${metodo})`, "success");
     cargarUsuarios();
-  } catch(e) { showToast("Error: "+e.message, "error"); }
+  } catch(e) {
+    showToast("Error: "+e.message, "error");
+    if (btn) { btn.disabled = false; btn.textContent = '✓ Registrar pago'; }
+  }
 }
 function openModalCrearUsuario() { document.getElementById("modalCrearUsuario").classList.add("show"); }
 async function crearUsuarioManual() {
@@ -1706,8 +1713,10 @@ function filtrarPagos(q) {}
 function filtrarPagoEstado(v) { api(`pagos?estado=${v}&limit=50`).then(d=>cargarFinanciero()).catch(()=>{}); }
 function refreshFinanciero() { cargarFinanciero(); showToast("✓ Actualizado","success"); }
 async function activarPagoManual(pago_id,usuario_id,btn) {
+  if (btn.disabled) return;
+  btn.disabled = true; btn.textContent = '⏳';
   try { await api("pagos",{method:"PATCH",body:{pago_id,usuario_id}}); btn.closest("tr").querySelector("td:nth-child(6)").innerHTML='<span class="pill pill-green">APPROVED</span>'; btn.remove(); showToast("✓ Pago activado","success"); }
-  catch(e) { showToast("Error: "+e.message,"error"); }
+  catch(e) { btn.disabled=false; btn.textContent='✓ Activar'; showToast("Error: "+e.message,"error"); }
 }
 
 // ═══════════════════════════════════════════════════════════
