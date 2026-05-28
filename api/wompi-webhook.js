@@ -379,20 +379,24 @@ export default async function handler(req, res) {
 
     const usuario = usuarioResult.data[0];
 
-    // ── 5. Idempotencia: ya activo o pago ya procesado ────────────────────────
-    if (usuario.activo) {
-      return res.status(200).json({ ok: true, mensaje: 'Usuario ya estaba activo' });
-    }
-
+    // ── 5. Idempotencia: pago ya procesado (verificar por wompi_id, no por activo)
+    // IMPORTANTE: NO salir solo porque activo=true — el pago puede no haberse
+    // insertado aún (e.g. retry de Wompi tras activación parcial). La guardia real
+    // es el wompi_transaction_id único.
     const pagoExiste = await supabase(
       `pagos?wompi_transaction_id=eq.${wompi_id}&select=id`
     );
     if (pagoExiste.ok && pagoExiste.data?.length > 0) {
+      // Pago ya registrado — asegurar que el usuario y cupo estén activos por si acaso
+      if (!usuario.activo) {
+        await supabase(`usuarios?id=eq.${usuario.id}`, 'PATCH', { activo: true }).catch(() => {});
+        await supabase(`cupos?usuario_id=eq.${usuario.id}&numero=eq.1`, 'PATCH', { activo: true }).catch(() => {});
+      }
       return res.status(200).json({ ok: true, mensaje: 'Pago ya procesado' });
     }
 
     // ── 6. Registrar el pago ──────────────────────────────────────────────────
-    await supabase('pagos', 'POST', {
+    const pagoInsert = await supabase('pagos', 'POST', {
       usuario_id: usuario.id,
       wompi_transaction_id: wompi_id,
       monto: Math.round(amount_in_cents / 100),
@@ -400,6 +404,11 @@ export default async function handler(req, res) {
       estado: 'APPROVED',
       metodo_pago: transaccion.payment_method_type || 'WOMPI',
     });
+    if (!pagoInsert.ok) {
+      console.error('❌ Error insertando pago en BD:', pagoInsert.status, JSON.stringify(pagoInsert.data));
+      // No continuar si el pago no se registró — Wompi reintentará
+      return res.status(500).json({ error: 'Error registrando pago' });
+    }
 
     // ── 7. Activar usuario Y cupo #1 ──────────────────────────────────────────
     await supabase(`usuarios?id=eq.${usuario.id}`, 'PATCH', {
