@@ -67,10 +67,10 @@ const EQUIPOS = [
 
 const JUGADORES_PRELISTA = [
 
-  // ── ARGENTINA 🇦🇷 ──────────────────────────────────────────────────────────
+  // ── ARGENTINA 🇦🇷 (convocatoria oficial 28/05/2026) ───────────────────────
   {id:'arg-1', nombre:'Emiliano Martínez',      equipo:'arg', pos:'POR', flag:'🇦🇷'},
   {id:'arg-2', nombre:'Gerónimo Rulli',         equipo:'arg', pos:'POR', flag:'🇦🇷'},
-  {id:'arg-3', nombre:'Walter Benítez',         equipo:'arg', pos:'POR', flag:'🇦🇷'},
+  {id:'arg-3', nombre:'Juan Musso',             equipo:'arg', pos:'POR', flag:'🇦🇷'},
   {id:'arg-4', nombre:'Nahuel Molina',          equipo:'arg', pos:'DEF', flag:'🇦🇷'},
   {id:'arg-5', nombre:'Gonzalo Montiel',        equipo:'arg', pos:'DEF', flag:'🇦🇷'},
   {id:'arg-6', nombre:'Cristian Romero',        equipo:'arg', pos:'DEF', flag:'🇦🇷'},
@@ -78,25 +78,22 @@ const JUGADORES_PRELISTA = [
   {id:'arg-8', nombre:'Lisandro Martínez',      equipo:'arg', pos:'DEF', flag:'🇦🇷'},
   {id:'arg-9', nombre:'Facundo Medina',         equipo:'arg', pos:'DEF', flag:'🇦🇷'},
   {id:'arg-10',nombre:'Nicolás Tagliafico',     equipo:'arg', pos:'DEF', flag:'🇦🇷'},
-  {id:'arg-11',nombre:'Marcos Acuña',           equipo:'arg', pos:'DEF', flag:'🇦🇷'},
-  {id:'arg-12',nombre:'Valentín Barco',         equipo:'arg', pos:'DEF', flag:'🇦🇷'},
+  {id:'arg-11',nombre:'Leonardo Balerdi',       equipo:'arg', pos:'DEF', flag:'🇦🇷'},
+  {id:'arg-12',nombre:'Valentín Barco',         equipo:'arg', pos:'MED', flag:'🇦🇷'},
   {id:'arg-13',nombre:'Enzo Fernández',         equipo:'arg', pos:'MED', flag:'🇦🇷'},
   {id:'arg-14',nombre:'Rodrigo De Paul',        equipo:'arg', pos:'MED', flag:'🇦🇷'},
   {id:'arg-15',nombre:'Alexis Mac Allister',    equipo:'arg', pos:'MED', flag:'🇦🇷'},
   {id:'arg-16',nombre:'Leandro Paredes',        equipo:'arg', pos:'MED', flag:'🇦🇷'},
   {id:'arg-17',nombre:'Giovani Lo Celso',       equipo:'arg', pos:'MED', flag:'🇦🇷'},
   {id:'arg-18',nombre:'Exequiel Palacios',      equipo:'arg', pos:'MED', flag:'🇦🇷'},
-  {id:'arg-19',nombre:'Thiago Almada',          equipo:'arg', pos:'MED', flag:'🇦🇷'},
-  {id:'arg-20',nombre:'Valentín Carboni',       equipo:'arg', pos:'MED', flag:'🇦🇷'},
-  {id:'arg-21',nombre:'Franco Mastantuono',     equipo:'arg', pos:'MED', flag:'🇦🇷'},
-  {id:'arg-22',nombre:'Claudio Echeverri',      equipo:'arg', pos:'MED', flag:'🇦🇷'},
+  {id:'arg-19',nombre:'Thiago Almada',          equipo:'arg', pos:'DEL', flag:'🇦🇷'},
+  {id:'arg-20',nombre:'Nicolás Paz',            equipo:'arg', pos:'DEL', flag:'🇦🇷'},
+  {id:'arg-21',nombre:'Giuliano Simeone',       equipo:'arg', pos:'DEL', flag:'🇦🇷'},
+  {id:'arg-22',nombre:'Nicolás González',       equipo:'arg', pos:'DEL', flag:'🇦🇷'},
   {id:'arg-23',nombre:'Lionel Messi',           equipo:'arg', pos:'DEL', flag:'🇦🇷'},
   {id:'arg-24',nombre:'Julián Álvarez',         equipo:'arg', pos:'DEL', flag:'🇦🇷'},
   {id:'arg-25',nombre:'Lautaro Martínez',       equipo:'arg', pos:'DEL', flag:'🇦🇷'},
-  {id:'arg-26',nombre:'Alejandro Garnacho',     equipo:'arg', pos:'DEL', flag:'🇦🇷'},
-  {id:'arg-27',nombre:'Nicolás González',       equipo:'arg', pos:'DEL', flag:'🇦🇷'},
-  {id:'arg-28',nombre:'Paulo Dybala',           equipo:'arg', pos:'DEL', flag:'🇦🇷'},
-  {id:'arg-29',nombre:'Lucas Beltrán',          equipo:'arg', pos:'DEL', flag:'🇦🇷'},
+  {id:'arg-26',nombre:'José Manuel López',      equipo:'arg', pos:'DEL', flag:'🇦🇷'},
 
   // ── BRASIL 🇧🇷 ── Convocatoria oficial ──────────────────────────────────────
   {id:'bra-1',  nombre:'Alisson',               equipo:'bra', pos:'POR', flag:'🇧🇷'},
