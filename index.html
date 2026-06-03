@@ -87,7 +87,13 @@
   input.error{border-color:var(--red);}
   .error-msg{font-size:11px;color:var(--red);font-weight:700;margin-top:4px;display:none;}
   input.error ~ .error-msg{display:block;}
+  .pw-wrap:has(input.error) ~ .error-msg{display:block;}
   .input-hint{font-size:11px;color:var(--gray);margin-top:4px;font-weight:600;}
+  .pw-wrap{position:relative;}
+  .pw-wrap input{padding-right:42px;}
+  .btn-eye{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#9AA5B4;padding:0;display:flex;align-items:center;line-height:1;}
+  .btn-eye:hover{color:var(--navy);}
+  .btn-eye svg{width:18px;height:18px;}
   .pago-section{background:var(--navy);border-radius:13px;padding:16px;margin-bottom:14px;}
   .pago-title{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:11px;}
   .pago-metodos{display:flex;gap:8px;margin-bottom:11px;}
@@ -542,7 +548,14 @@
         </div>
         <div>
           <label for="password" style="padding-top:4px;">Contraseña</label>
-          <input type="password" id="password" placeholder="Mín. 8 caracteres">
+          <div class="pw-wrap">
+            <input type="password" id="password" placeholder="Mín. 8 caracteres">
+            <button type="button" class="btn-eye" id="btnEye" onclick="togglePw()" aria-label="Mostrar/ocultar contraseña" tabindex="-1">
+              <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
           <div class="error-msg" id="pwError">Mín. 8 caracteres, 1 mayúscula, 1 minúscula, 1 especial</div>
           <div class="input-hint">Mín. 8 caracteres · 1 mayúscula · 1 minúscula · 1 especial (!@#$...)</div>
         </div>
@@ -620,6 +633,17 @@
 
   function validarPassword(pw){
     return pw.length>=8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[^A-Za-z0-9]/.test(pw);
+  }
+  function togglePw(){
+    const inp=document.getElementById("password");
+    const ico=document.getElementById("eyeIcon");
+    if(inp.type==="password"){
+      inp.type="text";
+      ico.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    }else{
+      inp.type="password";
+      ico.innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
   }
   function validarCorreo(email){
     return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
