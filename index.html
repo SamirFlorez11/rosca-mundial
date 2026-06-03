@@ -657,6 +657,8 @@
     const documento=document.getElementById("documento");
     const password=document.getElementById("password");
     [nombre,correo,celular,documento,password].forEach(f=>f.classList.remove("error"));
+    document.querySelectorAll(".server-error-msg").forEach(e=>e.remove());
+    const prevAlert=document.getElementById("reg-error-msg"); if(prevAlert) prevAlert.remove();
     if(!nombre.value.trim()||nombre.value.trim().split(" ").filter(Boolean).length<2){nombre.classList.add("error");valid=false;}
     if(!validarCorreo(correo.value)){correo.classList.add("error");valid=false;}
     if(celular.value.replace(/\D/g,"").length<7){celular.classList.add("error");valid=false;}
@@ -703,19 +705,39 @@
       if (!res.ok) {
         btn.disabled = false;
         btn.innerHTML = '<span>Inscribirme y pagar</span><span class="btn-wompi-badge">WOMPI</span>';
-        // Mostrar error específico
         const errMsg = data.error || "Error al registrarte. Intenta de nuevo.";
-        if (errMsg.includes("correo")) correo.classList.add("error");
-        else if (errMsg.includes("documento")) documento.classList.add("error");
-        // Mostrar mensaje al usuario
+        const campo = data.campo || "";
+        // Marcar campo específico en rojo y mostrar mensaje inline
+        const campoMap = {
+          correo:    correo,
+          documento: documento,
+          celular:   celular,
+          nombre:    nombre,
+          password:  password,
+          alias:     document.getElementById("alias")
+        };
+        // Limpiar errores previos de servidor
+        document.querySelectorAll(".server-error-msg").forEach(e=>e.remove());
+        if (campo && campoMap[campo]) {
+          const inputEl = campoMap[campo];
+          inputEl.classList.add("error");
+          const hint = document.createElement("div");
+          hint.className = "server-error-msg";
+          hint.style.cssText = "font-size:12px;color:#CE1126;font-weight:700;margin-top:4px;";
+          hint.textContent = "⚠ " + errMsg;
+          inputEl.closest(".pw-wrap") ? inputEl.closest(".pw-wrap").after(hint) : inputEl.after(hint);
+          inputEl.scrollIntoView({behavior:"smooth",block:"center"});
+        }
+        // Mostrar también el banner general
         let alertBox = document.getElementById("reg-error-msg");
         if (!alertBox) {
           alertBox = document.createElement("div");
           alertBox.id = "reg-error-msg";
-          alertBox.style.cssText = "background:rgba(206,17,38,0.12);border:1px solid rgba(206,17,38,0.3);color:#FF6B6B;font-size:13px;font-weight:700;padding:12px 16px;border-radius:10px;margin-top:12px;text-align:center;";
+          alertBox.style.cssText = "background:rgba(206,17,38,0.12);border:1px solid rgba(206,17,38,0.3);color:#CE1126;font-size:13px;font-weight:700;padding:12px 16px;border-radius:10px;margin-top:12px;text-align:center;";
           btn.parentNode.insertBefore(alertBox, btn.nextSibling);
         }
-        alertBox.textContent = errMsg;
+        alertBox.textContent = "❌ " + errMsg;
+        window.scrollTo({top: alertBox.offsetTop - 40, behavior:"smooth"});
         return;
       }
 
