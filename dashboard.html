@@ -2506,7 +2506,12 @@
   actualizarMiPosicion();
   // Refresca contador cada 30s y al volver a la pestaña
   setInterval(cargarInscritos, 30000);
-  document.addEventListener('visibilitychange', function() { if (!document.hidden) cargarInscritos(); });
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+      cargarInscritos();
+      cargarCuposUsuario(); // re-chequea picks_completos al volver de picks.html
+    }
+  });
 
   // ── Realtime: recarga rankings cuando el cron actualiza la BD ──────────────
   supabase
@@ -2535,6 +2540,7 @@
   function setCupoActivo(cupo_id) {
     localStorage.setItem(CUPO_KEY, cupo_id);
     renderCupoPills();
+    actualizarAlertaPicks();
     // Disparar evento para que picks.html pueda escuchar si está en el mismo contexto
     window.dispatchEvent(new CustomEvent('cupo-changed', { detail: { cupo_id } }));
   }
@@ -2558,6 +2564,9 @@
         localStorage.setItem(CUPO_KEY, _cuposUsuario[0].id);
       }
 
+      // Ocultar "Picks incompletos" si el cupo activo ya tiene picks completos
+      actualizarAlertaPicks();
+
       // Mostrar barra solo si hay 2+ cupos activos
       const bar = document.getElementById('cupoBar');
       if (bar && _cuposUsuario.length >= 2) bar.style.display = 'flex';
@@ -2572,6 +2581,18 @@
       renderCupoPills();
     } catch(e) {
       console.warn('Error cargando cupos:', e.message);
+    }
+  }
+
+  function actualizarAlertaPicks() {
+    const alert = document.getElementById('picksAlert');
+    if (!alert) return;
+    const cupoActivoId = getCupoActivo();
+    const cupo = _cuposUsuario.find(c => c.id === cupoActivoId) || _cuposUsuario[0];
+    if (cupo?.picks_completos) {
+      alert.style.display = 'none';
+    } else {
+      alert.style.display = 'flex';
     }
   }
 
