@@ -690,7 +690,9 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ referencia })
       });
+      if (!resp.ok) throw new Error("Error generando firma de pago");
       const data = await resp.json();
+      if (!data.firma) throw new Error("Firma de pago inválida");
       return data.firma;
     }
 
