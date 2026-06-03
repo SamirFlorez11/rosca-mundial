@@ -88,6 +88,11 @@ body{background:var(--bg);color:var(--text);}
 .lev-btn-card{padding:12px 6px 10px;border:none;border-right:1px solid rgba(80,110,180,0.18);background:transparent;cursor:pointer;font-weight:600;transition:background 0.12s,color 0.12s;display:flex;flex-direction:column;align-items:center;gap:3px;color:rgba(160,180,220,0.65);touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;min-height:72px;justify-content:center;width:100%;}
 .lev-btn-card:last-child{border-right:none;}
 .lev-btn-card .btn-flag{font-size:26px;line-height:1;transition:transform 0.15s;}
+.lev-btn-card .btn-flag img{height:26px;width:auto;border-radius:2px;display:block;margin:0 auto;}
+.team-flag img{height:26px;width:auto;border-radius:2px;}
+.player-flag img{height:18px;width:auto;border-radius:1px;vertical-align:middle;}
+.killer-chip img{height:14px;width:auto;border-radius:1px;vertical-align:middle;}
+.player-group-label img{height:14px;width:auto;border-radius:1px;vertical-align:middle;}
 .lev-btn-card .btn-name{font-size:11.5px;font-weight:800;text-align:center;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:96px;transition:color 0.15s;}
 .lev-btn-card .btn-sub{font-size:9px;text-transform:uppercase;letter-spacing:1px;opacity:0.4;font-weight:600;transition:opacity 0.15s,color 0.15s;}
 .empate-icon{display:none;}
@@ -203,6 +208,9 @@ body{background:var(--bg);color:var(--text);}
   /* Botones L/E/V: flags enormes, texto legible */
   .lev-btn-card{ min-height: 88px; padding: 14px 8px; }
   .lev-btn-card .btn-flag{ font-size: 32px; }
+  .lev-btn-card .btn-flag img{ height: 32px; }
+  .team-flag img{ height: 32px; }
+  .player-flag img{ height: 22px; }
   .lev-btn-card .btn-name{ font-size: 13px; max-width: 140px; font-weight: 800; }
   .lev-btn-card .btn-sub{ font-size: 10px; opacity: 0.6; }
 
@@ -614,6 +622,21 @@ function toggleTema() {
 // ─────────────────────────────────────────────
 // DATA
 // ─────────────────────────────────────────────
+
+// Convierte emoji de bandera a imagen flagcdn.com (soluciona Windows que no renderiza flags)
+function flagImg(emoji, cls) {
+  if (!emoji) return '';
+  try {
+    const pts = [...emoji].map(c => c.codePointAt(0));
+    if (pts.length >= 2 && pts[0] >= 0x1F1E6 && pts[0] <= 0x1F1FF) {
+      const iso = pts.slice(0,2).map(cp => String.fromCharCode(cp - 0x1F1A5)).join('').toLowerCase();
+      const clsAttr = cls ? ` class="${cls}"` : '';
+      return `<img src="https://flagcdn.com/48x36/${iso}.png"${clsAttr} alt="${emoji}" onerror="this.outerHTML='${emoji}'">`;
+    }
+  } catch(e) {}
+  return emoji;
+}
+
 const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 const EQ = {};
 EQUIPOS.forEach(e => EQ[e.id] = e);
@@ -858,7 +881,7 @@ function renderPartidos() {
         <div class="partido-card-meta"><span>${p.fecha} · Col</span></div>
         <div class="partido-btns-row">
           <button class="lev-btn-card ${sel==='L'?'sel-L':''}" data-pid="${p.id}" data-val="L" onclick="pickLEV('${p.id}','L')">
-            <span class="btn-flag">${p.local.flag}</span>
+            <span class="btn-flag">${flagImg(p.local.flag)}</span>
             <span class="btn-name">${p.local.nombre}</span>
             <span class="btn-sub">Local</span>
           </button>
@@ -868,7 +891,7 @@ function renderPartidos() {
             <span class="btn-sub">X</span>
           </button>
           <button class="lev-btn-card ${sel==='V'?'sel-V':''}" data-pid="${p.id}" data-val="V" onclick="pickLEV('${p.id}','V')">
-            <span class="btn-flag">${p.visit.flag}</span>
+            <span class="btn-flag">${flagImg(p.visit.flag)}</span>
             <span class="btn-name">${p.visit.nombre}</span>
             <span class="btn-sub">Visitante</span>
           </button>
@@ -915,7 +938,7 @@ function renderTeamGrid(cat) {
     const isSelected = sel.includes(eq.id);
     const isDisabled = !isSelected && sel.length >= max;
     return `<div class="team-card${isSelected ? ' selected' : ''}${isDisabled ? ' disabled' : ''}" onclick="toggleTeam('${cat}','${eq.id}')">
-      <div class="team-flag">${eq.flag}</div>
+      <div class="team-flag">${flagImg(eq.flag)}</div>
       <div class="team-name">${eq.nombre}</div>
       <div class="team-check">✓</div>
     </div>`;
@@ -961,7 +984,7 @@ function renderKiller() {
       if (!j) return '';
       const eq = EQ[j.equipo];
       return `<div class="killer-chip" onclick="toggleJugador('${jid}')">
-        ${eq ? eq.flag : ''}  ${j.nombre} <span class="killer-chip-x">✕</span>
+        ${eq ? flagImg(eq.flag) : ''}  ${j.nombre} <span class="killer-chip-x">✕</span>
       </div>`;
     }).join('');
   } else {
@@ -980,7 +1003,7 @@ function renderKiller() {
   Object.entries(grupos).forEach(([eqId, jugadores]) => {
     const eq = EQ[eqId];
     if (!eq) return;
-    html += `<div class="player-group-label">${eq.flag} ${eq.nombre}</div>`;
+    html += `<div class="player-group-label">${flagImg(eq.flag)} ${eq.nombre}</div>`;
     jugadores.forEach(j => {
       const isSelected = sel.includes(j.id);
       const teamCount = contPorEquipo(j.equipo);
@@ -988,7 +1011,7 @@ function renderKiller() {
       const posMap = {POR:'Portero',DEF:'Defensa',MED:'Mediocampista',DEL:'Delantero'};
       const pos = posMap[j.pos] || j.pos || '—';
       html += `<div class="player-item${isSelected ? ' selected' : ''}${isDisabled ? ' disabled' : ''}" onclick="toggleJugador('${j.id}')">
-        <span class="player-flag">${j.flag || eq.flag}</span>
+        <span class="player-flag">${flagImg(j.flag || eq.flag)}</span>
         <div class="player-info">
           <div class="player-name">${j.nombre}<span class="player-team-tag">${pos}</span></div>
           <div class="player-detail">${eq.nombre}${isSelected ? ' · <strong style="color:var(--amarillo)">Seleccionado</strong>' : ''}</div>

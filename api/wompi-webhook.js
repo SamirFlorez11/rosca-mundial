@@ -411,16 +411,23 @@ export default async function handler(req, res) {
     }
 
     // ── 7. Activar usuario Y cupo #1 ──────────────────────────────────────────
-    await supabase(`usuarios?id=eq.${usuario.id}`, 'PATCH', {
+    const activarUsuario = await supabase(`usuarios?id=eq.${usuario.id}`, 'PATCH', {
       activo: true,
       updated_at: new Date().toISOString(),
     });
+    if (!activarUsuario.ok) {
+      console.error('❌ Error activando usuario:', activarUsuario.status, JSON.stringify(activarUsuario.data));
+      return res.status(500).json({ error: 'Error activando usuario' });
+    }
 
-    // Activar cupo #1 (creado con activo:false en el registro)
-    await supabase(`cupos?usuario_id=eq.${usuario.id}&numero=eq.1`, 'PATCH', {
+    // Activar cupo #1 (cupos NO tiene columna updated_at)
+    const activarCupo = await supabase(`cupos?usuario_id=eq.${usuario.id}&numero=eq.1`, 'PATCH', {
       activo: true,
-      updated_at: new Date().toISOString(),
     });
+    if (!activarCupo.ok) {
+      console.error('⚠️  Error activando cupo #1:', activarCupo.status, JSON.stringify(activarCupo.data));
+      // No retornar 500 — usuario ya activado, el cupo se puede corregir manualmente
+    }
 
     // Registrar notificación
     await supabase('notificaciones', 'POST', {
