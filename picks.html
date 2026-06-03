@@ -246,6 +246,25 @@
     border-bottom: 1px solid var(--border);
     display: flex; flex-direction: column;
   }
+  .ph-back-row {
+    padding: 10px 14px 6px;
+    border-bottom: 1px solid var(--border);
+    background: var(--card2);
+    flex-shrink: 0;
+  }
+  .btn-back-pc {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none;
+    border: 1px solid rgba(252,209,22,0.35);
+    color: var(--amarillo);
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
+    padding: 5px 14px; border-radius: 8px; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .btn-back-pc:hover { background: rgba(252,209,22,0.08); border-color: var(--amarillo); }
+  /* En móvil este botón no se muestra — ya existe el de la navbar */
+  @media (max-width: 600px) { .ph-back-row { display: none; } }
 
   .panel-header {
     padding: 14px 20px;
@@ -820,6 +839,12 @@
 
       <!-- Panel Izquierdo -->
       <div class="panel-left">
+        <!-- Botón atrás visible en PC -->
+        <div class="ph-back-row">
+          <button onclick="volverAlMenu()" class="btn-back-pc">
+            ← Categorías
+          </button>
+        </div>
         <div class="panel-header">
           <div class="ph-titulo" id="panelTitulo">—</div>
           <div class="ph-sub" id="panelSub">—</div>

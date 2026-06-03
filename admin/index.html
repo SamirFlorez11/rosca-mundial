@@ -1363,7 +1363,7 @@ function confirmarEliminarUsuario(id, nombre) {
   _eliminarId = id; _eliminarNombre = nombre;
   const msg = document.getElementById('eliminarMsg');
   if (msg) msg.textContent = `¿Eliminar permanentemente a "${nombre}"? Se borrarán sus pagos, cupos y todos sus datos. Esta acción NO se puede deshacer.`;
-  openModal('modalEliminarUsuario');
+  document.getElementById('modalEliminarUsuario').classList.add('show');
 }
 async function ejecutarEliminarUsuario() {
   if (!_eliminarId) return;
