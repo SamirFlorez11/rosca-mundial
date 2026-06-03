@@ -2504,6 +2504,9 @@
   cargarInscritos();
   cargarUsuariosEnRankings();
   actualizarMiPosicion();
+  // Refresca contador cada 30s y al volver a la pestaña
+  setInterval(cargarInscritos, 30000);
+  document.addEventListener('visibilitychange', function() { if (!document.hidden) cargarInscritos(); });
 
   // ── Realtime: recarga rankings cuando el cron actualiza la BD ──────────────
   supabase

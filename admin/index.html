@@ -1156,6 +1156,25 @@ input:checked+.slider::before{transform:translateX(18px);}
   </div>
 </div>
 
+<!-- MODAL ELIMINAR USUARIO -->
+<div class="modal-over" id="modalEliminarUsuario">
+  <div class="modal-bx" style="max-width:440px;">
+    <div class="modal-hd">
+      <h3 style="color:#fca5a5;">🗑 Eliminar usuario</h3>
+      <button class="modal-cl" onclick="closeModal('modalEliminarUsuario')">✕</button>
+    </div>
+    <div class="modal-bd">
+      <div style="background:rgba(127,29,29,0.25);border:1px solid rgba(153,27,27,0.5);border-radius:10px;padding:14px 16px;margin-bottom:18px;font-size:13px;font-weight:700;color:#fca5a5;line-height:1.6;" id="eliminarMsg">
+        ¿Eliminar permanentemente este usuario?
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn btn-navy" onclick="closeModal('modalEliminarUsuario')">Cancelar</button>
+        <button class="btn" id="btnConfirmarEliminar" style="background:#991b1b;color:#fca5a5;border:1px solid #7f1d1d;font-weight:800;" onclick="ejecutarEliminarUsuario()">🗑 Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -1324,6 +1343,7 @@ async function cargarUsuarios() {
           <button class="btn btn-sm btn-navy" onclick="editarAliasDirecto('${u.nombre}','${u.alias||""}','${u.id}','${(u.correo||"").replace(/'/g,"\\'")}','${u.celular||""}','${u.ciudad||""}','${u.pais||""}')" title="Editar usuario">✏️</button>
           <button class="btn btn-sm btn-navy" onclick="enviarResetPassword('${(u.correo||"").replace(/'/g,"\\'")}','${u.nombre}')" title="Enviar reset de contraseña">🔑</button>
           ${(!u.tiene_pago_registrado && !u.activo) ? `<button class="btn btn-sm btn-green" onclick="registrarPagoManual('${u.id}','${u.nombre}')" title="Registrar pago ($60k)">💳 Pago</button>` : ""}
+          <button class="btn btn-sm" style="background:#7f1d1d;color:#fca5a5;border:1px solid #991b1b;" onclick="confirmarEliminarUsuario('${u.id}','${u.nombre.replace(/'/g,"\\'")}')" title="Eliminar usuario">🗑</button>
         </td>
       </tr>`).join("");
     const totalPags = Math.ceil(d.total/20);
@@ -1337,6 +1357,31 @@ function pagUsuarios(dir) { userPage+=dir; cargarUsuarios(); }
 function filtrarUsuarios(q)      { userQ=q;      userPage=1; cargarUsuarios(); }
 function filtrarUsuarioEstado(v) { userActivo=v; userPage=1; cargarUsuarios(); }
 function filtrarUsuarioPicks(v)  { userPicks=v;  userPage=1; cargarUsuarios(); }
+
+let _eliminarId = null, _eliminarNombre = null;
+function confirmarEliminarUsuario(id, nombre) {
+  _eliminarId = id; _eliminarNombre = nombre;
+  const msg = document.getElementById('eliminarMsg');
+  if (msg) msg.textContent = `¿Eliminar permanentemente a "${nombre}"? Se borrarán sus pagos, cupos y todos sus datos. Esta acción NO se puede deshacer.`;
+  openModal('modalEliminarUsuario');
+}
+async function ejecutarEliminarUsuario() {
+  if (!_eliminarId) return;
+  const btn = document.getElementById('btnConfirmarEliminar');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Eliminando...'; }
+  try {
+    await api("eliminar-usuario", { method: "DELETE", body: { usuario_id: _eliminarId } });
+    closeModal('modalEliminarUsuario');
+    showToast(`✓ "${_eliminarNombre}" eliminado`, "success");
+    cargarUsuarios();
+    initApp(); // refresca contadores del dashboard
+  } catch(e) {
+    showToast("Error: " + e.message, "error");
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '🗑 Sí, eliminar'; }
+    _eliminarId = null; _eliminarNombre = null;
+  }
+}
 
 async function toggleUser(id, activo) {
   try { await api("usuarios", {method:"PATCH", body:{id, activo}}); showToast(`Usuario ${activo?"activado ✓":"desactivado"}`,"success"); }

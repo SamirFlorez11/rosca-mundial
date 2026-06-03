@@ -626,6 +626,42 @@ export default async function handler(req, res) {
   }
 
   // ══════════════════════════════════════════════════════
+  //  ELIMINAR USUARIO
+  // ══════════════════════════════════════════════════════
+  if (action === "eliminar-usuario" && req.method === "DELETE") {
+    const { usuario_id } = req.body || {};
+    if (!usuario_id) return err(res, "Falta usuario_id");
+
+    // Verificar que existe
+    const rU = await sb("usuarios", { params: { id: `eq.${usuario_id}`, select: "id,nombre_completo,correo" } });
+    const usuario = rU.data?.[0];
+    if (!usuario) return err(res, "Usuario no encontrado");
+
+    // 1. Borrar registros relacionados (orden: sin FK primero)
+    await sb(`notificaciones?usuario_id=eq.${usuario_id}`, { method: "DELETE" }).catch(() => {});
+    await sb(`pagos?usuario_id=eq.${usuario_id}`,          { method: "DELETE" }).catch(() => {});
+    await sb(`cupos?usuario_id=eq.${usuario_id}`,          { method: "DELETE" }).catch(() => {});
+    await sb(`logs?usuario_id=eq.${usuario_id}`,           { method: "DELETE" }).catch(() => {});
+
+    // 2. Borrar de la tabla usuarios
+    const rDel = await sb(`usuarios?id=eq.${usuario_id}`, { method: "DELETE" });
+    if (!rDel.ok) return err(res, "Error borrando usuario de la BD: " + JSON.stringify(rDel.data));
+
+    // 3. Borrar de Supabase Auth
+    const authDel = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${usuario_id}`, {
+      method: "DELETE",
+      headers: { "apikey": SERVICE_KEY, "Authorization": `Bearer ${SERVICE_KEY}` },
+    });
+    if (!authDel.ok) {
+      console.error("⚠️  Error borrando auth user:", authDel.status, await authDel.text());
+      // No es fatal — el usuario de BD ya fue borrado
+    }
+
+    await log("usuario_eliminado", { usuario_id, nombre: usuario.nombre_completo, correo: usuario.correo });
+    return ok(res, { mensaje: `Usuario "${usuario.nombre_completo}" eliminado correctamente` });
+  }
+
+  // ══════════════════════════════════════════════════════
   //  PICKS EXPORT (JSON + CSV) — evita exponer service key en frontend
   // ══════════════════════════════════════════════════════
   if (action === "picks-export-json") {

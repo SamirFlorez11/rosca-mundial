@@ -859,28 +859,28 @@
     setInterval(tick, 1000);
   })();
 
-  // ── Contador de inscritos desde Supabase ─────────────────────────────────
+  // ── Contador de inscritos desde Supabase (refresca cada 30s y en foco) ──────
   (function() {
     var SUPA_URL = 'https://hwhlmuixnxevzbabkqcy.supabase.co';
     var ANON_KEY = 'sb_publishable_Sub3P-1VhdcnNfhNzeet1A_yhQt_wJS';
-    fetch(SUPA_URL + '/rest/v1/usuarios?activo=eq.true&es_admin=eq.false&select=id', {
-      headers: {
-        'apikey': ANON_KEY,
-        'Authorization': 'Bearer ' + ANON_KEY,
-        'Prefer': 'count=exact',
-        'Range': '0-0'
-      }
-    }).then(function(r) {
-      var total = parseInt(r.headers.get('content-range')?.split('/')[1] || '0', 10);
-      if (!total || isNaN(total)) return;
-      var pct = Math.min(Math.round((total / 400) * 100), 100);
-      var pc = document.querySelector('.progress-count');
-      if (pc) pc.textContent = total + ' / 400';
-      var pf = document.querySelector('.progress-bar-fill');
-      if (pf) { pf.style.animation = 'none'; pf.style.width = pct + '%'; }
-      var pp = document.querySelector('.progress-pct');
-      if (pp) pp.textContent = pct + '% completado';
-    }).catch(function(){});
+    function actualizarContador() {
+      fetch(SUPA_URL + '/rest/v1/usuarios?activo=eq.true&es_admin=eq.false&select=id', {
+        headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY, 'Prefer': 'count=exact', 'Range': '0-0' }
+      }).then(function(r) {
+        var total = parseInt((r.headers.get('content-range') || '').split('/')[1] || '0', 10);
+        if (!total || isNaN(total)) return;
+        var pct = Math.min(Math.round((total / 400) * 100), 100);
+        var pc = document.querySelector('.progress-count');
+        if (pc) pc.textContent = total + ' / 400';
+        var pf = document.querySelector('.progress-bar-fill');
+        if (pf) { pf.style.animation = 'none'; pf.style.width = pct + '%'; }
+        var pp = document.querySelector('.progress-pct');
+        if (pp) pp.textContent = pct + '% completado';
+      }).catch(function(){});
+    }
+    actualizarContador();
+    setInterval(actualizarContador, 30000);
+    document.addEventListener('visibilitychange', function() { if (!document.hidden) actualizarContador(); });
   })();
 
 </script>
