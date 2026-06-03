@@ -435,6 +435,10 @@
   }
   .lev-btn-card:last-child { border-right: none; }
   .lev-btn-card .btn-flag { font-size: 22px; line-height: 1; transition: transform 0.15s; }
+  .flag-img { height: 22px; width: auto; border-radius: 2px; display: block; margin: 0 auto; vertical-align: middle; }
+  .btn-flag .flag-img { height: 22px; }
+  .opt-flag .flag-img, .pick-flag .flag-img { height: 18px; }
+  .ranking-flag .flag-img { height: 16px; }
   .lev-btn-card .btn-name { font-size: 11px; font-weight: 700; text-align: center; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 96px; transition: color 0.15s; }
   .lev-btn-card .btn-sub  { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.45; transition: opacity 0.15s, color 0.15s; }
 
@@ -923,6 +927,18 @@
 <script>
 // EQUIPOS y JUGADORES_PRELISTA provienen de /datos.js — no editar aqui
 
+// Convierte emoji de bandera → <img> flagcdn.com (soluciona Windows que no renderiza flags)
+function flagImg(emoji) {
+  if (!emoji) return '';
+  try {
+    const pts = [...emoji].map(c => c.codePointAt(0));
+    if (pts.length >= 2 && pts[0] >= 0x1F1E6 && pts[0] <= 0x1F1FF) {
+      const iso = pts.slice(0,2).map(cp => String.fromCharCode(cp - 0x1F1A5)).join('').toLowerCase();
+      return `<img src="https://flagcdn.com/48x36/${iso}.png" class="flag-img" alt="${emoji}" onerror="this.outerHTML='${emoji}'">`;
+    }
+  } catch(e) {}
+  return emoji;
+}
 
 // GRUPOS Y PARTIDOS LEV
 const GRUPOS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
@@ -1237,7 +1253,7 @@ function renderPartidosTodos() {
         </div>
         <div class="partido-btns-row">
           <button class="lev-btn-card ${clsL}" data-pid="${p.id}" data-val="L" onclick="pickLEV('${p.id}','L')">
-            <span class="btn-flag">${p.local.flag}</span>
+            <span class="btn-flag">${flagImg(p.local.flag)}</span>
             <span class="btn-name">${p.local.nombre}</span>
             <span class="btn-sub">Local</span>
           </button>
@@ -1247,7 +1263,7 @@ function renderPartidosTodos() {
             <span class="btn-sub">X</span>
           </button>
           <button class="lev-btn-card ${clsV}" data-pid="${p.id}" data-val="V" onclick="pickLEV('${p.id}','V')">
-            <span class="btn-flag">${p.visit.flag}</span>
+            <span class="btn-flag">${flagImg(p.visit.flag)}</span>
             <span class="btn-name">${p.visit.nombre}</span>
             <span class="btn-sub">Visitante</span>
           </button>
@@ -1311,7 +1327,7 @@ function renderPicksLEV() {
       const col = s==='L'?'#85B7EB':s==='E'?'#FAC775':'#F0997B';
       html += `<div class="pick-item filled">
         <div style="font-family:'Poppins',sans-serif;font-size:16px;color:${col};width:28px;text-align:center;flex-shrink:0">${s}</div>
-        <div style="font-size:13px;flex-shrink:0">${p.local.flag}${p.visit.flag}</div>
+        <div style="font-size:13px;flex-shrink:0;display:flex;gap:2px;align-items:center">${flagImg(p.local.flag)}${flagImg(p.visit.flag)}</div>
         <div style="flex:1"><div class="pick-name" style="font-size:12px">${p.local.nombre} vs ${p.visit.nombre}</div></div>
         <button class="btn-remove" onclick="quitarLEV('${p.id}')">✕</button>
       </div>`;
@@ -1369,7 +1385,7 @@ function renderPicksCategoria(cat) {
       : `Grupo ${item.grupo}`;
     return `<div class="pick-item filled">
       <div class="pick-num">${i+1}</div>
-      <div class="pick-flag">${item.flag}</div>
+      <div class="pick-flag">${flagImg(item.flag)}</div>
       <div style="flex:1">
         <div class="pick-name">${item.nombre}</div>
         <div class="pick-detail">${detail}</div>
@@ -1408,14 +1424,14 @@ function renderOpcionesCategoria(cat, q) {
     Object.entries(porEquipo).forEach(([eqId, jugs]) => {
       const eq = EQUIPOS.find(e => e.id === eqId);
       const cantEq = contPorEquipo[eqId]||0;
-      html += `<div style="padding:6px 4px 2px;font-family:'Poppins',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">${eq?.flag||''} ${eq?.nombre||eqId} <span style="color:${cantEq>=3?'#ef4444':'var(--amarillo)'};">(${cantEq}/3)</span></div>`;
+      html += `<div style="padding:6px 4px 2px;font-family:'Poppins',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">${flagImg(eq?.flag||'')} ${eq?.nombre||eqId} <span style="color:${cantEq>=3?'#ef4444':'var(--amarillo)'};">(${cantEq}/3)</span></div>`;
       jugs.forEach(j => {
         const sel = STATE[cat].includes(j.id);
         const lleno = STATE[cat].length >= 15 && !sel;
         const maxEq = (contPorEquipo[eqId]||0) >= 3 && !sel;
         const dis = (lleno || maxEq) && !sel;
         html += `<div class="option-item opt-reveal ${sel?'selected':''} ${dis?'disabled':''}" onclick="${!dis&&!sel?`agregarPick('${cat}','${j.id}')`:sel?`quitarPick('${cat}','${j.id}')`:''}"  >
-          <div class="opt-flag">${j.flag}</div>
+          <div class="opt-flag">${flagImg(j.flag)}</div>
           <div style="flex:1"><div class="opt-name">${j.nombre}</div><div class="opt-detail">${j.pos}</div></div>
           ${sel ? '<span class="opt-check">✓</span>' : !dis ? '<span class="opt-add">+</span>' : ''}
         </div>`;
@@ -1442,7 +1458,7 @@ function renderOpcionesCategoria(cat, q) {
         const lleno = STATE[cat].length >= cfg.max && !sel;
         const dis = lleno && !sel;
         html += `<div class="option-item opt-reveal ${sel?'selected':''} ${dis?'disabled':''}" onclick="${!dis?`toggleEquipo('${cat}','${e.id}')`:''}"  >
-          <div class="opt-flag">${e.flag}</div>
+          <div class="opt-flag">${flagImg(e.flag)}</div>
           <div style="flex:1"><div class="opt-name">${e.nombre}</div><div class="opt-detail">Grupo ${e.grupo}</div></div>
           ${sel ? '<span class="opt-check">✓</span>' : !dis ? '<span class="opt-add">+</span>' : ''}
         </div>`;
@@ -1697,7 +1713,7 @@ function renderResumenPicks() {
       const ps = PARTIDOS_LEV.filter(p => p.grupo === g && STATE.lev[p.id]);
       if (!ps.length) return `<div style="color:var(--muted);font-size:11px;font-style:italic;padding:2px 0">Grupo ${g}: sin picks</div>`;
       return `<div style="font-size:11px;margin-bottom:2px"><strong style="color:var(--muted)">Grupo ${g}:</strong> ` +
-        ps.map(p => `${p.local.flag}${STATE.lev[p.id]}${p.visit.flag}`).join(' · ') + '</div>';
+        ps.map(p => `${flagImg(p.local.flag)}${STATE.lev[p.id]}${flagImg(p.visit.flag)}`).join(' · ') + '</div>';
     }).join('');
   });
 
@@ -1715,7 +1731,7 @@ function renderResumenPicks() {
         if (!item) return '';
         return `<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid rgba(30,45,69,0.3)">
           <span style="font-size:11px;color:var(--muted);width:18px">${i+1}.</span>
-          <span style="font-size:14px">${item.flag}</span>
+          <span style="font-size:14px">${flagImg(item.flag)}</span>
           <span style="font-family:'Poppins',sans-serif;font-size:13px;font-weight:600">${item.nombre}</span>
           ${cfg.tipo==='jugadores' ? `<span style="font-size:10px;color:var(--muted);margin-left:auto">${item.pos}</span>` : ''}
         </div>`;
