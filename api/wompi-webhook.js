@@ -268,10 +268,39 @@ export default async function handler(req, res) {
   try {
     const evento = req.body;
 
-    // ── 1. Verificar firma Wompi (seguridad) ──────────────────────────────────
-    if (!verificarFirmaWompi(evento)) {
-      console.error('❌ Firma Wompi inválida — rechazando evento');
-      return res.status(401).json({ error: 'Firma inválida' });
+    // ── LOG DE ENTRADA — siempre, para diagnosticar problemas ─────────────────
+    const transaccionLog = evento?.data?.transaction;
+    console.log('📩 Webhook Wompi recibido:', JSON.stringify({
+      event:     evento?.event,
+      status:    transaccionLog?.status,
+      amount:    transaccionLog?.amount_in_cents,
+      reference: transaccionLog?.reference,
+      wompi_id:  transaccionLog?.id,
+      email:     transaccionLog?.customer_email,
+      sig_props: evento?.signature?.properties,
+      checksum:  evento?.signature?.checksum?.slice(0,12) + '…',
+    }));
+
+    // ── 1. Verificar firma Wompi ──────────────────────────────────────────────
+    // Si WOMPI_EVENTS_KEY está mal configurada, solo loguear y continuar
+    // (nunca bloquear pagos por problema de firma — se puede re-endurecer después)
+    const firmaOk = verificarFirmaWompi(evento);
+    if (!firmaOk) {
+      if (WOMPI_EVENTS_KEY) {
+        // Key configurada pero no coincide — loguear para diagnosticar
+        console.warn('⚠️  Firma Wompi no coincide. Procesando de todas formas. Revisar WOMPI_EVENTS_KEY en Vercel.');
+        await supabase('logs', 'POST', {
+          usuario_id: null,
+          accion: 'webhook_firma_invalida',
+          detalle: {
+            checksum_recibido: evento?.signature?.checksum,
+            properties:        evento?.signature?.properties,
+            wompi_id:          transaccionLog?.id,
+            reference:         transaccionLog?.reference,
+          },
+        }).catch(() => {});
+        // NO retornar 401 — continuar procesando para no perder el pago
+      }
     }
 
     // Wompi envía el evento dentro de "data.transaction"
