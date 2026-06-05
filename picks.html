@@ -2038,10 +2038,16 @@ function tienePicks(data) {
     if (tienePicks(perfil.picks_data)) { cargarPicksEnState(perfil.picks_data); return; }
   }
 
-  // 4. Último fallback: sessionStorage (invitado) o localStorage (usuario offline)
-  const lsData = sessionStorage.getItem(LS_KEY) || localStorage.getItem(LS_KEY);
-  if (lsData) {
-    try { cargarPicksEnState(JSON.parse(lsData)); return; } catch (_) {}
+  // 4. Fallback localStorage — SOLO para invitados
+  // Para usuarios registrados NO usar localStorage: puede contener picks de otra sesión/usuario
+  if (perfil.esInvitado) {
+    const lsData = sessionStorage.getItem(LS_KEY) || localStorage.getItem(LS_KEY);
+    if (lsData) {
+      try { cargarPicksEnState(JSON.parse(lsData)); return; } catch (_) {}
+    }
+  } else {
+    // Usuario registrado sin picks en BD → limpiar localStorage por seguridad
+    localStorage.removeItem(LS_KEY);
   }
 
   cargarPicksEnState(perfil.picks_data);

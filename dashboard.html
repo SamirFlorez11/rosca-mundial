@@ -2476,8 +2476,12 @@
   };
 
   window.cerrarSesion = async function() {
+    // Limpiar datos locales del usuario actual antes de cerrar sesión
+    localStorage.removeItem('rosca_picks_invitado');
+    localStorage.removeItem('rm_cupo_activo');
+    sessionStorage.removeItem('rosca_picks_invitado');
     await supabase.auth.signOut();
-    window.location.href = '/index.html';
+    window.location.href = '/login.html';
   };
 
   // ── Cargar alias real del usuario actual ───────────────────────────────────
